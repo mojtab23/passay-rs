@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+type Comparator = fn(&str, &str) -> Ordering;
+
 pub trait ArraySorter {
     fn sort(self, array: &mut [String])
     where
@@ -7,7 +9,7 @@ pub trait ArraySorter {
     {
         self.sort_with_comparator(array, |a, b| a.cmp(b))
     }
-    fn sort_with_comparator(self, array: &mut [String], compare: fn(&String, &String) -> Ordering)
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
     where
         Self: Sized;
 }
@@ -15,7 +17,7 @@ pub trait ArraySorter {
 pub struct BubbleSort;
 
 impl ArraySorter for BubbleSort {
-    fn sort_with_comparator(self, array: &mut [String], compare: fn(&String, &String) -> Ordering)
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
     where
         Self: Sized,
     {
@@ -35,11 +37,8 @@ impl ArraySorter for BubbleSort {
 pub struct BubbleSortOptimized;
 
 impl ArraySorter for BubbleSortOptimized {
-    fn sort_with_comparator(
-        self,
-        array: &mut [String],
-        mut compare: fn(&String, &String) -> Ordering,
-    ) where
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
+    where
         Self: Sized,
     {
         let mut new_len: usize;
@@ -64,23 +63,26 @@ impl ArraySorter for BubbleSortOptimized {
 
 pub struct SliceSort;
 
+impl Default for SliceSort {
+    fn default() -> Self {
+        SliceSort
+    }
+}
+
 impl ArraySorter for SliceSort {
-    fn sort_with_comparator(self, array: &mut [String], compare: fn(&String, &String) -> Ordering)
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
     where
         Self: Sized,
     {
-        array.sort_by(compare);
+        array.sort_by(|a, b| compare(a, b))
     }
 }
 
 pub struct InsertionSort;
 
 impl ArraySorter for InsertionSort {
-    fn sort_with_comparator(
-        self,
-        array: &mut [String],
-        mut compare: fn(&String, &String) -> Ordering,
-    ) where
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
+    where
         Self: Sized,
     {
         for i in 1..array.len() {
@@ -96,16 +98,11 @@ impl ArraySorter for InsertionSort {
 pub struct QuickSort;
 
 impl ArraySorter for QuickSort {
-    fn sort_with_comparator(self, array: &mut [String], compare: fn(&String, &String) -> Ordering)
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
     where
         Self: Sized,
     {
-        fn partition(
-            arr: &mut [String],
-            low: isize,
-            high: isize,
-            compare: fn(&String, &String) -> Ordering,
-        ) -> isize {
+        fn partition(arr: &mut [String], low: isize, high: isize, compare: Comparator) -> isize {
             let pivot = high as usize;
             let mut store_index = low - 1;
             let mut last_index = high;
@@ -130,12 +127,7 @@ impl ArraySorter for QuickSort {
             arr.swap(store_index as usize, pivot as usize);
             store_index
         }
-        fn _quick_sort(
-            arr: &mut [String],
-            low: isize,
-            high: isize,
-            compare: fn(&String, &String) -> Ordering,
-        ) {
+        fn _quick_sort(arr: &mut [String], low: isize, high: isize, compare: Comparator) {
             if low < high {
                 let p = partition(arr, low, high, compare);
                 _quick_sort(arr, low, p - 1, compare);
@@ -151,7 +143,7 @@ impl ArraySorter for QuickSort {
 pub struct SelectionSort;
 
 impl ArraySorter for SelectionSort {
-    fn sort_with_comparator(self, array: &mut [String], compare: fn(&String, &String) -> Ordering)
+    fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
     where
         Self: Sized,
     {
@@ -180,7 +172,7 @@ mod tests {
     fn init() {
         let _ = env_logger::builder()
             .is_test(true)
-            .filter_level(log::LevelFilter::Info)
+            .filter_level(log::LevelFilter::Debug)
             .try_init();
     }
 

@@ -5,18 +5,18 @@ use std::slice::Iter;
 use crate::word_lists::sort::{ArraySorter, SliceSort};
 use crate::word_lists::WordLists;
 
-pub fn case_sensitive_comparator(a: &String, b: &String) -> Ordering {
+pub fn case_sensitive_comparator(a: &str, b: &str) -> Ordering {
     a.cmp(b)
 }
 
-pub fn case_insensitive_comparator(a: &String, b: &String) -> Ordering {
+pub fn case_insensitive_comparator(a: &str, b: &str) -> Ordering {
     a.to_lowercase().cmp(&b.to_lowercase())
 }
 
 pub struct ArrayWordList {
     words: Vec<String>,
     case_sensitive: bool,
-    comparator: fn(&String, &String) -> Ordering,
+    comparator: fn(&str, &str) -> Ordering,
 }
 
 impl ArrayWordList {
@@ -47,7 +47,6 @@ impl ArrayWordList {
 }
 
 impl WordLists for ArrayWordList {
-
     fn iter() -> Iter<'static, &'static str> {
         todo!()
     }
@@ -77,14 +76,14 @@ mod tests {
     #[test]
     fn construct() {
         let words = ["a", "b", "", "c"].map(String::from).to_vec();
-        let word_list = ArrayWordList::new(words, true);
+        let _word_list = ArrayWordList::new(words, true);
     }
 
     #[test]
     fn words_with_space() {
         let mut vec_with_space = [" Man", " cadet", "!@#$%^&*", "password", "inner ", "outer "];
         vec_with_space.sort();
-        let mut vec_with_space = vec_with_space.map(String::from).to_vec();
+        let vec_with_space = vec_with_space.map(String::from).to_vec();
         let vec_len = vec_with_space.len();
         let first_in_vec = vec_with_space[0].to_owned();
         let last_in_vec = vec_with_space.last().unwrap().to_owned();
