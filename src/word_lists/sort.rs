@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-type Comparator = fn(&str, &str) -> Ordering;
+pub type Comparator = fn(&str, &str) -> Ordering;
 
 pub trait ArraySorter {
     fn sort(self, array: &mut [String])
@@ -172,7 +172,7 @@ mod tests {
     fn init() {
         let _ = env_logger::builder()
             .is_test(true)
-            .filter_level(log::LevelFilter::Debug)
+            .filter_level(log::LevelFilter::Info)
             .try_init();
     }
 

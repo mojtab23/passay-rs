@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 use std::ops::Index;
 use std::slice::Iter;
 
-use crate::word_lists::sort::{ArraySorter, SliceSort};
+use crate::word_lists::sort::{ArraySorter, Comparator, SliceSort};
 use crate::word_lists::WordLists;
 
 pub fn case_sensitive_comparator(a: &str, b: &str) -> Ordering {
@@ -20,6 +20,7 @@ pub struct ArrayWordList {
 }
 
 impl ArrayWordList {
+    /// Creates a new word list backed by the given vector with optional sorter.
     pub fn with_sorter(
         mut words: Vec<String>,
         case_sensitive: bool,
@@ -41,8 +42,15 @@ impl ArrayWordList {
             comparator,
         }
     }
+
+    /// Creates a new word list backed by the given array.
     pub fn new(words: Vec<String>, case_sensitive: bool) -> Self {
         Self::with_sorter(words, case_sensitive, Option::<SliceSort>::None)
+    }
+
+    /// Creates a new case-sensitive word list backed by the given vector.
+    pub fn with_words(words: Vec<String>) -> Self {
+        Self::new(words, true)
     }
 }
 
@@ -57,6 +65,10 @@ impl WordLists for ArrayWordList {
 
     fn len(&self) -> usize {
         self.words.len()
+    }
+
+    fn get_comparator(&self) -> Comparator {
+        self.comparator
     }
 }
 
