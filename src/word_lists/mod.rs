@@ -24,16 +24,7 @@ pub trait WordLists: Index<usize> {
     fn len(&self) -> usize;
 }
 
-///
-/// Creates an {@link ArrayWordList} by reading the contents of the given file with support for sorting file contents.
-///
-/// @param  readers  array of readers
-/// @param  caseSensitive  set to true to create case-sensitive word list (default), false otherwise
-/// @param  sorter  to sort the input array with
-///
-/// @return  word list read from given readers
-///
-/// @throws  IOException  if an error occurs reading from a reader
+/// Creates an [ArrayWordList] by reading the contents of the given read with support for sorting the contents.
 pub fn create_from_read(
     read: impl Read,
     case_sensitive: bool,
@@ -47,10 +38,20 @@ pub fn create_from_read(
     ArrayWordList::with_sorter(words, case_sensitive, Some(sorter))
 }
 
+/// Reads words, one per line, from a Read and returns a word list.
+pub fn read_words(read: impl Read) -> Vec<String> {
+    let reader = BufReader::new(read);
+    reader
+        .lines()
+        .map(|l| l.expect("Could not parse line"))
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
+
     use crate::word_lists::sort::SliceSort;
-    use crate::word_lists::{create_from_read, WordLists};
+    use crate::word_lists::{create_from_read, read_words, WordLists};
 
     #[test]
     fn create_from_reader() {
@@ -71,5 +72,13 @@ mod tests {
         for i in 0..word_list.len() {
             assert_eq!(words[i], word_list[i]);
         }
+    }
+
+    #[test]
+    fn test_words_from_read() {
+        let sorted_file = include_str!("../../resources/test/eign");
+        let words = read_words(sorted_file.as_bytes());
+        let good = "good".to_string();
+        assert!(words.contains(&good));
     }
 }
