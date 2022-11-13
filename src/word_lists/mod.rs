@@ -1,8 +1,7 @@
 /// Represents a random-access list of words.
 use core::slice::Iter;
 use std::cmp::Ordering;
-use std::io::prelude::*;
-use std::io::{BufReader, Read};
+use std::io::{BufReader, Error, Lines, Read};
 use std::ops::Index;
 
 use crate::word_lists::array_word_list::ArrayWordList;
@@ -10,6 +9,7 @@ use crate::word_lists::sort::{ArraySorter, Comparator};
 
 mod array_word_list;
 mod sort;
+mod test_base;
 
 pub trait WordLists: Index<usize, Output = String> {
     /// Returns an iterator to traverse this word list from the 0th index.
@@ -33,23 +33,27 @@ pub trait WordLists: Index<usize, Output = String> {
 pub fn create_from_read(
     read: impl Read,
     case_sensitive: bool,
-    sorter: impl ArraySorter,
+    sorter: Option<impl ArraySorter>,
 ) -> ArrayWordList {
-    let reader = BufReader::new(read);
-    let words: Vec<String> = reader
+    let mut reader = BufReader::new(read);
+    let mut s = String::new();
+    let _ = reader.read_to_string(&mut s);
+    let s = s.replace("\r", "\n");
+    let words: Vec<String> = s
         .lines()
-        .map(|l| l.expect("Could not parse line"))
+        .map(String::from)
+        .filter(|s| !s.is_empty())
         .collect();
-    ArrayWordList::with_sorter(words, case_sensitive, Some(sorter))
+    ArrayWordList::with_sorter(words, case_sensitive, sorter)
 }
 
 /// Reads words, one per line, from a Read and returns a word list.
 pub fn read_words(read: impl Read) -> Vec<String> {
-    let reader = BufReader::new(read);
-    reader
-        .lines()
-        .map(|l| l.expect("Could not parse line"))
-        .collect()
+    let mut reader = BufReader::new(read);
+    let mut s = String::new();
+    let _ = reader.read_to_string(&mut s);
+    let s = s.replace("\r", "\n");
+    s.lines().map(String::from).collect()
 }
 
 /// Performs a binary search of the given word list for the given word.
@@ -81,7 +85,7 @@ mod tests {
         create_from_read(
             include_bytes!("../../resources/test/freebsd").as_slice(),
             true,
-            SliceSort::default(),
+            Some(SliceSort::default()),
         )
     }
 
@@ -89,7 +93,7 @@ mod tests {
         create_from_read(
             include_bytes!("../../resources/test/web2").as_slice(),
             false,
-            SliceSort::default(),
+            Some(SliceSort::default()),
         )
     }
 
@@ -146,7 +150,7 @@ mod tests {
             all_string.push_str(word);
             all_string.push('\n');
         }
-        let word_list = create_from_read(all_string.as_bytes(), true, SliceSort::default());
+        let word_list = create_from_read(all_string.as_bytes(), true, Some(SliceSort::default()));
         for i in 0..word_list.len() {
             assert_eq!(words[i], word_list[i]);
         }

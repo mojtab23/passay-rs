@@ -83,6 +83,7 @@ impl Index<usize> for ArrayWordList {
 #[cfg(test)]
 mod tests {
     use crate::word_lists::array_word_list::ArrayWordList;
+    use crate::word_lists::test_base;
     use crate::word_lists::WordLists;
 
     #[test]
@@ -104,5 +105,14 @@ mod tests {
         assert_eq!(vec_len, wl.len());
         assert_eq!(first_in_vec, wl[0]);
         assert_eq!(last_in_vec, wl[wl.len() - 1]);
+    }
+
+    #[test]
+    fn test_get() {
+        let params = test_base::provide_word_lists_with_expected_words();
+
+        for p in params {
+            test_base::test_get(p.0, p.1, &p.2);
+        }
     }
 }
