@@ -1,24 +1,25 @@
 /// Represents a random-access list of words.
 use core::slice::Iter;
 use std::cmp::Ordering;
-use std::io::{BufReader, Error, Lines, Read};
+
+use std::io::{BufReader, Read};
 use std::ops::Index;
 
-use crate::word_lists::array_word_list::ArrayWordList;
-use crate::word_lists::sort::{ArraySorter, Comparator};
+pub use self::array_word_list::ArrayWordList;
+use self::sort::{ArraySorter, Comparator};
 
 mod array_word_list;
-mod sort;
+pub mod sort;
 mod test_base;
 
 pub trait WordLists: Index<usize, Output = String> {
     /// Returns an iterator to traverse this word list from the 0th index.
     /// @return  iterator for this word list
-    fn iter() -> Iter<'static, &'static str>;
+    fn iter(&self) -> Iter<'_, String>;
 
-    /// Returns an iterator to traverse this word list by following a recursive sequence of medians.
-    /// @return  iterator for this word list
-    fn medians_iter() -> Iter<'static, &'static str>;
+    // /// Returns an iterator to traverse this word list by following a recursive sequence of medians.
+    // /// @return  iterator for this word list
+    // fn medians_iter(&self) -> Iter<'static, &'static str>;
 
     /// Returns the number of words in the list.
     /// @return  total number of words in list.
@@ -38,7 +39,7 @@ pub fn create_from_read(
     let mut reader = BufReader::new(read);
     let mut s = String::new();
     let _ = reader.read_to_string(&mut s);
-    let s = s.replace("\r", "\n");
+    let s = s.replace('\r', "\n");
     let words: Vec<String> = s
         .lines()
         .map(String::from)
@@ -52,7 +53,7 @@ pub fn read_words(read: impl Read) -> Vec<String> {
     let mut reader = BufReader::new(read);
     let mut s = String::new();
     let _ = reader.read_to_string(&mut s);
-    let s = s.replace("\r", "\n");
+    let s = s.replace('\r', "\n");
     s.lines().map(String::from).collect()
 }
 
@@ -77,23 +78,23 @@ pub fn binary_search(word_list: impl WordLists, word: &str) -> Option<usize> {
 
 #[cfg(test)]
 mod tests {
-    use crate::word_lists::array_word_list::ArrayWordList;
-    use crate::word_lists::sort::SliceSort;
-    use crate::word_lists::{binary_search, create_from_read, read_words, WordLists};
+    use super::array_word_list::ArrayWordList;
+    use super::sort::SliceSort;
+    use super::{binary_search, create_from_read, read_words, WordLists};
 
     fn case_sensitive_word_list() -> ArrayWordList {
         create_from_read(
-            include_bytes!("../../resources/test/freebsd").as_slice(),
+            include_bytes!("../../../resources/test/freebsd").as_slice(),
             true,
-            Some(SliceSort::default()),
+            Some(SliceSort),
         )
     }
 
     fn case_insensitive_word_list() -> ArrayWordList {
         create_from_read(
-            include_bytes!("../../resources/test/web2").as_slice(),
+            include_bytes!("../../../resources/test/web2").as_slice(),
             false,
-            Some(SliceSort::default()),
+            Some(SliceSort),
         )
     }
 
@@ -137,7 +138,7 @@ mod tests {
 
     #[test]
     fn create_from_reader() {
-        let words = vec![
+        let words = [
             " leading whitespace",
             " surrounding whitespace ",
             "bar",
@@ -150,7 +151,7 @@ mod tests {
             all_string.push_str(word);
             all_string.push('\n');
         }
-        let word_list = create_from_read(all_string.as_bytes(), true, Some(SliceSort::default()));
+        let word_list = create_from_read(all_string.as_bytes(), true, Some(SliceSort));
         for i in 0..word_list.len() {
             assert_eq!(words[i], word_list[i]);
         }
@@ -158,7 +159,7 @@ mod tests {
 
     #[test]
     fn test_words_from_read() {
-        let sorted_file = include_str!("../../resources/test/eign");
+        let sorted_file = include_str!("../../../resources/test/eign");
         let words = read_words(sorted_file.as_bytes());
         let good = "good".to_string();
         assert!(words.contains(&good));

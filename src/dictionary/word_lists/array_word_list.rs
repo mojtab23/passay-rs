@@ -2,8 +2,8 @@ use std::cmp::Ordering;
 use std::ops::Index;
 use std::slice::Iter;
 
-use crate::word_lists::sort::{ArraySorter, Comparator, SliceSort};
-use crate::word_lists::WordLists;
+use super::sort::{ArraySorter, Comparator, SliceSort};
+use super::WordLists;
 
 pub fn case_sensitive_comparator(a: &str, b: &str) -> Ordering {
     a.cmp(b)
@@ -55,13 +55,13 @@ impl ArrayWordList {
 }
 
 impl WordLists for ArrayWordList {
-    fn iter() -> Iter<'static, &'static str> {
-        todo!()
+    fn iter(&self) -> Iter<'_, String> {
+        self.words.iter()
     }
 
-    fn medians_iter() -> Iter<'static, &'static str> {
-        todo!()
-    }
+    // fn medians_iter(&self) -> Iter<'static, &'static str> {
+    //     todo!()
+    // }
 
     fn len(&self) -> usize {
         self.words.len()
@@ -82,9 +82,9 @@ impl Index<usize> for ArrayWordList {
 
 #[cfg(test)]
 mod tests {
-    use crate::word_lists::array_word_list::ArrayWordList;
-    use crate::word_lists::test_base;
-    use crate::word_lists::WordLists;
+    use super::super::test_base;
+    use super::ArrayWordList;
+    use super::WordLists;
 
     #[test]
     fn construct() {

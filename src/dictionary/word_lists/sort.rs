@@ -34,6 +34,7 @@ impl ArraySorter for BubbleSort {
     }
 }
 
+#[derive(Clone)]
 pub struct BubbleSortOptimized;
 
 impl ArraySorter for BubbleSortOptimized {
@@ -78,6 +79,7 @@ impl ArraySorter for SliceSort {
     }
 }
 
+#[derive(Clone)]
 pub struct InsertionSort;
 
 impl ArraySorter for InsertionSort {
@@ -95,6 +97,7 @@ impl ArraySorter for InsertionSort {
     }
 }
 
+#[derive(Clone)]
 pub struct QuickSort;
 
 impl ArraySorter for QuickSort {
@@ -124,7 +127,7 @@ impl ArraySorter for QuickSort {
                     arr.swap(store_index as usize, last_index as usize);
                 }
             }
-            arr.swap(store_index as usize, pivot as usize);
+            arr.swap(store_index as usize, pivot);
             store_index
         }
         fn _quick_sort(arr: &mut [String], low: isize, high: isize, compare: Comparator) {
@@ -140,6 +143,7 @@ impl ArraySorter for QuickSort {
     }
 }
 
+#[derive(Clone)]
 pub struct SelectionSort;
 
 impl ArraySorter for SelectionSort {
@@ -180,7 +184,7 @@ mod tests {
     fn bubble_sort_test() {
         init();
 
-        let mut vec1 = vec!["dd", "dd", "ss"];
+        let mut vec1 = ["dd", "dd", "ss"];
         vec1.sort_unstable();
         let sorted_array: Vec<String> = read_sorted_lines().map(|l| l.to_string()).collect();
         let mut array: Vec<String> = read_lines().map(|l| l.to_string()).collect();
@@ -283,12 +287,12 @@ mod tests {
     }
 
     fn read_sorted_lines() -> Lines<'static> {
-        let sorted_file = include_str!("../../resources/test/freebsd.sort");
+        let sorted_file = include_str!("../../../resources/test/freebsd.sort");
         sorted_file.lines()
     }
 
     fn read_lines() -> Lines<'static> {
-        let file = include_str!("../../resources/test/freebsd");
+        let file = include_str!("../../../resources/test/freebsd");
         file.lines()
     }
 }

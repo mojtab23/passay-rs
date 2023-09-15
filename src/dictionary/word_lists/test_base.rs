@@ -1,8 +1,8 @@
 #![cfg(test)]
 
-use crate::word_lists::array_word_list::ArrayWordList;
-use crate::word_lists::sort::SliceSort;
-use crate::word_lists::{create_from_read, WordLists};
+use super::array_word_list::ArrayWordList;
+use super::sort::SliceSort;
+use super::{create_from_read, WordLists};
 
 pub struct ExpectedWord {
     pub word: String,
@@ -19,7 +19,7 @@ pub fn provide_word_lists_with_expected_words() -> [(ArrayWordList, usize, Vec<E
     [
         (
             create_from_read(
-                include_bytes!("../../resources/test/dict-enUS.txt").as_slice(),
+                include_bytes!("../../../resources/test/dict-enUS.txt").as_slice(),
                 true,
                 None::<SliceSort>,
             ),
@@ -37,7 +37,7 @@ pub fn provide_word_lists_with_expected_words() -> [(ArrayWordList, usize, Vec<E
         ),
         (
             create_from_read(
-                include_bytes!("../../resources/test/dict-frFR.txt").as_slice(),
+                include_bytes!("../../../resources/test/dict-frFR.txt").as_slice(),
                 true,
                 None::<SliceSort>,
             ),
@@ -54,7 +54,7 @@ pub fn provide_word_lists_with_expected_words() -> [(ArrayWordList, usize, Vec<E
         ),
         (
             create_from_read(
-                include_bytes!("../../resources/test/dict-frFR-cr.txt").as_slice(),
+                include_bytes!("../../../resources/test/dict-frFR-cr.txt").as_slice(),
                 true,
                 None::<SliceSort>,
             ),
@@ -71,7 +71,7 @@ pub fn provide_word_lists_with_expected_words() -> [(ArrayWordList, usize, Vec<E
         ),
         (
             create_from_read(
-                include_bytes!("../../resources/test/dict-viVN.txt").as_slice(),
+                include_bytes!("../../../resources/test/dict-viVN.txt").as_slice(),
                 true,
                 None::<SliceSort>,
             ),
@@ -90,7 +90,7 @@ pub fn provide_word_lists_with_expected_words() -> [(ArrayWordList, usize, Vec<E
         ),
         (
             create_from_read(
-                include_bytes!("../../resources/test/dict-viVN-crlf.txt").as_slice(),
+                include_bytes!("../../../resources/test/dict-viVN-crlf.txt").as_slice(),
                 true,
                 None::<SliceSort>,
             ),

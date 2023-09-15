@@ -1,4 +1,4 @@
-mod word_lists;
+mod dictionary;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
