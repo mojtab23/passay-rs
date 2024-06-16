@@ -11,6 +11,7 @@ use self::sort::{ArraySorter, Comparator};
 mod array_word_list;
 pub mod sort;
 mod test_base;
+mod word_list_dictionary;
 
 pub trait WordLists: Index<usize, Output = String> {
     /// Returns an iterator to traverse this word list from the 0th index.
@@ -58,7 +59,7 @@ pub fn read_words(read: impl Read) -> Vec<String> {
 }
 
 /// Performs a binary search of the given word list for the given word.
-pub fn binary_search(word_list: impl WordLists, word: &str) -> Option<usize> {
+pub fn binary_search(word_list: &impl WordLists, word: &str) -> Option<usize> {
     let mut low = 0usize;
     let mut high = word_list.len() - 1;
     let mut mid: usize;
@@ -132,7 +133,7 @@ mod tests {
     fn test_binary_search() {
         let search_data = create_search_data();
         for (wl, word, i) in search_data {
-            assert_eq!(i, binary_search(wl, word));
+            assert_eq!(i, binary_search(&wl, word));
         }
     }
 

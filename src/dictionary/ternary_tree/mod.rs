@@ -31,7 +31,7 @@ impl Dictionary for TernaryTreeDictionary {
         self.tree.get(word).is_some()
     }
 
-    fn size(&self) -> usize {
+    fn len(&self) -> usize {
         self.tree.len()
     }
 }

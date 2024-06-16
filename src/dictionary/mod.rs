@@ -3,5 +3,5 @@ pub mod word_lists;
 
 pub trait Dictionary {
     fn search(&self, word: &str) -> bool;
-    fn size(&self) -> usize;
+    fn len(&self) -> usize;
 }

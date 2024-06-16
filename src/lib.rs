@@ -1,4 +1,6 @@
 mod dictionary;
+mod entropy;
+mod rule;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
