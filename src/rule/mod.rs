@@ -1,32 +1,38 @@
-use std::fmt::Display;
 
-use crate::rule::reference::{Reference, VoidReference};
+use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
+mod character_sequence;
+mod illegal_sequence_rule;
 mod length_rule;
+mod message_resolver;
+mod password_validator;
 mod reference;
 mod rule_result;
+mod sequence_data;
 
 pub trait Rule {
-    fn validate(&self, password_data: PasswordData<impl Reference>) -> RuleResult;
+    fn validate(&self, password_data: &PasswordData) -> RuleResult;
 }
 
 /// Contains password related information used by rules to perform password validation.
-pub struct PasswordData<R>
-where
-    R: Reference,
-{
+#[derive(Debug)]
+pub struct PasswordData {
     password: String,
     username: Option<String>,
-    password_references: Vec<R>,
+    password_references: Vec<Box<dyn Reference>>,
 }
 
-impl PasswordData<VoidReference> {
+impl PasswordData {
     pub fn new(password: String) -> Self {
         Self {
             password,
             username: None,
-            password_references: Vec::<VoidReference>::new(),
+            password_references: Vec::new(),
         }
+    }
+
+    pub fn password(&self) -> &str {
+        &self.password
     }
 }

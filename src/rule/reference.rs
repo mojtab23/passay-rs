@@ -1,10 +1,13 @@
-pub trait Reference {
+use std::fmt::Debug;
+
+pub trait Reference: Debug {
     fn password(&self) -> &str;
-    fn salt(&self) -> Option<impl Salt> {
-        None::<NoSalt>
+    fn salt(&self) -> &Option<Box<dyn Salt>> {
+        &None
     }
 }
 
+#[derive(Debug)]
 pub struct VoidReference;
 
 impl Reference for VoidReference {

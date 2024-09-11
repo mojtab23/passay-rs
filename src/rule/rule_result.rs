@@ -25,6 +25,9 @@ impl RuleResult {
     pub fn metadata(&self) -> &RuleResultMetadata {
         &self.metadata
     }
+    pub fn metadata_mut(&mut self) -> &mut RuleResultMetadata {
+        &mut self.metadata
+    }
     pub fn set_metadata(&mut self, metadata: RuleResultMetadata) {
         self.metadata = metadata;
     }
@@ -32,8 +35,26 @@ impl RuleResult {
     pub fn valid(&self) -> bool {
         self.valid
     }
+
+    pub fn set_valid(&mut self, valid: bool) {
+        self.valid = valid;
+    }
+
+    pub fn details(&self) -> &Vec<RuleResultDetail> {
+        &self.details
+    }
+    pub fn details_mut(&mut self) -> &mut Vec<RuleResultDetail> {
+        &mut self.details
+    }
 }
 
+impl Default for RuleResult {
+    fn default() -> Self {
+        RuleResult::new(true)
+    }
+}
+
+#[derive(Debug)]
 pub struct RuleResultDetail {
     error_codes: Vec<String>,
     parameters: HashMap<String, String>,
@@ -50,11 +71,20 @@ impl RuleResultDetail {
             }
         }
 
-        let parameters = parameters.unwrap_or(HashMap::new());
+        let parameters = parameters.unwrap_or_default();
         Self {
             error_codes,
             parameters,
         }
+    }
+    /// Returns the least-specific error code.
+    pub fn error_code(&self) -> &str {
+        &self.error_codes[self.error_codes.len() - 1]
+    }
+
+    /// Returns an array of error codes as provided at creation time.
+    pub fn error_codes(&self) -> &[String] {
+        self.error_codes.as_slice()
     }
 }
 
@@ -64,6 +94,7 @@ impl Display for RuleResultDetail {
     }
 }
 
+#[derive(Default)]
 pub struct RuleResultMetadata {
     counts: HashMap<CountCategory, usize>,
 }
@@ -77,16 +108,13 @@ impl RuleResultMetadata {
     pub fn get_count(&self, category: &CountCategory) -> Option<&usize> {
         self.counts.get(category)
     }
-}
 
-impl Default for RuleResultMetadata {
-    fn default() -> Self {
-        RuleResultMetadata {
-            counts: HashMap::default(),
-        }
+    pub fn merge(&mut self, other: &RuleResultMetadata) {
+        self.counts.extend(other.counts.clone());
     }
 }
-#[derive(Debug, Eq, PartialEq, Hash)]
+
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub enum CountCategory {
     /// password length.
     Length,

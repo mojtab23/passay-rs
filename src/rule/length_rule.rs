@@ -31,9 +31,7 @@ impl LengthRule {
         map.insert("max_length".to_string(), self.max_length.to_string());
         map
     }
-    fn create_rule_result_metadata(
-        password_data: &PasswordData<impl Reference>,
-    ) -> RuleResultMetadata {
+    fn create_rule_result_metadata(password_data: &PasswordData) -> RuleResultMetadata {
         RuleResultMetadata::new(CountCategory::Length, password_data.password.len())
     }
 }
@@ -48,7 +46,7 @@ impl Default for LengthRule {
 }
 
 impl Rule for LengthRule {
-    fn validate(&self, password_data: PasswordData<impl Reference>) -> RuleResult {
+    fn validate(&self, password_data: &PasswordData) -> RuleResult {
         let mut result = RuleResult::new(true);
         let length = password_data.password.len();
         if length < self.min_length {
@@ -62,7 +60,7 @@ impl Rule for LengthRule {
                 Some(self.create_rule_result_detail_parameters()),
             )
         }
-        result.set_metadata(Self::create_rule_result_metadata(&password_data));
+        result.set_metadata(Self::create_rule_result_metadata(password_data));
         result
     }
 }
@@ -70,21 +68,21 @@ impl Rule for LengthRule {
 #[cfg(test)]
 mod tests {
     use crate::rule::length_rule::LengthRule;
-    use crate::rule::reference::VoidReference;
+    
     use crate::rule::rule_result::CountCategory;
     use crate::rule::{PasswordData, Rule};
 
     #[test]
     fn check_metadata() {
         let rule = LengthRule::new(4, 10);
-        let result = rule.validate(PasswordData::new("metadata".to_string()));
+        let result = rule.validate(&PasswordData::new("metadata".to_string()));
         assert!(result.valid());
         assert_eq!(
             8,
             *result.metadata().get_count(&CountCategory::Length).unwrap()
         );
 
-        let result = rule.validate(PasswordData::new("md".to_string()));
+        let result = rule.validate(&PasswordData::new("md".to_string()));
         assert!(!result.valid());
         assert_eq!(
             2,

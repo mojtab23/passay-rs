@@ -1,0 +1,791 @@
+use crate::rule::character_sequence::CharacterSequence;
+use crate::rule::rule_result::RuleResult;
+use crate::rule::sequence_data::SequenceData;
+use crate::rule::{PasswordData, Rule};
+use std::collections::HashMap;
+
+pub const DEFAULT_SEQUENCE_LENGTH: usize = 5;
+pub struct IllegalSequenceRule<S>
+where
+    S: SequenceData,
+{
+    sequence_data: S,
+    length: usize,
+    wrap: bool,
+    report_all: bool,
+}
+
+impl<S: SequenceData> IllegalSequenceRule<S> {
+    pub fn new(sequence_data: S, length: usize, wrap: bool, report_all: bool) -> Self {
+        Self {
+            sequence_data,
+            length,
+            wrap,
+            report_all,
+        }
+    }
+    pub fn with_sequence_data(sequence_data: S) -> Self {
+        Self::new(sequence_data, DEFAULT_SEQUENCE_LENGTH, false, true)
+    }
+    pub fn with_warp(sequence_data: S, length: usize, wrap: bool) -> Self {
+        Self::new(sequence_data, length, wrap, true)
+    }
+
+    fn add_error(&self, result: &mut RuleResult, match_str: &str) {
+        if self.report_all || result.details().is_empty() {
+            // let mut m = LinkedHashMap::new();
+            let mut map = HashMap::new();
+
+            map.insert("sequence".to_string(), match_str.to_string());
+            result.add_error(self.sequence_data.get_error_code(), Some(map));
+        }
+    }
+}
+fn index_of(sequence: &CharacterSequence, c: char) -> isize {
+    for i in 0..sequence.length() {
+        if sequence.matches(i, c) {
+            return i as isize;
+        }
+    }
+    -1
+}
+impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
+    fn validate(&self, password_data: &PasswordData) -> RuleResult {
+        let mut result = RuleResult::default();
+        let password = format!("{}{}", password_data.password(), '\u{ffff}');
+        let mut match_builder = String::with_capacity(password.len());
+        for cs in self.sequence_data.get_sequences() {
+            let cs_length: isize = cs.length() as isize;
+            let mut direction = 0;
+            let mut prev_position = -1;
+            for (_i, c) in password.chars().enumerate() {
+                let position = index_of(&cs, c);
+                // set diff to +1 for increase in sequence, -1 for decrease, anything else for neither
+                let mut diff = if position < 0 || prev_position < 0 {
+                    0
+                } else {
+                    position - prev_position
+                };
+                if self.wrap && (diff == cs_length - 1 || diff == 1 - cs_length) {
+                    diff -= diff.signum() * cs_length;
+                }
+                // if we have a sequence and reached its end, add it to result
+                if diff != direction && match_builder.len() >= self.length {
+                    // result.add_error(match_builder.clone());
+                    self.add_error(&mut result, &match_builder)
+                }
+                // update the current potential sequence
+                if diff == 1 || diff == -1 {
+                    if diff != direction {
+                        match_builder = match_builder.chars().last().unwrap().to_string();
+                        direction = diff;
+                    }
+                } else {
+                    match_builder.clear();
+                    direction = 0;
+                }
+                match_builder.push(c);
+                prev_position = position;
+            }
+        }
+        result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        rule::illegal_sequence_rule::IllegalSequenceRule,
+        rule::message_resolver::DebugMessageResolver,
+        rule::message_resolver::MessageResolver,
+        rule::password_validator::PasswordValidator,
+        rule::rule_result::RuleResult,
+        rule::sequence_data::{
+            CyrillicSequenceData, CzechSequenceData, EnglishSequenceData, GermanSequenceData,
+            PolishSequenceData, SequenceData,
+        },
+        rule::{PasswordData, Rule},
+    };
+    #[test]
+    fn test_passwords() {
+        let test_cases: Vec<(Box<dyn Rule>, PasswordData, Vec<&str>)> = vec![
+            /* QWERTY SEQUENCE */
+            // Test valid password
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::USQwerty,
+                )),
+                PasswordData::new("p4zRcv8#n65".to_string()),
+                vec![],
+            ),
+            // Has qwerty sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("pqwerty#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has qwerty sequence at beginning
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("qwerty#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has qwerty sequence at end
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("ppqwerty".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has qwerty sequence in entirety
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("qwerty".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has two qwerty sequences
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("pqwerty#n65tyuiop".to_string()),
+                vec![
+                    EnglishSequenceData::USQwerty.get_error_code(),
+                    EnglishSequenceData::USQwerty.get_error_code(),
+                ],
+            ),
+            // Has two joined qwerty sequences
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("qwertytrewq".to_string()),
+                vec![
+                    EnglishSequenceData::USQwerty.get_error_code(),
+                    EnglishSequenceData::USQwerty.get_error_code(),
+                ],
+            ),
+            // Has two joined qwerty sequences with padding
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("pqwertytrewqp".to_string()),
+                vec![
+                    EnglishSequenceData::USQwerty.get_error_code(),
+                    EnglishSequenceData::USQwerty.get_error_code(),
+                ],
+            ),
+            // Has wrapping qwerty sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::USQwerty,
+                )),
+                PasswordData::new("pkl;'a#n65".to_string()),
+                vec![],
+            ),
+            // Has wrapping qwerty sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    8,
+                    true,
+                )),
+                PasswordData::new("piop{}|qw#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has backward qwerty sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    4,
+                    false,
+                )),
+                PasswordData::new("p7^54#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has backward wrapping qwerty sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    8,
+                    false,
+                )),
+                PasswordData::new("phgfdsa\";#n65".to_string()),
+                vec![],
+            ),
+            // Has backward wrapping qwerty sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    true,
+                )),
+                PasswordData::new("p@1`+_0#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                )),
+                PasswordData::new("pQ∑eR†y#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has wrapping alt qwerty sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::USQwerty,
+                )),
+                PasswordData::new("pK¬;æA#n65".to_string()),
+                vec![],
+            ),
+            // Has wrapping qwerty sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    8,
+                    true,
+                )),
+                PasswordData::new("pIøp“}|œW#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has backwards alt qwerty sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    4,
+                    false,
+                )),
+                PasswordData::new("p7§5›#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // Has backward alt wrapping qwerty sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    8,
+                    false,
+                )),
+                PasswordData::new("ph©fÎßa\"…#n65".to_string()),
+                vec![],
+            ),
+            // Has backward alt wrapping qwerty sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    true,
+                )),
+                PasswordData::new("p@1~≠_º#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // report single error
+            (
+                Box::new(IllegalSequenceRule::new(
+                    EnglishSequenceData::USQwerty,
+                    6,
+                    false,
+                    false,
+                )),
+                PasswordData::new("pqwertyui#n65".to_string()),
+                vec![EnglishSequenceData::USQwerty.get_error_code()],
+            ),
+            // German QWERTZ SEQUENCE
+            // Test valid password
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    GermanSequenceData::DEQwertz,
+                )),
+                PasswordData::new("p4zRcv8#n65".to_string()),
+                vec![],
+            ),
+            // Has one 6 character qwertz sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    GermanSequenceData::DEQwertz,
+                    6,
+                    false,
+                )),
+                PasswordData::new("pqwertz#n65".to_string()),
+                vec![GermanSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has two 5 character qwertz sequences
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    GermanSequenceData::DEQwertz,
+                    5,
+                    false,
+                )),
+                PasswordData::new("wertz#~yxcvb".to_string()),
+                vec![
+                    GermanSequenceData::Alphabetical.get_error_code(),
+                    GermanSequenceData::Alphabetical.get_error_code(),
+                ],
+            ),
+            // Has one 4 character backward qwertz sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    GermanSequenceData::DEQwertz,
+                    4,
+                    false,
+                )),
+                PasswordData::new("1xäölk2y".to_string()),
+                vec![GermanSequenceData::Alphabetical.get_error_code()],
+            ),
+            /* ALPHABETICAL SEQUENCE */
+            // Test valid password
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::Alphabetical,
+                )),
+                PasswordData::new("p4zRcv8#n65".to_string()),
+                vec![],
+            ),
+            // Has alphabetical sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    7,
+                    false,
+                )),
+                PasswordData::new("phijklmn#n65".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has wrapping alphabetical sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    4,
+                    false,
+                )),
+                PasswordData::new("pXyza#n65".to_string()),
+                vec![],
+            ),
+            // Has wrapping alphabetical sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    4,
+                    true,
+                )),
+                PasswordData::new("pxyzA#n65".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has backward alphabetical sequence
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::Alphabetical,
+                )),
+                PasswordData::new("ptSrqp#n65".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has backward wrapping alphabetical sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    8,
+                    false,
+                )),
+                PasswordData::new("pcBazyXwv#n65".to_string()),
+                vec![],
+            ),
+            // Has backward wrapping alphabetical sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    8,
+                    true,
+                )),
+                PasswordData::new("pcbazyxwv#n65".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has forward alphabetical sequence that ends with 'y'
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    false,
+                )),
+                PasswordData::new("wxy".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has forward alphabetical sequence that ends with 'z'
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    false,
+                )),
+                PasswordData::new("xyz".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has forward alphabetical sequence that ends with 'a' with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    false,
+                )),
+                PasswordData::new("yza".to_string()),
+                vec![],
+            ),
+            // Has forward alphabetical sequence that ends with 'a' with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    true,
+                )),
+                PasswordData::new("yza".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has backward alphabetical sequence that ends with 'b'
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    false,
+                )),
+                PasswordData::new("dcb".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has backward alphabetical sequence that ends with 'a'
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    false,
+                )),
+                PasswordData::new("cba".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // Has backward alphabetical sequence that ends with 'z' with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    false,
+                )),
+                PasswordData::new("baz".to_string()),
+                vec![],
+            ),
+            // Has backward alphabetical sequence that ends with 'z' with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Alphabetical,
+                    3,
+                    true,
+                )),
+                PasswordData::new("baz".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // report single error
+            (
+                Box::new(IllegalSequenceRule::new(
+                    EnglishSequenceData::Alphabetical,
+                    5,
+                    false,
+                    false,
+                )),
+                PasswordData::new("phijklmn#n65".to_string()),
+                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // NUMERICAL SEQUENCE
+            // Test valid password
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::Numerical,
+                )),
+                PasswordData::new("p4zRcv8#n65".to_string()),
+                vec![],
+            ),
+            // Has numerical sequence
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Numerical,
+                    4,
+                    false,
+                )),
+                PasswordData::new("p3456#n65".to_string()),
+                vec![EnglishSequenceData::Numerical.get_error_code()],
+            ),
+            // Has wrapping numerical sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Numerical,
+                    7,
+                    false,
+                )),
+                PasswordData::new("p4zRcv2#n8901234".to_string()),
+                vec![],
+            ),
+            // Has wrapping numerical sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Numerical,
+                    7,
+                    true,
+                )),
+                PasswordData::new("p4zRcv2#n8901234".to_string()),
+                vec![EnglishSequenceData::Numerical.get_error_code()],
+            ),
+            // Has backward numerical sequence
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::Numerical,
+                )),
+                PasswordData::new("p54321#n65".to_string()),
+                vec![EnglishSequenceData::Numerical.get_error_code()],
+            ),
+            // Has backward wrapping numerical sequence with wrap=false
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Numerical,
+                    5,
+                    false,
+                )),
+                PasswordData::new("p987#n32109".to_string()),
+                vec![],
+            ),
+            // Has backward wrapping numerical sequence with wrap=true
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Numerical,
+                    8,
+                    true,
+                )),
+                PasswordData::new("p54321098#n65".to_string()),
+                vec![EnglishSequenceData::Numerical.get_error_code()],
+            ),
+            // Issue 135 original java repo
+            (
+                Box::new(IllegalSequenceRule::with_warp(
+                    EnglishSequenceData::Numerical,
+                    5,
+                    true,
+                )),
+                PasswordData::new("1234567".to_string()),
+                vec![EnglishSequenceData::Numerical.get_error_code()],
+            ),
+            // report single error
+            (
+                Box::new(IllegalSequenceRule::new(
+                    EnglishSequenceData::Numerical,
+                    5,
+                    true,
+                    false,
+                )),
+                PasswordData::new("1234567".to_string()),
+                vec![EnglishSequenceData::Numerical.get_error_code()],
+            ),
+            // Polish and English
+            (
+                Box::new(PasswordValidator::new(vec![
+                    Box::new(IllegalSequenceRule::new(
+                        EnglishSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                    Box::new(IllegalSequenceRule::new(
+                        PolishSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                ])),
+                PasswordData::new("p987rw3sśtuwxyzź".to_string()),
+                vec![PolishSequenceData::Alphabetical.get_error_code()],
+            ),
+            // german and english
+            (
+                Box::new(PasswordValidator::new(vec![
+                    Box::new(IllegalSequenceRule::new(
+                        EnglishSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                    Box::new(IllegalSequenceRule::new(
+                        GermanSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                ])),
+                PasswordData::new("P987xyzäö".to_string()),
+                vec![GermanSequenceData::Alphabetical.get_error_code()],
+            ),
+            // czech and english
+            (
+                Box::new(PasswordValidator::new(vec![
+                    Box::new(IllegalSequenceRule::new(
+                        EnglishSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                    Box::new(IllegalSequenceRule::new(
+                        CzechSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                ])),
+                PasswordData::new("ABCx12y34zcčdĎeě".to_string()),
+                vec![CzechSequenceData::Alphabetical.get_error_code()],
+            ),
+            // cyrillic and english
+            (
+                Box::new(PasswordValidator::new(vec![
+                    Box::new(IllegalSequenceRule::new(
+                        EnglishSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                    Box::new(IllegalSequenceRule::new(
+                        CyrillicSequenceData::Alphabetical,
+                        5,
+                        true,
+                        false,
+                    )),
+                ])),
+                PasswordData::new("ABCx12y34zcабвгд".to_string()),
+                vec![CyrillicSequenceData::Alphabetical.get_error_code()],
+            ),
+        ];
+        println!("size {}", test_cases.len());
+        for (rule, password, expected_errors) in test_cases {
+            check_password(rule, &password, expected_errors);
+        }
+    }
+
+    #[test]
+    fn test_messages() {
+        let test_cases: Vec<(Box<dyn Rule>, PasswordData, Vec<&str>)> = vec![
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::USQwerty,
+                )),
+                PasswordData::new("pkwerty#n65".to_string()),
+                vec!["ILLEGAL_QWERTY_SEQUENCE,werty"],
+            ),
+            (
+                Box::new(IllegalSequenceRule::new(
+                    EnglishSequenceData::USQwerty,
+                    5,
+                    true,
+                    false,
+                )),
+                PasswordData::new("pkl;'asd65".to_string()),
+                vec!["ILLEGAL_QWERTY_SEQUENCE,kl;'asd"],
+            ),
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::Alphabetical,
+                )),
+                PasswordData::new("phijkl#n65".to_string()),
+                vec!["ILLEGAL_ALPHABETICAL_SEQUENCE,hijkl"],
+            ),
+            (
+                Box::new(IllegalSequenceRule::new(
+                    EnglishSequenceData::Alphabetical,
+                    5,
+                    true,
+                    false,
+                )),
+                PasswordData::new("phijklmno#n65".to_string()),
+                vec!["ILLEGAL_ALPHABETICAL_SEQUENCE,hijklmno"],
+            ),
+            (
+                Box::new(IllegalSequenceRule::with_sequence_data(
+                    EnglishSequenceData::Numerical,
+                )),
+                PasswordData::new("p34567n65".to_string()),
+                vec!["ILLEGAL_NUMERICAL_SEQUENCE,34567"],
+            ),
+            (
+                Box::new(IllegalSequenceRule::new(
+                    EnglishSequenceData::Numerical,
+                    5,
+                    false,
+                    false,
+                )),
+                PasswordData::new("p3456789n65".to_string()),
+                vec!["ILLEGAL_NUMERICAL_SEQUENCE,3456789"],
+            ),
+        ];
+
+        for (rule, password, expected_errors) in test_cases {
+            check_messages(rule, &password, expected_errors);
+        }
+    }
+
+    fn check_messages(rule: Box<dyn Rule>, password: &PasswordData, expected_errors: Vec<&str>) {
+        let resolver = DebugMessageResolver;
+        let result = rule.validate(password);
+        assert!(!result.valid());
+        assert_eq!(expected_errors.len(), result.details().len());
+
+        for i in 0..result.details().len() {
+            let result_detail = result.details().get(i).unwrap();
+            let error = expected_errors[i];
+            let resolved_message = resolver.resolve(result_detail);
+            for part in error.split(",") {
+                assert!(
+                    resolved_message.contains(part),
+                    "expected {part:?} not found in resolved message: {resolved_message:?}"
+                );
+            }
+        }
+    }
+
+    fn check_password(rule: Box<dyn Rule>, password: &PasswordData, expected_errors: Vec<&str>) {
+        let result = rule.validate(password);
+        if !expected_errors.is_empty() {
+            dbg!(password, &expected_errors);
+            if !result.valid() {
+                assert!(!result.valid());
+            }
+            assert_eq!(expected_errors.len(), result.details().len());
+            for error_code in expected_errors {
+                has_error_code(error_code, &result);
+            }
+        } else {
+            assert!(result.valid());
+        }
+    }
+
+    fn has_error_code(code: &str, result: &RuleResult) -> bool {
+        for detail in result.details() {
+            if code == detail.error_code() {
+                return true;
+            }
+        }
+        false
+    }
+}

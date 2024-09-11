@@ -55,62 +55,6 @@ found, they offer the `current_key` and `current_key_back` methods to retrieve t
 
 The following lines may give you a foretaste of this crate and TSTs
 
-```
-extern crate ternary_tree;
-
-use ternary_tree::Tst;
-use std::fs::File;
-use std::error::Error;
-
-const SOME_KEYS : [&str; 16] = ["aba", "ab", "bc", "ac",
-"abc", "a", "b", "aca", "caa", "cbc", "bac", "c", "cca",
-"aab", "abb", "aa"];
-
-let mut map = Tst::new();
-
-for key in &SOME_KEYS {
-
-    // Say the value is the same as the key,
-    // it makes the example easier !
-    let some_value = *key;
-
-    map.insert(key, some_value);
-}
-
-// Use Graphviz to convert tst.dot to tst.png:
-// dot -T png -o tst.png tst.dot
-let mut file = File::create("tst.dot").unwrap();
-map.pretty_print(&mut file);
-
-let mut v = Vec::new();
-
-// Recursively get all values whose keys match "a?a" pattern
-map.visit_crossword_values("a?a", '?', |s| v.push(s.clone()));
-assert_eq!(v, ["aba", "aca"]);
-
-v.clear();
-
-// Iterate over all values whose keys are close to "abc"
-// (At a Hamming distance of 1 from "abc")
-{
-    let mut it = map.iter_neighbor("abc", 1);
-
-    while let Some(value) = it.next() {
-
-        v.push(*value);
-    }
-    assert_eq!(v, ["ab", "aba", "abb", "abc", "cbc"]);
-
-    v.clear();
-}
-
-// Mutate all values whose keys begin with "c"
-map.visit_complete_values_mut("c", |s| *s = "xxx");
-
-assert_eq!(map.get("caa"), Some(&"xxx"));
-assert_eq!(map.get("cbc"), Some(&"xxx"));
-assert_eq!(map.get("cca"), Some(&"xxx"));
-```
  */
 
 #![forbid(unsafe_code)]
@@ -1111,8 +1055,8 @@ impl<T> Tst<T> {
     /// same sequence of values in a non-recursive way.
     ///
     /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
+    /// # use passay_rs::Tst;
+    /// # use passay_rs::tst;
     /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
     ///
     /// let mut v = Vec::new();
