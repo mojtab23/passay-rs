@@ -94,17 +94,15 @@ impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test::{check_passwords, RulePasswordTestItem};
+    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
     use crate::{
         rule::illegal_sequence_rule::IllegalSequenceRule,
-        rule::message_resolver::DebugMessageResolver,
-        rule::message_resolver::MessageResolver,
         rule::password_validator::PasswordValidator,
         rule::sequence_data::{
             CyrillicSequenceData, CzechSequenceData, EnglishSequenceData, GermanSequenceData,
             PolishSequenceData, SequenceData,
         },
-        rule::{PasswordData, Rule},
+        rule::PasswordData,
     };
 
     #[test]
@@ -684,15 +682,15 @@ mod tests {
 
     #[test]
     fn test_messages() {
-        let test_cases: Vec<(Box<dyn Rule>, PasswordData, Vec<&str>)> = vec![
-            (
+        let test_cases: Vec<RulePasswordTestItem> = vec![
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::USQwerty,
                 )),
                 PasswordData::new("pkwerty#n65".to_string()),
                 vec!["ILLEGAL_QWERTY_SEQUENCE,werty"],
             ),
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::new(
                     EnglishSequenceData::USQwerty,
                     5,
@@ -702,14 +700,14 @@ mod tests {
                 PasswordData::new("pkl;'asd65".to_string()),
                 vec!["ILLEGAL_QWERTY_SEQUENCE,kl;'asd"],
             ),
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::Alphabetical,
                 )),
                 PasswordData::new("phijkl#n65".to_string()),
                 vec!["ILLEGAL_ALPHABETICAL_SEQUENCE,hijkl"],
             ),
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::new(
                     EnglishSequenceData::Alphabetical,
                     5,
@@ -719,14 +717,14 @@ mod tests {
                 PasswordData::new("phijklmno#n65".to_string()),
                 vec!["ILLEGAL_ALPHABETICAL_SEQUENCE,hijklmno"],
             ),
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::Numerical,
                 )),
                 PasswordData::new("p34567n65".to_string()),
                 vec!["ILLEGAL_NUMERICAL_SEQUENCE,34567"],
             ),
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::new(
                     EnglishSequenceData::Numerical,
                     5,
@@ -738,27 +736,6 @@ mod tests {
             ),
         ];
 
-        for (rule, password, expected_errors) in test_cases {
-            check_messages(rule, &password, expected_errors);
-        }
-    }
-
-    fn check_messages(rule: Box<dyn Rule>, password: &PasswordData, expected_errors: Vec<&str>) {
-        let resolver = DebugMessageResolver;
-        let result = rule.validate(password);
-        assert!(!result.valid());
-        assert_eq!(expected_errors.len(), result.details().len());
-
-        for i in 0..result.details().len() {
-            let result_detail = result.details().get(i).unwrap();
-            let error = expected_errors[i];
-            let resolved_message = resolver.resolve(result_detail);
-            for part in error.split(",") {
-                assert!(
-                    resolved_message.contains(part),
-                    "expected {part:?} not found in resolved message: {resolved_message:?}"
-                );
-            }
-        }
+        check_messages(test_cases);
     }
 }
