@@ -70,7 +70,7 @@ impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
                     diff -= diff.signum() * cs_length;
                 }
                 // if we have a sequence and reached its end, add it to result
-                if diff != direction && match_builder.len() >= self.length {
+                if diff != direction && match_builder.chars().count() >= self.length {
                     // result.add_error(match_builder.clone());
                     self.add_error(&mut result, &match_builder)
                 }
@@ -94,24 +94,25 @@ impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
 
 #[cfg(test)]
 mod tests {
+    use crate::test::{check_passwords, RulePasswordTestItem};
     use crate::{
         rule::illegal_sequence_rule::IllegalSequenceRule,
         rule::message_resolver::DebugMessageResolver,
         rule::message_resolver::MessageResolver,
         rule::password_validator::PasswordValidator,
-        rule::rule_result::RuleResult,
         rule::sequence_data::{
             CyrillicSequenceData, CzechSequenceData, EnglishSequenceData, GermanSequenceData,
             PolishSequenceData, SequenceData,
         },
         rule::{PasswordData, Rule},
     };
+
     #[test]
     fn test_passwords() {
-        let test_cases: Vec<(Box<dyn Rule>, PasswordData, Vec<&str>)> = vec![
+        let test_cases: Vec<RulePasswordTestItem> = vec![
             /* QWERTY SEQUENCE */
             // Test valid password
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::USQwerty,
                 )),
@@ -119,7 +120,7 @@ mod tests {
                 vec![],
             ),
             // Has qwerty sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -129,7 +130,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has qwerty sequence at beginning
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -139,7 +140,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has qwerty sequence at end
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -149,7 +150,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has qwerty sequence in entirety
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -159,7 +160,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has two qwerty sequences
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -172,7 +173,7 @@ mod tests {
                 ],
             ),
             // Has two joined qwerty sequences
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -185,7 +186,7 @@ mod tests {
                 ],
             ),
             // Has two joined qwerty sequences with padding
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -198,7 +199,7 @@ mod tests {
                 ],
             ),
             // Has wrapping qwerty sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::USQwerty,
                 )),
@@ -206,7 +207,7 @@ mod tests {
                 vec![],
             ),
             // Has wrapping qwerty sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     8,
@@ -216,7 +217,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has backward qwerty sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     4,
@@ -226,7 +227,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has backward wrapping qwerty sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     8,
@@ -236,7 +237,7 @@ mod tests {
                 vec![],
             ),
             // Has backward wrapping qwerty sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -245,7 +246,7 @@ mod tests {
                 PasswordData::new("p@1`+_0#n65".to_string()),
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -255,7 +256,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has wrapping alt qwerty sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::USQwerty,
                 )),
@@ -263,7 +264,7 @@ mod tests {
                 vec![],
             ),
             // Has wrapping qwerty sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     8,
@@ -273,7 +274,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has backwards alt qwerty sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     4,
@@ -283,7 +284,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // Has backward alt wrapping qwerty sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     8,
@@ -293,7 +294,7 @@ mod tests {
                 vec![],
             ),
             // Has backward alt wrapping qwerty sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -303,7 +304,7 @@ mod tests {
                 vec![EnglishSequenceData::USQwerty.get_error_code()],
             ),
             // report single error
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::new(
                     EnglishSequenceData::USQwerty,
                     6,
@@ -315,7 +316,7 @@ mod tests {
             ),
             // German QWERTZ SEQUENCE
             // Test valid password
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     GermanSequenceData::DEQwertz,
                 )),
@@ -323,7 +324,7 @@ mod tests {
                 vec![],
             ),
             // Has one 6 character qwertz sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     GermanSequenceData::DEQwertz,
                     6,
@@ -333,7 +334,7 @@ mod tests {
                 vec![GermanSequenceData::Alphabetical.get_error_code()],
             ),
             // Has two 5 character qwertz sequences
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     GermanSequenceData::DEQwertz,
                     5,
@@ -346,7 +347,7 @@ mod tests {
                 ],
             ),
             // Has one 4 character backward qwertz sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     GermanSequenceData::DEQwertz,
                     4,
@@ -357,7 +358,7 @@ mod tests {
             ),
             /* ALPHABETICAL SEQUENCE */
             // Test valid password
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::Alphabetical,
                 )),
@@ -365,7 +366,7 @@ mod tests {
                 vec![],
             ),
             // Has alphabetical sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     7,
@@ -375,7 +376,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has wrapping alphabetical sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     4,
@@ -385,7 +386,7 @@ mod tests {
                 vec![],
             ),
             // Has wrapping alphabetical sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     4,
@@ -395,7 +396,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has backward alphabetical sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::Alphabetical,
                 )),
@@ -403,7 +404,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has backward wrapping alphabetical sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     8,
@@ -413,7 +414,7 @@ mod tests {
                 vec![],
             ),
             // Has backward wrapping alphabetical sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     8,
@@ -423,7 +424,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has forward alphabetical sequence that ends with 'y'
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -433,7 +434,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has forward alphabetical sequence that ends with 'z'
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -443,7 +444,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has forward alphabetical sequence that ends with 'a' with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -453,7 +454,7 @@ mod tests {
                 vec![],
             ),
             // Has forward alphabetical sequence that ends with 'a' with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -463,7 +464,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has backward alphabetical sequence that ends with 'b'
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -473,7 +474,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has backward alphabetical sequence that ends with 'a'
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -483,7 +484,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // Has backward alphabetical sequence that ends with 'z' with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -493,7 +494,7 @@ mod tests {
                 vec![],
             ),
             // Has backward alphabetical sequence that ends with 'z' with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Alphabetical,
                     3,
@@ -503,7 +504,7 @@ mod tests {
                 vec![EnglishSequenceData::Alphabetical.get_error_code()],
             ),
             // report single error
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::new(
                     EnglishSequenceData::Alphabetical,
                     5,
@@ -515,7 +516,7 @@ mod tests {
             ),
             // NUMERICAL SEQUENCE
             // Test valid password
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::Numerical,
                 )),
@@ -523,7 +524,7 @@ mod tests {
                 vec![],
             ),
             // Has numerical sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Numerical,
                     4,
@@ -533,7 +534,7 @@ mod tests {
                 vec![EnglishSequenceData::Numerical.get_error_code()],
             ),
             // Has wrapping numerical sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Numerical,
                     7,
@@ -543,7 +544,7 @@ mod tests {
                 vec![],
             ),
             // Has wrapping numerical sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Numerical,
                     7,
@@ -553,7 +554,7 @@ mod tests {
                 vec![EnglishSequenceData::Numerical.get_error_code()],
             ),
             // Has backward numerical sequence
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_sequence_data(
                     EnglishSequenceData::Numerical,
                 )),
@@ -561,7 +562,7 @@ mod tests {
                 vec![EnglishSequenceData::Numerical.get_error_code()],
             ),
             // Has backward wrapping numerical sequence with wrap=false
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Numerical,
                     5,
@@ -571,7 +572,7 @@ mod tests {
                 vec![],
             ),
             // Has backward wrapping numerical sequence with wrap=true
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Numerical,
                     8,
@@ -581,7 +582,7 @@ mod tests {
                 vec![EnglishSequenceData::Numerical.get_error_code()],
             ),
             // Issue 135 original java repo
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
                     EnglishSequenceData::Numerical,
                     5,
@@ -591,7 +592,7 @@ mod tests {
                 vec![EnglishSequenceData::Numerical.get_error_code()],
             ),
             // report single error
-            (
+            RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::new(
                     EnglishSequenceData::Numerical,
                     5,
@@ -602,7 +603,7 @@ mod tests {
                 vec![EnglishSequenceData::Numerical.get_error_code()],
             ),
             // Polish and English
-            (
+            RulePasswordTestItem(
                 Box::new(PasswordValidator::new(vec![
                     Box::new(IllegalSequenceRule::new(
                         EnglishSequenceData::Alphabetical,
@@ -621,7 +622,7 @@ mod tests {
                 vec![PolishSequenceData::Alphabetical.get_error_code()],
             ),
             // german and english
-            (
+            RulePasswordTestItem(
                 Box::new(PasswordValidator::new(vec![
                     Box::new(IllegalSequenceRule::new(
                         EnglishSequenceData::Alphabetical,
@@ -640,7 +641,7 @@ mod tests {
                 vec![GermanSequenceData::Alphabetical.get_error_code()],
             ),
             // czech and english
-            (
+            RulePasswordTestItem(
                 Box::new(PasswordValidator::new(vec![
                     Box::new(IllegalSequenceRule::new(
                         EnglishSequenceData::Alphabetical,
@@ -659,7 +660,7 @@ mod tests {
                 vec![CzechSequenceData::Alphabetical.get_error_code()],
             ),
             // cyrillic and english
-            (
+            RulePasswordTestItem(
                 Box::new(PasswordValidator::new(vec![
                     Box::new(IllegalSequenceRule::new(
                         EnglishSequenceData::Alphabetical,
@@ -678,10 +679,7 @@ mod tests {
                 vec![CyrillicSequenceData::Alphabetical.get_error_code()],
             ),
         ];
-        println!("size {}", test_cases.len());
-        for (rule, password, expected_errors) in test_cases {
-            check_password(rule, &password, expected_errors);
-        }
+        check_passwords(test_cases);
     }
 
     #[test]
@@ -762,30 +760,5 @@ mod tests {
                 );
             }
         }
-    }
-
-    fn check_password(rule: Box<dyn Rule>, password: &PasswordData, expected_errors: Vec<&str>) {
-        let result = rule.validate(password);
-        if !expected_errors.is_empty() {
-            dbg!(password, &expected_errors);
-            if !result.valid() {
-                assert!(!result.valid());
-            }
-            assert_eq!(expected_errors.len(), result.details().len());
-            for error_code in expected_errors {
-                has_error_code(error_code, &result);
-            }
-        } else {
-            assert!(result.valid());
-        }
-    }
-
-    fn has_error_code(code: &str, result: &RuleResult) -> bool {
-        for detail in result.details() {
-            if code == detail.error_code() {
-                return true;
-            }
-        }
-        false
     }
 }
