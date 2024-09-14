@@ -122,7 +122,7 @@ mod test {
     use crate::rule::history::{HistoricalReference, HistoryRule, ERROR_CODE};
     use crate::rule::reference::Reference;
     use crate::rule::PasswordData;
-    use crate::test::{check_passwords, RulePasswordTestItem};
+    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
 
     #[test]
     fn test_passwords() {
@@ -236,6 +236,46 @@ mod test {
             ),
         ];
         check_passwords(test_cases);
+    }
+
+    #[test]
+    fn test_messages() {
+        let rule = HistoryRule::default();
+        let rule_report_first = HistoryRule::new(false);
+
+        let history_len = setup_history().len();
+        let message = "HISTORY_VIOLATION,".to_owned() + history_len.to_string().as_str();
+
+        let test_cases: Vec<RulePasswordTestItem> = vec![
+            RulePasswordTestItem(
+                Box::new(rule.clone()),
+                PasswordData::new(
+                    "t3stUs3r01".to_string(),
+                    Some("testuser".to_string()),
+                    setup_history(),
+                ),
+                vec![&message],
+            ),
+            RulePasswordTestItem(
+                Box::new(rule.clone()),
+                PasswordData::new(
+                    "t3stUs3r02".to_string(),
+                    Some("testuser".to_string()),
+                    setup_history(),
+                ),
+                vec![&message, &message],
+            ),
+            RulePasswordTestItem(
+                Box::new(rule_report_first),
+                PasswordData::new(
+                    "t3stUs3r02".to_string(),
+                    Some("testuser".to_string()),
+                    setup_history(),
+                ),
+                vec![&message],
+            ),
+        ];
+        check_messages(test_cases);
     }
 
     fn setup_history() -> Vec<Box<dyn Reference>> {
