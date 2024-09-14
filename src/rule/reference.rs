@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::fmt::Debug;
 
 pub trait Reference: Debug {
@@ -5,6 +6,8 @@ pub trait Reference: Debug {
     fn salt(&self) -> &Option<Box<dyn Salt>> {
         &None
     }
+
+    fn as_any(&self) -> &dyn Any;
 }
 
 #[derive(Debug)]
@@ -13,6 +16,10 @@ pub struct VoidReference;
 impl Reference for VoidReference {
     fn password(&self) -> &str {
         ""
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

@@ -2,6 +2,7 @@ use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
 mod character_sequence;
+mod history;
 mod illegal_regex;
 mod illegal_sequence_rule;
 mod length_rule;
@@ -24,15 +25,37 @@ pub struct PasswordData {
 }
 
 impl PasswordData {
-    pub fn new(password: String) -> Self {
+    pub fn with_password(password: String) -> Self {
         Self {
             password,
             username: None,
             password_references: Vec::new(),
         }
     }
+    pub fn with_password_and_user(password: String, username: Option<String>) -> Self {
+        Self {
+            password,
+            username,
+            password_references: Vec::new(),
+        }
+    }
+    pub fn new(
+        password: String,
+        username: Option<String>,
+        password_references: Vec<Box<dyn Reference>>,
+    ) -> Self {
+        Self {
+            password,
+            username,
+            password_references,
+        }
+    }
 
     pub fn password(&self) -> &str {
         &self.password
+    }
+
+    pub fn password_references(&self) -> &Vec<Box<dyn Reference>> {
+        &self.password_references
     }
 }

@@ -65,7 +65,7 @@ mod tests {
             // test valid password
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("p4zRcv8#n65".to_string()),
+                PasswordData::with_password("p4zRcv8#n65".to_string()),
                 vec![],
             ),
             // test entire password
@@ -73,19 +73,19 @@ mod tests {
                 Box::new(IllegalRegex::from(
                     Regex::new("^[\\p{Alpha}]+\\d\\d\\d\\d$").unwrap(),
                 )),
-                PasswordData::new("pwUiNh0248".to_string()),
+                PasswordData::with_password("pwUiNh0248".to_string()),
                 vec![ERROR_CODE],
             ),
             // test find password
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("pwUi0248xwK".to_string()),
+                PasswordData::with_password("pwUi0248xwK".to_string()),
                 vec![ERROR_CODE],
             ),
             // test multiple matches
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("pwUi0248xwK9753".to_string()),
+                PasswordData::with_password("pwUi0248xwK9753".to_string()),
                 vec![ERROR_CODE, ERROR_CODE],
             ),
             // test single match
@@ -94,13 +94,13 @@ mod tests {
                     Regex::new("\\d\\d\\d\\d").unwrap(),
                     false,
                 )),
-                PasswordData::new("pwUi0248xwK9753".to_string()),
+                PasswordData::with_password("pwUi0248xwK9753".to_string()),
                 vec![ERROR_CODE],
             ),
             // test duplicate matches
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("pwUi0248xwK9753uu0248".to_string()),
+                PasswordData::with_password("pwUi0248xwK9753uu0248".to_string()),
                 vec![ERROR_CODE, ERROR_CODE],
             ),
             // test case-insensitive
@@ -111,7 +111,7 @@ mod tests {
                         .build()
                         .unwrap(),
                 )),
-                PasswordData::new("p4zRaBcDv8#n65".to_string()),
+                PasswordData::with_password("p4zRaBcDv8#n65".to_string()),
                 vec![ERROR_CODE],
             ),
             // test case-insensitive
@@ -122,19 +122,19 @@ mod tests {
                         .build()
                         .unwrap(),
                 )),
-                PasswordData::new("p4zRaBBcDv8#n65".to_string()),
+                PasswordData::with_password("p4zRaBBcDv8#n65".to_string()),
                 vec![],
             ),
             // test case-insensitive
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("(?i)abcd").unwrap())),
-                PasswordData::new("p4zRaBcDv8#n65".to_string()),
+                PasswordData::with_password("p4zRaBcDv8#n65".to_string()),
                 vec![ERROR_CODE],
             ),
             // test case-insensitive
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("(?i)abcd").unwrap())),
-                PasswordData::new("p4zRaBBcDv8#n65".to_string()),
+                PasswordData::with_password("p4zRaBBcDv8#n65".to_string()),
                 vec![],
             ),
         ];
@@ -147,12 +147,12 @@ mod tests {
         let test_cases: Vec<RulePasswordTestItem> = vec![
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("pwUiNh0248".to_string()),
+                PasswordData::with_password("pwUiNh0248".to_string()),
                 vec!["ILLEGAL_MATCH,0248"],
             ),
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("pwUiNh0248xwK9753".to_string()),
+                PasswordData::with_password("pwUiNh0248xwK9753".to_string()),
                 vec!["ILLEGAL_MATCH,0248", "ILLEGAL_MATCH,9753"],
             ),
             RulePasswordTestItem(
@@ -160,12 +160,12 @@ mod tests {
                     Regex::new("\\d\\d\\d\\d").unwrap(),
                     false,
                 )),
-                PasswordData::new("pwUiNh0248xwK9753".to_string()),
+                PasswordData::with_password("pwUiNh0248xwK9753".to_string()),
                 vec!["ILLEGAL_MATCH,0248"],
             ),
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("\\d\\d\\d\\d").unwrap())),
-                PasswordData::new("pwUiNh0248xwK9753uu0248".to_string()),
+                PasswordData::with_password("pwUiNh0248xwK9753uu0248".to_string()),
                 vec!["ILLEGAL_MATCH,0248", "ILLEGAL_MATCH,9753"],
             ),
             RulePasswordTestItem(
@@ -175,12 +175,12 @@ mod tests {
                         .build()
                         .unwrap(),
                 )),
-                PasswordData::new("pwABCD0248".to_string()),
+                PasswordData::with_password("pwABCD0248".to_string()),
                 vec!["ILLEGAL_MATCH,ABCD"],
             ),
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(Regex::new("(?i)abcd").unwrap())),
-                PasswordData::new("pwABCD0248".to_string()),
+                PasswordData::with_password("pwABCD0248".to_string()),
                 vec!["ILLEGAL_MATCH,ABCD"],
             ),
         ];

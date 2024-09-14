@@ -68,21 +68,20 @@ impl Rule for LengthRule {
 #[cfg(test)]
 mod tests {
     use crate::rule::length_rule::LengthRule;
-    
     use crate::rule::rule_result::CountCategory;
     use crate::rule::{PasswordData, Rule};
 
     #[test]
     fn check_metadata() {
         let rule = LengthRule::new(4, 10);
-        let result = rule.validate(&PasswordData::new("metadata".to_string()));
+        let result = rule.validate(&PasswordData::with_password("metadata".to_string()));
         assert!(result.valid());
         assert_eq!(
             8,
             *result.metadata().get_count(&CountCategory::Length).unwrap()
         );
 
-        let result = rule.validate(&PasswordData::new("md".to_string()));
+        let result = rule.validate(&PasswordData::with_password("md".to_string()));
         assert!(!result.valid());
         assert_eq!(
             2,
