@@ -1,12 +1,14 @@
 use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
+mod allowed_character;
 mod character_sequence;
 mod history;
 mod illegal_regex;
 mod illegal_sequence_rule;
 mod length_rule;
 pub mod message_resolver;
+mod password_utils;
 mod password_validator;
 mod reference;
 pub mod rule_result;

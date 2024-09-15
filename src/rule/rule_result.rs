@@ -22,6 +22,17 @@ impl RuleResult {
             .push(RuleResultDetail::new(vec![code.to_string()], params))
     }
 
+    pub fn add_error_with_codes(
+        &mut self,
+        codes: &[String],
+        params: Option<HashMap<String, String>>,
+    ) {
+        self.valid = false;
+        let error_codes = codes.to_vec();
+        self.details
+            .push(RuleResultDetail::new(error_codes, params))
+    }
+
     pub fn metadata(&self) -> &RuleResultMetadata {
         &self.metadata
     }
@@ -105,8 +116,8 @@ impl RuleResultMetadata {
         counts.insert(category, value);
         Self { counts }
     }
-    pub fn get_count(&self, category: &CountCategory) -> Option<&usize> {
-        self.counts.get(category)
+    pub fn get_count(&self, category: CountCategory) -> Option<usize> {
+        self.counts.get(&category).copied()
     }
 
     pub fn merge(&mut self, other: &RuleResultMetadata) {
@@ -114,7 +125,7 @@ impl RuleResultMetadata {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub enum CountCategory {
     /// password length.
     Length,
