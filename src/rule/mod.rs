@@ -2,6 +2,7 @@ use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
 mod allowed_character;
+mod allowed_regex;
 mod character_sequence;
 mod history;
 mod illegal_regex;

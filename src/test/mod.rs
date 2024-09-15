@@ -4,21 +4,22 @@ use crate::rule::{PasswordData, Rule};
 
 pub(crate) struct RulePasswordTestItem<'a>(pub Box<dyn Rule>, pub PasswordData, pub Vec<&'a str>);
 pub(crate) fn check_passwords(items: Vec<RulePasswordTestItem>) {
-    for item in items {
-        let rule = item.0;
+    for (case_num, item) in items.iter().enumerate() {
+        let rule = &item.0;
         let password = &item.1;
-        let expected_errors = item.2;
+        let expected_errors = &item.2;
 
         let result = rule.validate(password);
         if !expected_errors.is_empty() {
-            dbg!(password, &expected_errors);
+            dbg!(case_num, password, &expected_errors);
             if !result.valid() {
                 assert!(!result.valid());
             }
             assert_eq!(
                 expected_errors.len(),
                 result.details().len(),
-                "expected {} errors but got {}",
+                "[CASE:{}] expected {} errors but got {}",
+                case_num,
                 expected_errors.len(),
                 result.details().len()
             );
@@ -26,7 +27,7 @@ pub(crate) fn check_passwords(items: Vec<RulePasswordTestItem>) {
                 has_error_code(error_code, &result);
             }
         } else {
-            dbg!(password, "valid password");
+            dbg!(case_num, password, "valid password");
             assert!(result.valid());
         }
     }
@@ -39,7 +40,7 @@ pub(crate) fn check_messages(items: Vec<RulePasswordTestItem>) {
         let password = &item.1;
         let expected_errors = item.2;
         let result = rule.validate(password);
-        assert!(!result.valid());
+        assert!(!result.valid(), "rule result should be invalid");
         assert_eq!(expected_errors.len(), result.details().len());
 
         for i in 0..result.details().len() {
