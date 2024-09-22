@@ -51,3 +51,34 @@ impl CharacterSequence {
         self.forms[0].chars().count()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::rule::character_sequence::CharacterSequence;
+
+    #[test]
+    fn test_no_sequences_failure() {
+        let result = CharacterSequence::new(vec![]);
+        let expected_err = Err("At least one sequence must be defined".to_string());
+        assert_eq!(expected_err, result);
+    }
+    #[test]
+    fn test_unequal_sequence_failure() {
+        let result = CharacterSequence::new(vec!["12345".to_string(), "!@#$".to_string()]);
+        let expected_err = Err("Strings have unequal length".to_string());
+        assert_eq!(expected_err, result);
+    }
+    #[test]
+    fn test_matches() {
+        let sequence = CharacterSequence::new(vec![
+            "12345".to_string(),
+            "ABCDE".to_string(),
+            "abcde".to_string(),
+        ])
+        .unwrap();
+        assert!(sequence.matches(0, '1'));
+        assert!(sequence.matches(0, 'A'));
+        assert!(sequence.matches(0, 'a'));
+        assert_eq!(false, sequence.matches(4, 'z'));
+    }
+}
