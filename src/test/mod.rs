@@ -27,7 +27,7 @@ pub(crate) fn check_passwords(items: Vec<RulePasswordTestItem>) {
                 has_error_code(error_code, &result);
             }
         } else {
-            dbg!(case_num, password, "valid password");
+            println!("CASE#{} is VALID, {:?}", case_num, password);
             assert!(result.valid());
         }
     }

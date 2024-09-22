@@ -6,6 +6,7 @@ mod allowed_regex;
 mod character;
 mod character_characteristics;
 mod character_data;
+mod character_occurrences;
 mod character_sequence;
 mod history;
 mod illegal_regex;
