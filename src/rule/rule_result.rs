@@ -72,7 +72,7 @@ pub struct RuleResultDetail {
 }
 
 impl RuleResultDetail {
-    fn new(error_codes: Vec<String>, parameters: Option<HashMap<String, String>>) -> Self {
+    pub fn new(error_codes: Vec<String>, parameters: Option<HashMap<String, String>>) -> Self {
         if error_codes.is_empty() {
             panic!("Must specify at least one error code.")
         }
