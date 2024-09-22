@@ -19,10 +19,7 @@ impl CharacterSequence {
     pub fn new(strings: Vec<String>) -> Result<Self, String> {
         if strings.is_empty() {
             Err("At least one sequence must be defined".to_string())
-        } else if !strings
-            .iter()
-            .all(|s| s.chars().count() == strings[0].chars().count())
-        {
+        } else if !strings.iter().all(|s| s.chars().count() == strings[0].chars().count()) {
             Err("Strings have unequal length".to_string())
         } else {
             Ok(CharacterSequence { forms: strings })
@@ -46,9 +43,7 @@ impl CharacterSequence {
     ///
     /// True if sequence contains given character, false otherwise.
     pub fn matches(&self, index: usize, c: char) -> bool {
-        self.forms
-            .iter()
-            .any(|s| s.chars().nth(index).unwrap() == c)
+        self.forms.iter().any(|s| s.chars().nth(index).unwrap() == c)
     }
 
     /// Returns the length of character sequence.

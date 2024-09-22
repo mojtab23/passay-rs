@@ -41,11 +41,7 @@ pub fn create_from_read(
     let mut s = String::new();
     let _ = reader.read_to_string(&mut s);
     let s = s.replace('\r', "\n");
-    let words: Vec<String> = s
-        .lines()
-        .map(String::from)
-        .filter(|s| !s.is_empty())
-        .collect();
+    let words: Vec<String> = s.lines().map(String::from).filter(|s| !s.is_empty()).collect();
     ArrayWordList::with_sorter(words, case_sensitive, sorter)
 }
 

@@ -18,8 +18,7 @@ impl RuleResult {
 
     pub fn add_error(&mut self, code: &str, params: Option<HashMap<String, String>>) {
         self.valid = false;
-        self.details
-            .push(RuleResultDetail::new(vec![code.to_string()], params))
+        self.details.push(RuleResultDetail::new(vec![code.to_string()], params))
     }
 
     pub fn add_error_with_codes(
@@ -29,8 +28,7 @@ impl RuleResult {
     ) {
         self.valid = false;
         let error_codes = codes.to_vec();
-        self.details
-            .push(RuleResultDetail::new(error_codes, params))
+        self.details.push(RuleResultDetail::new(error_codes, params))
     }
 
     pub fn metadata(&self) -> &RuleResultMetadata {

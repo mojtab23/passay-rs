@@ -106,10 +106,7 @@ mod tests {
             // test case-insensitive
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(
-                    RegexBuilder::new("abcd")
-                        .case_insensitive(true)
-                        .build()
-                        .unwrap(),
+                    RegexBuilder::new("abcd").case_insensitive(true).build().unwrap(),
                 )),
                 PasswordData::with_password("p4zRaBcDv8#n65".to_string()),
                 vec![ERROR_CODE],
@@ -117,10 +114,7 @@ mod tests {
             // test case-insensitive
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(
-                    RegexBuilder::new("abcd")
-                        .case_insensitive(true)
-                        .build()
-                        .unwrap(),
+                    RegexBuilder::new("abcd").case_insensitive(true).build().unwrap(),
                 )),
                 PasswordData::with_password("p4zRaBBcDv8#n65".to_string()),
                 vec![],
@@ -170,10 +164,7 @@ mod tests {
             ),
             RulePasswordTestItem(
                 Box::new(IllegalRegex::from(
-                    RegexBuilder::new("abcd")
-                        .case_insensitive(true)
-                        .build()
-                        .unwrap(),
+                    RegexBuilder::new("abcd").case_insensitive(true).build().unwrap(),
                 )),
                 PasswordData::with_password("pwABCD0248".to_string()),
                 vec!["ILLEGAL_MATCH,ABCD"],

@@ -196,10 +196,7 @@ mod tests {
             RulePasswordTestItem(
                 create_rule1(),
                 PasswordData::with_password("R»S7VEW2e3)".to_string()),
-                vec![
-                    "INSUFFICIENT_LOWERCASE,2,1",
-                    "INSUFFICIENT_CHARACTERISTICS,4,5",
-                ],
+                vec!["INSUFFICIENT_LOWERCASE,2,1", "INSUFFICIENT_CHARACTERISTICS,4,5"],
             ),
             RulePasswordTestItem(
                 create_rule2(),

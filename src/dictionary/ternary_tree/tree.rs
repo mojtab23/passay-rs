@@ -1759,10 +1759,8 @@ impl<'a, 'b, T> TstNeighborIterator<'a, 'b, T> {
             let label = key_tail.next();
             let tail_len = if key_len == 0 { 0 } else { key_len - 1 };
 
-            it.todo_i
-                .push((node, GoLeft, label, key_tail.clone(), tail_len, range));
-            it.todo_j
-                .push((node, GoRight, label, key_tail, tail_len, range));
+            it.todo_i.push((node, GoLeft, label, key_tail.clone(), tail_len, range));
+            it.todo_j.push((node, GoRight, label, key_tail, tail_len, range));
         }
 
         it
@@ -1781,8 +1779,7 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
         while let Some((node, action, label, mut key_tail, tail_len, range)) = self.todo_i.pop() {
             match action {
                 GoLeft => {
-                    self.todo_i
-                        .push((node, Visit, label, key_tail.clone(), tail_len, range));
+                    self.todo_i.push((node, Visit, label, key_tail.clone(), tail_len, range));
 
                     if let Some(label) = label {
                         if range == 0 && label >= node.label {
@@ -1791,8 +1788,7 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                     }
 
                     if let Some(ref child) = node.left {
-                        self.todo_i
-                            .push((child, GoLeft, label, key_tail, tail_len, range));
+                        self.todo_i.push((child, GoLeft, label, key_tail, tail_len, range));
                     }
                 }
 
@@ -1809,8 +1805,7 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                         }
                     }
 
-                    self.todo_i
-                        .push((node, GoMiddle, label, key_tail, tail_len, range));
+                    self.todo_i.push((node, GoMiddle, label, key_tail, tail_len, range));
 
                     if let Some(ref value) = node.value {
                         let delta = match label {
@@ -1839,8 +1834,7 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                 }
 
                 GoMiddle => {
-                    self.todo_i
-                        .push((node, GoRight, label, key_tail.clone(), tail_len, range));
+                    self.todo_i.push((node, GoRight, label, key_tail.clone(), tail_len, range));
 
                     let delta = match label {
                         None => 1,
@@ -1875,8 +1869,7 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                     }
 
                     if let Some(ref child) = node.right {
-                        self.todo_i
-                            .push((child, GoLeft, label, key_tail, tail_len, range));
+                        self.todo_i.push((child, GoLeft, label, key_tail, tail_len, range));
                     }
                 }
             }
@@ -1893,8 +1886,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
         while let Some((node, action, label, mut key_tail, tail_len, range)) = self.todo_j.pop() {
             match action {
                 GoRight => {
-                    self.todo_j
-                        .push((node, GoMiddle, label, key_tail.clone(), tail_len, range));
+                    self.todo_j.push((node, GoMiddle, label, key_tail.clone(), tail_len, range));
 
                     if let Some(label) = label {
                         if range == 0 && label <= node.label {
@@ -1903,8 +1895,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                     }
 
                     if let Some(ref child) = node.right {
-                        self.todo_j
-                            .push((child, GoRight, label, key_tail, tail_len, range));
+                        self.todo_j.push((child, GoRight, label, key_tail, tail_len, range));
                     }
                 }
 
@@ -1921,8 +1912,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                         }
                     }
 
-                    self.todo_j
-                        .push((node, GoLeft, label, key_tail, tail_len, range));
+                    self.todo_j.push((node, GoLeft, label, key_tail, tail_len, range));
 
                     if let Some(ref value) = node.value {
                         let delta = match label {
@@ -1951,8 +1941,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                 }
 
                 GoMiddle => {
-                    self.todo_j
-                        .push((node, Visit, label, key_tail.clone(), tail_len, range));
+                    self.todo_j.push((node, Visit, label, key_tail.clone(), tail_len, range));
 
                     let delta = match label {
                         None => 1,
@@ -1987,8 +1976,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                     }
 
                     if let Some(ref child) = node.left {
-                        self.todo_j
-                            .push((child, GoRight, label, key_tail, tail_len, range));
+                        self.todo_j.push((child, GoRight, label, key_tail, tail_len, range));
                     }
                 }
             }
@@ -2029,8 +2017,7 @@ impl<'a, 'b, T> TstCrosswordIterator<'a, 'b, T> {
             if let Some(label) = key_tail.next() {
                 let tail_len = key.chars().count() - 1;
 
-                it.todo_i
-                    .push((node, GoLeft, label, key_tail.clone(), tail_len));
+                it.todo_i.push((node, GoLeft, label, key_tail.clone(), tail_len));
                 it.todo_j.push((node, GoRight, label, key_tail, tail_len));
             }
         }
@@ -2051,8 +2038,7 @@ impl<'a, 'b, T> Iterator for TstCrosswordIterator<'a, 'b, T> {
         while let Some((node, action, label, mut key_tail, tail_len)) = self.todo_i.pop() {
             match action {
                 GoLeft => {
-                    self.todo_i
-                        .push((node, Visit, label, key_tail.clone(), tail_len));
+                    self.todo_i.push((node, Visit, label, key_tail.clone(), tail_len));
 
                     if label == self.joker || label < node.label {
                         if let Some(ref child) = node.left {
@@ -2074,8 +2060,7 @@ impl<'a, 'b, T> Iterator for TstCrosswordIterator<'a, 'b, T> {
                         }
                     }
 
-                    self.todo_i
-                        .push((node, GoMiddle, label, key_tail, tail_len));
+                    self.todo_i.push((node, GoMiddle, label, key_tail, tail_len));
 
                     if let Some(ref value) = node.value {
                         if tail_len == 0 && (label == self.joker || label == node.label) {
@@ -2088,8 +2073,7 @@ impl<'a, 'b, T> Iterator for TstCrosswordIterator<'a, 'b, T> {
                 }
 
                 GoMiddle => {
-                    self.todo_i
-                        .push((node, GoRight, label, key_tail.clone(), tail_len));
+                    self.todo_i.push((node, GoRight, label, key_tail.clone(), tail_len));
 
                     if label == self.joker || label == node.label {
                         if let Some(ref child) = node.middle {
@@ -2127,13 +2111,11 @@ impl<'a, 'b, T> DoubleEndedIterator for TstCrosswordIterator<'a, 'b, T> {
         while let Some((node, action, label, mut key_tail, tail_len)) = self.todo_j.pop() {
             match action {
                 GoRight => {
-                    self.todo_j
-                        .push((node, GoMiddle, label, key_tail.clone(), tail_len));
+                    self.todo_j.push((node, GoMiddle, label, key_tail.clone(), tail_len));
 
                     if label == self.joker || label > node.label {
                         if let Some(ref child) = node.right {
-                            self.todo_j
-                                .push((child, GoRight, label, key_tail, tail_len));
+                            self.todo_j.push((child, GoRight, label, key_tail, tail_len));
                         }
                     }
                 }
@@ -2164,8 +2146,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstCrosswordIterator<'a, 'b, T> {
                 }
 
                 GoMiddle => {
-                    self.todo_j
-                        .push((node, Visit, label, key_tail.clone(), tail_len));
+                    self.todo_j.push((node, Visit, label, key_tail.clone(), tail_len));
 
                     if label == self.joker || label == node.label {
                         if let Some(ref child) = node.middle {
@@ -2185,8 +2166,7 @@ impl<'a, 'b, T> DoubleEndedIterator for TstCrosswordIterator<'a, 'b, T> {
                 GoLeft => {
                     if label == self.joker || label < node.label {
                         if let Some(ref child) = node.left {
-                            self.todo_j
-                                .push((child, GoRight, label, key_tail, tail_len));
+                            self.todo_j.push((child, GoRight, label, key_tail, tail_len));
                         }
                     }
                 }

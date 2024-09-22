@@ -37,14 +37,12 @@ impl Rule for HistoryRule {
         }
         let cleartext = password_data.password();
         if self.report_all {
-            history_refs
-                .filter(|rf| matches(cleartext, rf))
-                .for_each(|rf| {
-                    result.add_error(
-                        ERROR_CODE,
-                        Some(Self::create_rule_result_detail_parameters(len)),
-                    );
-                });
+            history_refs.filter(|rf| matches(cleartext, rf)).for_each(|rf| {
+                result.add_error(
+                    ERROR_CODE,
+                    Some(Self::create_rule_result_detail_parameters(len)),
+                );
+            });
         } else {
             let x = history_refs.filter(|rf| matches(cleartext, rf)).next();
             if x.is_some() {
