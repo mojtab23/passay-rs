@@ -55,7 +55,7 @@ impl CharacterRule {
             return RuleResultMetadata::new(
                 cc,
                 count_matching_characters(
-                    &self.character_data.characters(),
+                    self.character_data.characters(),
                     password_data.password(),
                 ),
             );

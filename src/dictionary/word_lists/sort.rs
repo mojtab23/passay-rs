@@ -64,12 +64,6 @@ impl ArraySorter for BubbleSortOptimized {
 
 pub struct SliceSort;
 
-impl Default for SliceSort {
-    fn default() -> Self {
-        SliceSort
-    }
-}
-
 impl ArraySorter for SliceSort {
     fn sort_with_comparator(self, array: &mut [String], compare: Comparator)
     where

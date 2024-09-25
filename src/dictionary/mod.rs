@@ -19,7 +19,7 @@ pub struct DictionaryBuilder {
 impl DictionaryBuilder {
     pub fn build(self) -> WordListDictionary<ArrayWordList> {
         let case_sensitive = self.case_sensitive;
-        let word_list = create_from_reads(self.reads, case_sensitive, Some(SliceSort::default()));
+        let word_list = create_from_reads(self.reads, case_sensitive, Some(SliceSort));
         WordListDictionary::new(word_list)
     }
 

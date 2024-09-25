@@ -3,7 +3,6 @@ use crate::rule::character_data::CharacterData;
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;
-use std::ops::{Deref, DerefMut};
 
 const ERROR_CODE: &str = "INSUFFICIENT_CHARACTERISTICS";
 pub struct CharacterCharacteristics {
@@ -63,10 +62,8 @@ impl Rule for CharacterCharacteristics {
             let mut rr = rule.validate(password_data);
             if rr.valid() {
                 success_count += 1;
-            } else {
-                if self.report_rule_failures {
-                    result.details_mut().append(rr.details_mut())
-                }
+            } else if self.report_rule_failures {
+                result.details_mut().append(rr.details_mut())
             }
             result.metadata_mut().merge(rr.metadata())
         }

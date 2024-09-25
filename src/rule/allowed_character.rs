@@ -66,19 +66,20 @@ impl Rule for AllowedCharacter {
         let text = password_data.password();
         'la: for c in text.chars() {
             let option = self.allowed_characters.iter().find(|&&x| x == c);
-            if option.is_none() && !matches.contains(&c) {
-                if self.match_behavior == Contains || self.match_behavior.match_text(text, c) {
-                    let first_codee = format!("{}.{}", ERROR_CODE.to_string(), c as u32);
-                    let codes = [first_codee, ERROR_CODE.to_string()];
-                    result.add_error_with_codes(
-                        &codes,
-                        Some(self.create_rule_result_detail_parameters(c)),
-                    );
-                    if !self.report_all {
-                        break 'la;
-                    }
-                    matches.insert(c);
+            if option.is_none()
+                && !matches.contains(&c)
+                && (self.match_behavior == Contains || self.match_behavior.match_text(text, c))
+            {
+                let first_codee = format!("{}.{}", ERROR_CODE.to_string(), c as u32);
+                let codes = [first_codee, ERROR_CODE.to_string()];
+                result.add_error_with_codes(
+                    &codes,
+                    Some(self.create_rule_result_detail_parameters(c)),
+                );
+                if !self.report_all {
+                    break 'la;
                 }
+                matches.insert(c);
             }
         }
         result.set_metadata(self.create_rule_result_metadata(password_data));

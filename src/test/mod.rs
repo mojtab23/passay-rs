@@ -43,9 +43,8 @@ pub(crate) fn check_messages(items: Vec<RulePasswordTestItem>) {
         assert!(!result.valid(), "rule result should be invalid");
         assert_eq!(expected_errors.len(), result.details().len());
 
-        for i in 0..result.details().len() {
+        for (i, &error) in expected_errors.iter().enumerate().take(result.details().len()) {
             let result_detail = result.details().get(i).unwrap();
-            let error = expected_errors[i];
             let resolved_message = resolver.resolve(result_detail);
             for part in error.split(",") {
                 if part.is_empty() {

@@ -58,7 +58,7 @@ impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
             let cs_length: isize = cs.length() as isize;
             let mut direction = 0;
             let mut prev_position = -1;
-            for (_i, c) in password.chars().enumerate() {
+            for c in password.chars() {
                 let position = index_of(&cs, c);
                 // set diff to +1 for increase in sequence, -1 for decrease, anything else for neither
                 let mut diff = if position < 0 || prev_position < 0 {
