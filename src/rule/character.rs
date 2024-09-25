@@ -34,7 +34,7 @@ impl CharacterRule {
         &self,
         matching_chars: String,
     ) -> HashMap<String, String> {
-        let mut map = HashMap::with_capacity(1);
+        let mut map = HashMap::with_capacity(4);
         map.insert(
             "minimumRequired".to_string(),
             self.num_characters.to_string(),

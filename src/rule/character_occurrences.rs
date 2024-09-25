@@ -19,7 +19,7 @@ impl CharacterOccurrences {
         c: char,
         repeat: usize,
     ) -> HashMap<String, String> {
-        let mut map = HashMap::with_capacity(1);
+        let mut map = HashMap::with_capacity(3);
         map.insert("matchingCharacter".to_string(), c.to_string());
         map.insert("matchingCharacterCount".to_string(), repeat.to_string());
         map.insert(

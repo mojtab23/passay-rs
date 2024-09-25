@@ -8,6 +8,7 @@ mod character_characteristics;
 mod character_data;
 mod character_occurrences;
 mod character_sequence;
+mod dictionary;
 mod history;
 mod illegal_regex;
 mod illegal_sequence_rule;

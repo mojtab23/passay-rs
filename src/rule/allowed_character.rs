@@ -43,7 +43,7 @@ impl AllowedCharacter {
     }
 
     fn create_rule_result_detail_parameters(&self, c: char) -> HashMap<String, String> {
-        let mut map = HashMap::with_capacity(1);
+        let mut map = HashMap::with_capacity(2);
         map.insert("illegalCharacter".to_string(), c.to_string());
         map.insert(
             "matchBehavior".to_string(),

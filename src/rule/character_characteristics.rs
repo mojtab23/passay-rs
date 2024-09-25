@@ -43,7 +43,7 @@ impl CharacterCharacteristics {
         Self::with_rules_and_characteristics(rules, 1)
     }
     fn create_rule_result_detail_parameters(&self, success: usize) -> HashMap<String, String> {
-        let mut map = HashMap::with_capacity(1);
+        let mut map = HashMap::with_capacity(3);
         map.insert("successCount".to_string(), success.to_string());
         map.insert(
             "minimumRequired".to_string(),

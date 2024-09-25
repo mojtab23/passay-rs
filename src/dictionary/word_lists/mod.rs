@@ -11,7 +11,7 @@ use self::sort::{ArraySorter, Comparator};
 mod array_word_list;
 pub mod sort;
 mod test_base;
-mod word_list_dictionary;
+pub mod word_list_dictionary;
 
 pub trait WordLists: Index<usize, Output = String> {
     /// Returns an iterator to traverse this word list from the 0th index.
@@ -45,8 +45,27 @@ pub fn create_from_read(
     ArrayWordList::with_sorter(words, case_sensitive, sorter)
 }
 
+/// Creates an [ArrayWordList] by reading the contents of the given reads with support for sorting the contents.
+pub fn create_from_reads(
+    reads: Vec<Box<dyn Read>>,
+    case_sensitive: bool,
+    sorter: Option<impl ArraySorter>,
+) -> ArrayWordList {
+    let mut words = vec![];
+    for read in reads {
+        read_word_list(read, &mut words);
+    }
+    ArrayWordList::with_sorter(words, case_sensitive, sorter)
+}
+
+/// Add words to word list
+fn read_word_list(read: Box<dyn Read>, words: &mut Vec<String>) {
+    let vec = read_words(read);
+    words.extend(vec);
+}
+
 /// Reads words, one per line, from a Read and returns a word list.
-pub fn read_words(read: impl Read) -> Vec<String> {
+pub fn read_words(read: Box<dyn Read>) -> Vec<String> {
     let mut reader = BufReader::new(read);
     let mut s = String::new();
     let _ = reader.read_to_string(&mut s);
@@ -56,19 +75,21 @@ pub fn read_words(read: impl Read) -> Vec<String> {
 
 /// Performs a binary search of the given word list for the given word.
 pub fn binary_search(word_list: &impl WordLists, word: &str) -> Option<usize> {
-    let mut low = 0usize;
-    let mut high = word_list.len() - 1;
-    let mut mid: usize;
+    let mut size = word_list.len();
+    let mut left = 0;
+    let mut right = size;
+    while left < right {
+        let mid = left + size / 2;
 
-    while low <= high {
-        mid = (low + high) / 2;
         let x = &word_list[mid];
-        let ordering = (word_list.get_comparator())(x, word);
-        match ordering {
-            Ordering::Less => low = mid + 1,
-            Ordering::Equal => return Some(mid),
-            Ordering::Greater => high = mid - 1,
+        let cmp = word_list.get_comparator()(x, word);
+        left = if cmp == Ordering::Less { mid + 1 } else { left };
+        right = if cmp == Ordering::Greater { mid } else { right };
+        if cmp == Ordering::Equal {
+            return Some(mid);
         }
+
+        size = right - left;
     }
     None
 }
@@ -157,7 +178,7 @@ mod tests {
     #[test]
     fn test_words_from_read() {
         let sorted_file = include_str!("../../../resources/test/eign");
-        let words = read_words(sorted_file.as_bytes());
+        let words = read_words(Box::new(sorted_file.as_bytes()));
         let good = "good".to_string();
         assert!(words.contains(&good));
     }
