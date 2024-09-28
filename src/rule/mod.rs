@@ -11,6 +11,7 @@ mod character_sequence;
 mod dictionary;
 mod dictionary_substring;
 mod digest_dictionary;
+mod digest_history;
 mod history;
 mod illegal_regex;
 mod illegal_sequence_rule;
