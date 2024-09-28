@@ -6,12 +6,12 @@ use std::collections::HashMap;
 const ERROR_CODE: &str = "ILLEGAL_WORD";
 const ERROR_CODE_REVERSED: &str = "ILLEGAL_WORD_REVERSED";
 
-pub struct DictionaryRule<D: Dictionary> {
+pub struct DictionarySubstringRule<D: Dictionary> {
     dictionary: D,
     match_backwards: bool,
 }
 
-impl<D: Dictionary> DictionaryRule<D> {
+impl<D: Dictionary> DictionarySubstringRule<D> {
     pub fn new(dictionary: D, match_backwards: bool) -> Self {
         Self {
             dictionary,
@@ -25,10 +25,17 @@ impl<D: Dictionary> DictionaryRule<D> {
         }
     }
     fn do_word_search(&self, text: &str) -> Option<String> {
-        match self.dictionary.search(text) {
-            true => Some(text.to_string()),
-            false => None,
+        for i in 1..=text.len() {
+            let mut j = 0usize;
+            while j + i <= text.len() {
+                let s = &text[j..j + i];
+                if self.dictionary.search(s) {
+                    return Some(s.to_string());
+                }
+                j += 1;
+            }
         }
+        None
     }
     fn create_rule_result_detail_parameters(&self, matching_word: &str) -> HashMap<String, String> {
         let mut map = HashMap::with_capacity(1);
@@ -37,7 +44,7 @@ impl<D: Dictionary> DictionaryRule<D> {
     }
 }
 
-impl<D: Dictionary> Rule for DictionaryRule<D> {
+impl<D: Dictionary> Rule for DictionarySubstringRule<D> {
     fn validate(&self, password_data: &PasswordData) -> RuleResult {
         let mut result = RuleResult::default();
         let text = password_data.password();
@@ -61,166 +68,139 @@ impl<D: Dictionary> Rule for DictionaryRule<D> {
         result
     }
 }
+
 #[cfg(test)]
 mod tests {
+    use crate::dictionary::word_lists::sort::SliceSort;
     use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
-    use crate::dictionary::word_lists::ArrayWordList;
-    use crate::dictionary::DictionaryBuilder;
-    use crate::rule::dictionary::{DictionaryRule, ERROR_CODE, ERROR_CODE_REVERSED};
+    use crate::dictionary::word_lists::{create_from_read, ArrayWordList};
+    use crate::rule::dictionary_substring::{
+        DictionarySubstringRule, ERROR_CODE, ERROR_CODE_REVERSED,
+    };
     use crate::rule::PasswordData;
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
-
-    fn create_rule() -> Box<DictionaryRule<WordListDictionary<ArrayWordList>>> {
-        let case_sensitive_dict = DictionaryBuilder::new()
-            .add_read(Box::new(read_word_list()))
-            .case_sensitive(true)
-            .build();
-        Box::new(DictionaryRule::from_dictionary(case_sensitive_dict))
-    }
-
-    fn read_word_list() -> &'static [u8] {
-        include_bytes!("../../resources/test/web2")
-    }
-
-    fn create_backward_rule() -> Box<DictionaryRule<WordListDictionary<ArrayWordList>>> {
-        let case_sensitive_dict = DictionaryBuilder::new()
-            .add_read(Box::new(read_word_list()))
-            .case_sensitive(true)
-            .build();
-        Box::new(DictionaryRule::new(case_sensitive_dict, true))
-    }
-    fn create_ignore_case_rule() -> Box<DictionaryRule<WordListDictionary<ArrayWordList>>> {
-        let case_insensitive_dict =
-            DictionaryBuilder::new().add_read(Box::new(read_word_list())).build();
-        Box::new(DictionaryRule::from_dictionary(case_insensitive_dict))
-    }
-    fn create_all_rule() -> Box<DictionaryRule<WordListDictionary<ArrayWordList>>> {
-        let case_insensitive_dict =
-            DictionaryBuilder::new().add_read(Box::new(read_word_list())).build();
-        Box::new(DictionaryRule::new(case_insensitive_dict, true))
-    }
 
     #[test]
     fn test_passwords() {
         let test_cases: Vec<RulePasswordTestItem> = vec![
-            // test valid password
+            // valid password
             RulePasswordTestItem(
                 create_rule(),
-                PasswordData::with_password("Pullm@n1z3".to_string()),
+                PasswordData::with_password("p4t3t#7wd5gew".to_string()),
                 vec![],
             ),
             // dictionary word
             RulePasswordTestItem(
                 create_rule(),
-                PasswordData::with_password("Pullmanize".to_string()),
+                PasswordData::with_password("p4tlancely5gew".to_string()),
                 vec![ERROR_CODE],
             ),
             // backwards dictionary word
             RulePasswordTestItem(
                 create_rule(),
-                PasswordData::with_password("ezinamlluP".to_string()),
+                PasswordData::with_password("p4tylecnal5gew".to_string()),
                 vec![],
             ),
             // mixed case dictionary word
             RulePasswordTestItem(
                 create_rule(),
-                PasswordData::with_password("PuLLmanIZE".to_string()),
+                PasswordData::with_password("p4tlAnCeLy5gew".to_string()),
                 vec![],
             ),
             // backwards mixed case dictionary word
             RulePasswordTestItem(
                 create_rule(),
-                PasswordData::with_password("EZInamLLuP".to_string()),
+                PasswordData::with_password("p4tyLeCnAl5gew".to_string()),
                 vec![],
             ),
             // valid password
             RulePasswordTestItem(
                 create_backward_rule(),
-                PasswordData::with_password("Pullm@n1z3".to_string()),
+                PasswordData::with_password("p4t3t#7wd5gew".to_string()),
                 vec![],
             ),
             // dictionary word
             RulePasswordTestItem(
                 create_backward_rule(),
-                PasswordData::with_password("Pullmanize".to_string()),
+                PasswordData::with_password("p4tlancely5gew".to_string()),
                 vec![ERROR_CODE],
             ),
-            // backward dictionary word
+            // backwards dictionary word
             RulePasswordTestItem(
                 create_backward_rule(),
-                PasswordData::with_password("ezinamlluP".to_string()),
+                PasswordData::with_password("p4tylecnal5gew".to_string()),
                 vec![ERROR_CODE_REVERSED],
             ),
             // mixed case dictionary word
             RulePasswordTestItem(
                 create_backward_rule(),
-                PasswordData::with_password("PuLLmanIZE".to_string()),
+                PasswordData::with_password("p4tlAnCeLy5gew".to_string()),
                 vec![],
             ),
             // backwards mixed case dictionary word
             RulePasswordTestItem(
                 create_backward_rule(),
-                PasswordData::with_password("EZInamLLuP".to_string()),
+                PasswordData::with_password("p4tyLeCnAl5gew".to_string()),
                 vec![],
             ),
             // valid password
             RulePasswordTestItem(
                 create_ignore_case_rule(),
-                PasswordData::with_password("Pullm@n1z3".to_string()),
+                PasswordData::with_password("p4t3t#7wd5gew".to_string()),
                 vec![],
             ),
             // dictionary word
             RulePasswordTestItem(
                 create_ignore_case_rule(),
-                PasswordData::with_password("Pullmanize".to_string()),
+                PasswordData::with_password("p4tlancely5gew".to_string()),
                 vec![ERROR_CODE],
             ),
-            // backward dictionary word
+            // backwards dictionary word
             RulePasswordTestItem(
                 create_ignore_case_rule(),
-                PasswordData::with_password("ezinamlluP".to_string()),
+                PasswordData::with_password("p4tylecnal5gew".to_string()),
                 vec![],
             ),
             // mixed case dictionary word
             RulePasswordTestItem(
                 create_ignore_case_rule(),
-                PasswordData::with_password("PuLLmanIZE".to_string()),
+                PasswordData::with_password("p4tlAnCeLy5gew".to_string()),
                 vec![ERROR_CODE],
             ),
             // backwards mixed case dictionary word
             RulePasswordTestItem(
                 create_ignore_case_rule(),
-                PasswordData::with_password("EZInamLLuP".to_string()),
+                PasswordData::with_password("p4tyLeCnAl5gew".to_string()),
                 vec![],
             ),
             // valid password
             RulePasswordTestItem(
                 create_all_rule(),
-                PasswordData::with_password("Pullm@n1z3".to_string()),
+                PasswordData::with_password("p4t3t#7wd5gew".to_string()),
                 vec![],
             ),
             // dictionary word
             RulePasswordTestItem(
                 create_all_rule(),
-                PasswordData::with_password("Pullmanize".to_string()),
+                PasswordData::with_password("p4tlancely5gew".to_string()),
                 vec![ERROR_CODE],
             ),
-            // backward dictionary word
+            // backwards dictionary word
             RulePasswordTestItem(
                 create_all_rule(),
-                PasswordData::with_password("ezinamlluP".to_string()),
+                PasswordData::with_password("p4tylecnal5gew".to_string()),
                 vec![ERROR_CODE_REVERSED],
             ),
             // mixed case dictionary word
             RulePasswordTestItem(
                 create_all_rule(),
-                PasswordData::with_password("PuLLmanIZE".to_string()),
+                PasswordData::with_password("p4tlAnCeLy5gew".to_string()),
                 vec![ERROR_CODE],
             ),
             // backwards mixed case dictionary word
             RulePasswordTestItem(
                 create_all_rule(),
-                PasswordData::with_password("EZInamLLuP".to_string()),
+                PasswordData::with_password("p4tyLeCnAl5gew".to_string()),
                 vec![ERROR_CODE_REVERSED],
             ),
         ];
@@ -232,15 +212,45 @@ mod tests {
         let test_cases: Vec<RulePasswordTestItem> = vec![
             RulePasswordTestItem(
                 create_rule(),
-                PasswordData::with_password("Pullmanize".to_string()),
-                vec!["ILLEGAL_WORD,Pullmanize"],
+                PasswordData::with_password("p4tlancely5gew".to_string()),
+                vec!["ILLEGAL_WORD,lance"],
             ),
             RulePasswordTestItem(
                 create_backward_rule(),
-                PasswordData::with_password("ezinamlluP".to_string()),
-                vec!["ILLEGAL_WORD_REVERSED,Pullmanize"],
+                PasswordData::with_password("p4tylecnal5gew".to_string()),
+                vec!["ILLEGAL_WORD_REVERSED,lance"],
             ),
         ];
         check_messages(test_cases);
+    }
+    fn create_rule() -> Box<DictionarySubstringRule<WordListDictionary<ArrayWordList>>> {
+        let case_sensitive_word_list = create_from_read(read_word_list(), true, Some(SliceSort));
+        let case_sensitive_dict = WordListDictionary::new(case_sensitive_word_list);
+        Box::new(DictionarySubstringRule::from_dictionary(
+            case_sensitive_dict,
+        ))
+    }
+
+    fn create_backward_rule() -> Box<DictionarySubstringRule<WordListDictionary<ArrayWordList>>> {
+        let case_sensitive_word_list = create_from_read(read_word_list(), true, Some(SliceSort));
+        let case_sensitive_dict = WordListDictionary::new(case_sensitive_word_list);
+        Box::new(DictionarySubstringRule::new(case_sensitive_dict, true))
+    }
+
+    fn create_ignore_case_rule() -> Box<DictionarySubstringRule<WordListDictionary<ArrayWordList>>>
+    {
+        let case_insensitive_word_list = create_from_read(read_word_list(), false, Some(SliceSort));
+        let case_insensitive_dict = WordListDictionary::new(case_insensitive_word_list);
+        Box::new(DictionarySubstringRule::from_dictionary(
+            case_insensitive_dict,
+        ))
+    }
+    fn create_all_rule() -> Box<DictionarySubstringRule<WordListDictionary<ArrayWordList>>> {
+        let case_insensitive_word_list = create_from_read(read_word_list(), false, Some(SliceSort));
+        let case_insensitive_dict = WordListDictionary::new(case_insensitive_word_list);
+        Box::new(DictionarySubstringRule::new(case_insensitive_dict, true))
+    }
+    fn read_word_list() -> &'static [u8] {
+        include_bytes!("../../resources/test/web2-gt3")
     }
 }
