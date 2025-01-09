@@ -22,6 +22,7 @@ pub mod message_resolver;
 mod password_utils;
 mod password_validator;
 mod reference;
+mod repeat_character_regex;
 pub mod rule_result;
 mod sequence_data;
 mod username;

@@ -1,9 +1,10 @@
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
-use regex::Regex;
+use fancy_regex::Regex;
 use std::collections::{HashMap, HashSet};
 
 const ERROR_CODE: &str = "ILLEGAL_MATCH";
+const REGEX_ERROR: &str = "REGEX_ERROR";
 pub struct IllegalRegex {
     regex: Regex,
     report_all: bool,
@@ -36,7 +37,11 @@ impl Rule for IllegalRegex {
         let mut result = RuleResult::default();
         let mut matches = HashSet::new();
         for mat in self.regex.find_iter(&password_data.password) {
-            let match_str = mat.as_str().to_string();
+            if mat.is_err() {
+                result.add_error(REGEX_ERROR, None);
+                continue;
+            }
+            let match_str = mat.unwrap().as_str().to_string();
             if !matches.contains(&match_str) {
                 result.add_error(
                     ERROR_CODE,
@@ -57,7 +62,7 @@ mod tests {
     use crate::rule::illegal_regex::{IllegalRegex, ERROR_CODE};
     use crate::rule::PasswordData;
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
-    use regex::{Regex, RegexBuilder};
+    use fancy_regex::{Regex, RegexBuilder};
 
     #[test]
     fn test_passwords() {

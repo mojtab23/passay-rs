@@ -1,9 +1,10 @@
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
-use regex::Regex;
+use fancy_regex::Regex;
 use std::collections::HashMap;
 
 const ERROR_CODE: &str = "ALLOWED_MATCH";
+const REGEX_ERROR: &str = "REGEX_ERROR";
 pub struct AllowedRegex {
     regex: Regex,
 }
@@ -22,11 +23,16 @@ impl AllowedRegex {
 impl Rule for AllowedRegex {
     fn validate(&self, password_data: &PasswordData) -> RuleResult {
         let mut result = RuleResult::default();
-        if !self.regex.is_match(password_data.password()) {
-            result.add_error(
-                ERROR_CODE,
-                Some(self.create_rule_result_detail_parameters()),
-            )
+        let result1 = self.regex.is_match(password_data.password());
+        if result1.is_err() {
+            result.add_error(ERROR_CODE, None)
+        } else {
+            if !result1.unwrap() {
+                result.add_error(
+                    ERROR_CODE,
+                    Some(self.create_rule_result_detail_parameters()),
+                )
+            }
         }
         result
     }
@@ -37,7 +43,7 @@ mod tests {
     use crate::rule::allowed_regex::{AllowedRegex, ERROR_CODE};
     use crate::rule::PasswordData;
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
-    use regex::{Regex, RegexBuilder};
+    use fancy_regex::{Regex, RegexBuilder};
 
     #[test]
     fn test_passwords() {
