@@ -24,6 +24,7 @@ mod password_validator;
 mod reference;
 pub mod rule_result;
 mod sequence_data;
+mod username;
 
 pub trait Rule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult;
@@ -70,5 +71,9 @@ impl PasswordData {
 
     pub fn password_references(&self) -> &Vec<Box<dyn Reference>> {
         &self.password_references
+    }
+
+    pub fn username(&self) -> Option<&str> {
+        self.username.as_deref()
     }
 }

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::rule::reference::Reference;
 use crate::rule::rule_result::{CountCategory, RuleResult, RuleResultMetadata};
 use crate::rule::{PasswordData, Rule};
 

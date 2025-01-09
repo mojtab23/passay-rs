@@ -68,7 +68,7 @@ impl Rule for AllowedCharacter {
             let option = self.allowed_characters.iter().find(|&&x| x == c);
             if option.is_none()
                 && !matches.contains(&c)
-                && (self.match_behavior == Contains || self.match_behavior.match_text(text, c))
+                && (self.match_behavior == Contains || self.match_behavior.match_char(text, c))
             {
                 let first_codee = format!("{}.{}", ERROR_CODE.to_string(), c as u32);
                 let codes = [first_codee, ERROR_CODE.to_string()];
@@ -95,11 +95,18 @@ pub enum MatchBehavior {
 }
 
 impl MatchBehavior {
-    pub fn match_text(&self, text: &str, c: char) -> bool {
+    pub fn match_char(&self, text: &str, c: char) -> bool {
         match self {
             StartsWith => text.starts_with(c),
             EndsWith => text.ends_with(c),
             Contains => text.contains(c),
+        }
+    }
+    pub fn match_str(&self, text: &str, s: &str) -> bool {
+        match self {
+            StartsWith => text.starts_with(s),
+            EndsWith => text.ends_with(s),
+            Contains => text.contains(s),
         }
     }
 

@@ -1,5 +1,4 @@
 use crate::rule::character::CharacterRule;
-use crate::rule::character_data::CharacterData;
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;

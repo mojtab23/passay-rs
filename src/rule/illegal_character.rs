@@ -65,7 +65,7 @@ impl Rule for IllegalCharacterRule {
         let text = password_data.password();
         let mut matches = HashSet::with_capacity(text.chars().count());
         for &c in &self.illegal_characters {
-            if self.match_behavior.match_text(text, c) && !matches.contains(&c) {
+            if self.match_behavior.match_char(text, c) && !matches.contains(&c) {
                 let codes = vec![format!("{ERROR_CODE}.{}", c as u32), ERROR_CODE.to_string()];
                 result.add_error_with_codes(
                     &codes,
@@ -87,7 +87,7 @@ mod tests {
     use crate::rule::illegal_character::{IllegalCharacterRule, ERROR_CODE};
     use crate::rule::rule_result::CountCategory::Illegal;
     use crate::rule::{PasswordData, Rule};
-    use crate::test::RulePasswordTestItem;
+    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
 
     #[test]
     fn test_passwords() {
@@ -144,6 +144,7 @@ mod tests {
                 vec![],
             ),
         ];
+        check_passwords(test_cases);
     }
     #[test]
     fn test_messages() {
@@ -188,6 +189,7 @@ mod tests {
                 vec!["ILLEGAL_CHAR,$"],
             ),
         ];
+        check_messages(test_cases);
     }
     #[test]
     fn check_metadata() {
