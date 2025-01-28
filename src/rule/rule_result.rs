@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
+#[derive(Debug)]
 pub struct RuleResult {
     valid: bool,
     details: Vec<RuleResultDetail>,
@@ -103,7 +104,7 @@ impl Display for RuleResultDetail {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct RuleResultMetadata {
     counts: HashMap<CountCategory, usize>,
 }

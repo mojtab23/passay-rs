@@ -37,7 +37,7 @@ impl<S: SequenceData> IllegalSequenceRule<S> {
             let mut map = HashMap::new();
 
             map.insert("sequence".to_string(), match_str.to_string());
-            result.add_error(self.sequence_data.get_error_code(), Some(map));
+            result.add_error(self.sequence_data.error_code(), Some(map));
         }
     }
 }
@@ -125,7 +125,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("pqwerty#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has qwerty sequence at beginning
             RulePasswordTestItem(
@@ -135,7 +135,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("qwerty#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has qwerty sequence at end
             RulePasswordTestItem(
@@ -145,7 +145,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("ppqwerty".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has qwerty sequence in entirety
             RulePasswordTestItem(
@@ -155,7 +155,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("qwerty".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has two qwerty sequences
             RulePasswordTestItem(
@@ -166,8 +166,8 @@ mod tests {
                 )),
                 PasswordData::with_password("pqwerty#n65tyuiop".to_string()),
                 vec![
-                    EnglishSequenceData::USQwerty.get_error_code(),
-                    EnglishSequenceData::USQwerty.get_error_code(),
+                    EnglishSequenceData::USQwerty.error_code(),
+                    EnglishSequenceData::USQwerty.error_code(),
                 ],
             ),
             // Has two joined qwerty sequences
@@ -179,8 +179,8 @@ mod tests {
                 )),
                 PasswordData::with_password("qwertytrewq".to_string()),
                 vec![
-                    EnglishSequenceData::USQwerty.get_error_code(),
-                    EnglishSequenceData::USQwerty.get_error_code(),
+                    EnglishSequenceData::USQwerty.error_code(),
+                    EnglishSequenceData::USQwerty.error_code(),
                 ],
             ),
             // Has two joined qwerty sequences with padding
@@ -192,8 +192,8 @@ mod tests {
                 )),
                 PasswordData::with_password("pqwertytrewqp".to_string()),
                 vec![
-                    EnglishSequenceData::USQwerty.get_error_code(),
-                    EnglishSequenceData::USQwerty.get_error_code(),
+                    EnglishSequenceData::USQwerty.error_code(),
+                    EnglishSequenceData::USQwerty.error_code(),
                 ],
             ),
             // Has wrapping qwerty sequence with wrap=false
@@ -212,7 +212,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("piop{}|qw#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has backward qwerty sequence
             RulePasswordTestItem(
@@ -222,7 +222,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("p7^54#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has backward wrapping qwerty sequence with wrap=false
             RulePasswordTestItem(
@@ -242,7 +242,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("p@1`+_0#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             RulePasswordTestItem(
                 Box::new(IllegalSequenceRule::with_warp(
@@ -251,7 +251,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("pQ∑eR†y#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has wrapping alt qwerty sequence with wrap=false
             RulePasswordTestItem(
@@ -269,7 +269,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("pIøp“}|œW#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has backwards alt qwerty sequence
             RulePasswordTestItem(
@@ -279,7 +279,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("p7§5›#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // Has backward alt wrapping qwerty sequence with wrap=false
             RulePasswordTestItem(
@@ -299,7 +299,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("p@1~≠_º#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // report single error
             RulePasswordTestItem(
@@ -310,7 +310,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("pqwertyui#n65".to_string()),
-                vec![EnglishSequenceData::USQwerty.get_error_code()],
+                vec![EnglishSequenceData::USQwerty.error_code()],
             ),
             // German QWERTZ SEQUENCE
             // Test valid password
@@ -329,7 +329,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("pqwertz#n65".to_string()),
-                vec![GermanSequenceData::Alphabetical.get_error_code()],
+                vec![GermanSequenceData::Alphabetical.error_code()],
             ),
             // Has two 5 character qwertz sequences
             RulePasswordTestItem(
@@ -340,8 +340,8 @@ mod tests {
                 )),
                 PasswordData::with_password("wertz#~yxcvb".to_string()),
                 vec![
-                    GermanSequenceData::Alphabetical.get_error_code(),
-                    GermanSequenceData::Alphabetical.get_error_code(),
+                    GermanSequenceData::Alphabetical.error_code(),
+                    GermanSequenceData::Alphabetical.error_code(),
                 ],
             ),
             // Has one 4 character backward qwertz sequence
@@ -352,7 +352,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("1xäölk2y".to_string()),
-                vec![GermanSequenceData::Alphabetical.get_error_code()],
+                vec![GermanSequenceData::Alphabetical.error_code()],
             ),
             /* ALPHABETICAL SEQUENCE */
             // Test valid password
@@ -371,7 +371,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("phijklmn#n65".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has wrapping alphabetical sequence with wrap=false
             RulePasswordTestItem(
@@ -391,7 +391,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("pxyzA#n65".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has backward alphabetical sequence
             RulePasswordTestItem(
@@ -399,7 +399,7 @@ mod tests {
                     EnglishSequenceData::Alphabetical,
                 )),
                 PasswordData::with_password("ptSrqp#n65".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has backward wrapping alphabetical sequence with wrap=false
             RulePasswordTestItem(
@@ -419,7 +419,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("pcbazyxwv#n65".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has forward alphabetical sequence that ends with 'y'
             RulePasswordTestItem(
@@ -429,7 +429,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("wxy".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has forward alphabetical sequence that ends with 'z'
             RulePasswordTestItem(
@@ -439,7 +439,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("xyz".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has forward alphabetical sequence that ends with 'a' with wrap=false
             RulePasswordTestItem(
@@ -459,7 +459,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("yza".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has backward alphabetical sequence that ends with 'b'
             RulePasswordTestItem(
@@ -469,7 +469,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("dcb".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has backward alphabetical sequence that ends with 'a'
             RulePasswordTestItem(
@@ -479,7 +479,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("cba".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // Has backward alphabetical sequence that ends with 'z' with wrap=false
             RulePasswordTestItem(
@@ -499,7 +499,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("baz".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // report single error
             RulePasswordTestItem(
@@ -510,7 +510,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("phijklmn#n65".to_string()),
-                vec![EnglishSequenceData::Alphabetical.get_error_code()],
+                vec![EnglishSequenceData::Alphabetical.error_code()],
             ),
             // NUMERICAL SEQUENCE
             // Test valid password
@@ -529,7 +529,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("p3456#n65".to_string()),
-                vec![EnglishSequenceData::Numerical.get_error_code()],
+                vec![EnglishSequenceData::Numerical.error_code()],
             ),
             // Has wrapping numerical sequence with wrap=false
             RulePasswordTestItem(
@@ -549,7 +549,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("p4zRcv2#n8901234".to_string()),
-                vec![EnglishSequenceData::Numerical.get_error_code()],
+                vec![EnglishSequenceData::Numerical.error_code()],
             ),
             // Has backward numerical sequence
             RulePasswordTestItem(
@@ -557,7 +557,7 @@ mod tests {
                     EnglishSequenceData::Numerical,
                 )),
                 PasswordData::with_password("p54321#n65".to_string()),
-                vec![EnglishSequenceData::Numerical.get_error_code()],
+                vec![EnglishSequenceData::Numerical.error_code()],
             ),
             // Has backward wrapping numerical sequence with wrap=false
             RulePasswordTestItem(
@@ -577,7 +577,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("p54321098#n65".to_string()),
-                vec![EnglishSequenceData::Numerical.get_error_code()],
+                vec![EnglishSequenceData::Numerical.error_code()],
             ),
             // Issue 135 original java repo
             RulePasswordTestItem(
@@ -587,7 +587,7 @@ mod tests {
                     true,
                 )),
                 PasswordData::with_password("1234567".to_string()),
-                vec![EnglishSequenceData::Numerical.get_error_code()],
+                vec![EnglishSequenceData::Numerical.error_code()],
             ),
             // report single error
             RulePasswordTestItem(
@@ -598,7 +598,7 @@ mod tests {
                     false,
                 )),
                 PasswordData::with_password("1234567".to_string()),
-                vec![EnglishSequenceData::Numerical.get_error_code()],
+                vec![EnglishSequenceData::Numerical.error_code()],
             ),
             // Polish and English
             RulePasswordTestItem(
@@ -617,7 +617,7 @@ mod tests {
                     )),
                 ])),
                 PasswordData::with_password("p987rw3sśtuwxyzź".to_string()),
-                vec![PolishSequenceData::Alphabetical.get_error_code()],
+                vec![PolishSequenceData::Alphabetical.error_code()],
             ),
             // german and english
             RulePasswordTestItem(
@@ -636,7 +636,7 @@ mod tests {
                     )),
                 ])),
                 PasswordData::with_password("P987xyzäö".to_string()),
-                vec![GermanSequenceData::Alphabetical.get_error_code()],
+                vec![GermanSequenceData::Alphabetical.error_code()],
             ),
             // czech and english
             RulePasswordTestItem(
@@ -655,7 +655,7 @@ mod tests {
                     )),
                 ])),
                 PasswordData::with_password("ABCx12y34zcčdĎeě".to_string()),
-                vec![CzechSequenceData::Alphabetical.get_error_code()],
+                vec![CzechSequenceData::Alphabetical.error_code()],
             ),
             // cyrillic and english
             RulePasswordTestItem(
@@ -674,7 +674,7 @@ mod tests {
                     )),
                 ])),
                 PasswordData::with_password("ABCx12y34zcабвгд".to_string()),
-                vec![CyrillicSequenceData::Alphabetical.get_error_code()],
+                vec![CyrillicSequenceData::Alphabetical.error_code()],
             ),
         ];
         check_passwords(test_cases);

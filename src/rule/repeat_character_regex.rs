@@ -3,10 +3,11 @@ use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use fancy_regex::Regex;
 
-const ERROR_CODE: &str = "ILLEGAL_MATCH";
+pub const ERROR_CODE: &str = "ILLEGAL_MATCH";
 const DEFAULT_SEQUENCE_LENGTH: usize = 5;
 const MINIMUM_SEQUENCE_LENGTH: usize = 3;
 
+// TODO rewrite it without regex
 pub struct RepeatCharacterRegexRule {
     regex_rule: IllegalRegex,
 }

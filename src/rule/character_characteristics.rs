@@ -3,7 +3,7 @@ use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;
 
-const ERROR_CODE: &str = "INSUFFICIENT_CHARACTERISTICS";
+pub const ERROR_CODE: &str = "INSUFFICIENT_CHARACTERISTICS";
 pub struct CharacterCharacteristics {
     rules: Vec<CharacterRule>,
     num_characteristics: usize,
@@ -84,7 +84,8 @@ mod tests {
     use crate::rule::character::CharacterRule;
     use crate::rule::character_characteristics::{CharacterCharacteristics, ERROR_CODE};
     use crate::rule::character_data::{CharacterData, EnglishCharacterData};
-    use crate::rule::PasswordData;
+    use crate::rule::rule_result::CountCategory;
+    use crate::rule::{PasswordData, Rule};
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
 
     #[test]
@@ -202,6 +203,35 @@ mod tests {
         ];
         check_messages(test_cases);
     }
+
+    #[test]
+    fn check_consistency() {
+        let result = CharacterCharacteristics::from_rules(vec![]);
+        assert!(result.is_err_and(|e| {
+            "Number of characteristics must be <= to the number of rules" == e
+        }));
+    }
+    #[test]
+    fn check_metadata() {
+        let rules = vec![
+            CharacterRule::new(Box::new(EnglishCharacterData::Digit), 1).unwrap(),
+            CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+        ];
+        let rule = CharacterCharacteristics::with_rules_and_characteristics(rules, 2).unwrap();
+
+        let password_data = PasswordData::with_password("meTAdata01".to_string());
+        let result = rule.validate(&password_data);
+        assert!(result.valid());
+        assert_eq!(
+            2,
+            result.metadata().get_count(CountCategory::Digit).unwrap()
+        );
+        assert_eq!(
+            6,
+            result.metadata().get_count(CountCategory::LowerCase).unwrap()
+        );
+    }
+
     fn create_rule1() -> Box<CharacterCharacteristics> {
         let char_rules = vec![
             CharacterRule::new(Box::new(EnglishCharacterData::Alphabetical), 4).unwrap(),

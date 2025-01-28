@@ -28,6 +28,9 @@ pub(crate) fn check_passwords(items: Vec<RulePasswordTestItem>) {
             }
         } else {
             println!("CASE#{} is VALID, {:?}", case_num, password);
+            if !result.valid() {
+                println!("CASE#{} should be VALID, {:?}", case_num, result.details());
+            }
             assert!(result.valid());
         }
     }

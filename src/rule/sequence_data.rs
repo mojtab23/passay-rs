@@ -9,7 +9,7 @@ pub trait SequenceData {
     ///
     /// # Returns
     /// error code
-    fn get_error_code(&self) -> &str;
+    fn error_code(&self) -> &str;
 
     /// # Returns
     /// one or more illegal character sequences.
@@ -28,7 +28,7 @@ pub enum EnglishSequenceData {
 }
 
 impl SequenceData for EnglishSequenceData {
-    fn get_error_code(&self) -> &str {
+    fn error_code(&self) -> &str {
         match self {
             EnglishSequenceData::Alphabetical => "ILLEGAL_ALPHABETICAL_SEQUENCE",
             EnglishSequenceData::Numerical => "ILLEGAL_NUMERICAL_SEQUENCE",
@@ -89,7 +89,7 @@ pub enum PolishSequenceData {
 }
 
 impl SequenceData for PolishSequenceData {
-    fn get_error_code(&self) -> &str {
+    fn error_code(&self) -> &str {
         match self {
             PolishSequenceData::Alphabetical => "ILLEGAL_ALPHABETICAL_SEQUENCE",
         }
@@ -112,7 +112,7 @@ pub enum GermanSequenceData {
 }
 
 impl SequenceData for GermanSequenceData {
-    fn get_error_code(&self) -> &str {
+    fn error_code(&self) -> &str {
         match self {
             GermanSequenceData::Alphabetical => "ILLEGAL_ALPHABETICAL_SEQUENCE",
             GermanSequenceData::DEQwertz => "ILLEGAL_QWERTY_SEQUENCE",
@@ -161,7 +161,7 @@ pub enum CzechSequenceData {
 }
 
 impl SequenceData for CzechSequenceData {
-    fn get_error_code(&self) -> &str {
+    fn error_code(&self) -> &str {
         match self {
             CzechSequenceData::Alphabetical => "ILLEGAL_ALPHABETICAL_SEQUENCE",
         }
@@ -183,7 +183,7 @@ pub enum CyrillicSequenceData {
 }
 
 impl SequenceData for CyrillicSequenceData {
-    fn get_error_code(&self) -> &str {
+    fn error_code(&self) -> &str {
         match self {
             CyrillicSequenceData::Alphabetical => "ILLEGAL_ALPHABETICAL_SEQUENCE",
         }

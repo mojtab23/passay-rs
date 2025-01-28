@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use crate::rule::rule_result::{CountCategory, RuleResult, RuleResultMetadata};
 use crate::rule::{PasswordData, Rule};
 
-const ERROR_CODE_MIN: &str = "TOO_SHORT";
-const ERROR_CODE_MAX: &str = "TOO_LONG";
+pub const ERROR_CODE_MIN: &str = "TOO_SHORT";
+pub const ERROR_CODE_MAX: &str = "TOO_LONG";
 pub struct LengthRule {
     min_length: usize,
     max_length: usize,
