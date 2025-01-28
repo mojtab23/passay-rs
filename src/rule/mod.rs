@@ -20,6 +20,7 @@ mod illegal_sequence_rule;
 mod length_complexity;
 mod length_rule;
 pub mod message_resolver;
+mod number_range;
 mod password_utils;
 mod password_validator;
 mod reference;
