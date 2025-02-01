@@ -3,9 +3,9 @@ use crate::rule::rule_result::RuleResult;
 
 mod allowed_character;
 mod allowed_regex;
-mod character;
-mod character_characteristics;
-mod character_data;
+pub mod character;
+pub mod character_characteristics;
+pub mod character_data;
 mod character_occurrences;
 mod character_sequence;
 mod dictionary;

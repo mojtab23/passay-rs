@@ -62,6 +62,14 @@ impl CharacterRule {
         }
         RuleResultMetadata::default()
     }
+
+    pub fn valid_characters(&self) -> &str {
+        self.character_data.characters()
+    }
+
+    pub fn num_characters(&self) -> usize {
+        self.num_characters
+    }
 }
 
 impl Rule for CharacterRule {

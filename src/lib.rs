@@ -1,5 +1,6 @@
 mod dictionary;
 mod entropy;
+mod password_generator;
 mod rule;
 mod test;
 
