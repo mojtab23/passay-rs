@@ -28,6 +28,7 @@ mod repeat_character_regex;
 pub mod rule_result;
 mod sequence_data;
 mod username;
+mod whitespace;
 
 pub trait Rule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult;

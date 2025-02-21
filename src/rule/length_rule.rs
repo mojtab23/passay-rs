@@ -75,16 +75,10 @@ mod tests {
         let rule = LengthRule::new(4, 10);
         let result = rule.validate(&PasswordData::with_password("metadata".to_string()));
         assert!(result.valid());
-        assert_eq!(
-            8,
-            result.metadata().get_count(CountCategory::Length).unwrap()
-        );
+        assert_eq!(8, result.metadata().get_count(CountCategory::Length));
 
         let result = rule.validate(&PasswordData::with_password("md".to_string()));
         assert!(!result.valid());
-        assert_eq!(
-            2,
-            result.metadata().get_count(CountCategory::Length).unwrap()
-        );
+        assert_eq!(2, result.metadata().get_count(CountCategory::Length));
     }
 }

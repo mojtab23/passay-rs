@@ -196,12 +196,12 @@ mod tests {
         let rule = IllegalCharacterRule::from_chars(vec!['@', '$']);
         let result = rule.validate(&PasswordData::with_password("metadata".to_string()));
         assert!(result.valid());
-        let option = result.metadata().get_count(Illegal).unwrap();
+        let option = result.metadata().get_count(Illegal);
         assert_eq!(0, option);
 
         let result = rule.validate(&PasswordData::with_password("meta@data$".to_string()));
         assert_eq!(false, result.valid());
-        let option = result.metadata().get_count(Illegal).unwrap();
+        let option = result.metadata().get_count(Illegal);
         assert_eq!(2, option);
     }
 }

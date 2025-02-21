@@ -115,8 +115,8 @@ impl RuleResultMetadata {
         counts.insert(category, value);
         Self { counts }
     }
-    pub fn get_count(&self, category: CountCategory) -> Option<usize> {
-        self.counts.get(&category).copied()
+    pub fn get_count(&self, category: CountCategory) -> usize {
+        self.counts.get(&category).copied().unwrap_or(0)
     }
 
     pub fn merge(&mut self, other: &RuleResultMetadata) {

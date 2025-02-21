@@ -276,10 +276,10 @@ mod tests {
         let result = rule.validate(&PasswordData::with_password("metadata".to_string()));
         assert!(result.valid());
         let category = CountCategory::Allowed;
-        assert_eq!(8, result.metadata().get_count(category).unwrap());
+        assert_eq!(8, result.metadata().get_count(category));
 
         let result = rule.validate(&PasswordData::with_password("metaDATA".to_string()));
         assert_eq!(false, result.valid());
-        assert_eq!(4, result.metadata().get_count(category).unwrap());
+        assert_eq!(4, result.metadata().get_count(category));
     }
 }

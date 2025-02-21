@@ -222,14 +222,8 @@ mod tests {
         let password_data = PasswordData::with_password("meTAdata01".to_string());
         let result = rule.validate(&password_data);
         assert!(result.valid());
-        assert_eq!(
-            2,
-            result.metadata().get_count(CountCategory::Digit).unwrap()
-        );
-        assert_eq!(
-            6,
-            result.metadata().get_count(CountCategory::LowerCase).unwrap()
-        );
+        assert_eq!(2, result.metadata().get_count(CountCategory::Digit));
+        assert_eq!(6, result.metadata().get_count(CountCategory::LowerCase));
     }
 
     fn create_rule1() -> Box<CharacterCharacteristics> {
