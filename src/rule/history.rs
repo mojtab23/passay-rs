@@ -27,24 +27,26 @@ impl HistoryRule {
 impl Rule for HistoryRule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult {
         let mut result = RuleResult::default();
-        let history_refs = password_data.password_references().iter().filter(|rf| {
-            let option = (**rf).as_any().downcast_ref::<HistoricalReference>();
-            option.is_some()
-        });
+
+        let history_refs = password_data
+            .password_references()
+            .iter()
+            .filter_map(|rf| rf.as_any().downcast_ref::<HistoricalReference>());
+
         let len = history_refs.clone().count();
         if len == 0 {
             return result;
         }
         let cleartext = password_data.password();
         if self.report_all {
-            history_refs.filter(|rf| matches(cleartext, rf)).for_each(|rf| {
+            history_refs.filter(|&rf| matches(cleartext, rf)).for_each(|rf| {
                 result.add_error(
                     ERROR_CODE,
                     Some(Self::create_rule_result_detail_parameters(len)),
                 );
             });
         } else {
-            let x = history_refs.filter(|rf| matches(cleartext, rf)).next();
+            let x = history_refs.filter(|&rf| matches(cleartext, rf)).next();
             if x.is_some() {
                 result.add_error(
                     ERROR_CODE,
@@ -61,22 +63,18 @@ impl Default for HistoryRule {
         Self { report_all: true }
     }
 }
-fn matches(password: &str, rf: &Box<dyn Reference>) -> bool {
+fn matches(password: &str, rf: &HistoricalReference) -> bool {
     password == rf.password()
 }
 
 pub struct HistoricalReference {
     label: Option<String>,
     password: String,
-    salt: Option<Box<dyn Salt>>,
+    salt: Option<Salt>,
 }
 
 impl HistoricalReference {
-    pub fn new(
-        password: String,
-        label: Option<String>,
-        salt: Option<Box<dyn Salt>>,
-    ) -> HistoricalReference {
+    pub fn new(password: String, label: Option<String>, salt: Option<Salt>) -> HistoricalReference {
         HistoricalReference {
             password,
             label,
@@ -106,7 +104,7 @@ impl Reference for HistoricalReference {
         self.password.as_str()
     }
 
-    fn salt(&self) -> &Option<Box<dyn Salt>> {
+    fn salt(&self) -> &Option<Salt> {
         &self.salt
     }
 

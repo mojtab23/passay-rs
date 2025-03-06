@@ -1,59 +1,47 @@
 use std::any::Any;
 use std::fmt::Debug;
 
-pub trait Reference: Debug {
+pub trait Reference: Debug + Any {
     fn password(&self) -> &str;
-    fn salt(&self) -> &Option<Box<dyn Salt>> {
-        &None
-    }
+    fn salt(&self) -> &Option<Salt>;
 
     fn as_any(&self) -> &dyn Any;
 }
 
-#[derive(Debug)]
-pub struct VoidReference;
+trait AsAny {
+    fn as_any(&self) -> &dyn Any;
+}
 
-impl Reference for VoidReference {
-    fn password(&self) -> &str {
-        ""
-    }
-
+impl<T: 'static + Reference> AsAny for T {
     fn as_any(&self) -> &dyn Any {
         self
     }
 }
 
-pub trait Salt {
-    fn apply_to(&self, password: String) -> String;
+pub enum Salt {
+    Prefix(String),
+    Suffix(String),
 }
 
-pub struct PrefixSalt {
-    salt: String,
-}
-
-impl Salt for PrefixSalt {
-    fn apply_to(&self, password: String) -> String {
-        let mut s = self.salt.to_owned();
-        s.push_str(&password);
-        s
+impl Salt {
+    pub fn prefix(s: String) -> Salt {
+        Salt::Prefix(s)
     }
-}
-
-pub struct SuffixSalt {
-    salt: String,
-}
-
-impl Salt for SuffixSalt {
-    fn apply_to(&self, mut password: String) -> String {
-        password.push_str(&self.salt);
-        password
+    pub fn suffix(s: String) -> Salt {
+        Salt::Suffix(s)
     }
-}
-
-pub struct NoSalt;
-
-impl Salt for NoSalt {
     fn apply_to(&self, password: String) -> String {
-        password
+        match self {
+            Salt::Prefix(s) => {
+                let mut s = s.to_owned();
+                s.push_str(&password);
+                s
+            }
+            Salt::Suffix(s) => {
+                let mut pass = password.to_owned();
+                pass.push_str(&s);
+                pass
+            }
+        }
     }
 }

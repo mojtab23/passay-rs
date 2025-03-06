@@ -27,6 +27,7 @@ mod reference;
 mod repeat_character_regex;
 pub mod rule_result;
 mod sequence_data;
+mod source;
 mod username;
 mod whitespace;
 
