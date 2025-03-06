@@ -116,7 +116,26 @@ mod tests {
     #[test]
     fn test_messages() {
         let test_cases: Vec<RulePasswordTestItem> = vec![
-            // ss
+            RulePasswordTestItem(
+                Box::new(RepeatCharacterRegexRule::default()),
+                PasswordData::with_password("p4&&&&&#n65".to_string()),
+                vec!["ILLEGAL_MATCH,&&&&&"],
+            ),
+            RulePasswordTestItem(
+                Box::new(RepeatCharacterRegexRule::default()),
+                PasswordData::with_password("p4&&&&&#n65FFFFF".to_string()),
+                vec!["ILLEGAL_MATCH,&&&&&", "ILLEGAL_MATCH,FFFFF"],
+            ),
+            RulePasswordTestItem(
+                Box::new(RepeatCharacterRegexRule::new(5, false).unwrap()),
+                PasswordData::with_password("p4&&&&&#n65FFFFF".to_string()),
+                vec!["ILLEGAL_MATCH,&&&&&"],
+            ),
+            RulePasswordTestItem(
+                Box::new(RepeatCharacterRegexRule::default()),
+                PasswordData::with_password("p4&&&&&#n65FFFFFQr1&&&&&".to_string()),
+                vec!["ILLEGAL_MATCH,&&&&&", "ILLEGAL_MATCH,FFFFF"],
+            ),
         ];
         check_messages(test_cases);
     }
