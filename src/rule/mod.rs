@@ -25,6 +25,7 @@ mod password_utils;
 mod password_validator;
 mod reference;
 mod repeat_character_regex;
+mod repeat_characters;
 pub mod rule_result;
 mod sequence_data;
 mod source;
