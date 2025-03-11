@@ -5,7 +5,7 @@ use std::any::Any;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
-const ERROR_CODE: &str = "SOURCE_VIOLATION";
+pub(super) const ERROR_CODE: &str = "SOURCE_VIOLATION";
 #[derive(Clone)]
 pub struct SourceRule {
     report_all: bool,
@@ -14,11 +14,6 @@ pub struct SourceRule {
 impl SourceRule {
     pub fn new(report_all: bool) -> SourceRule {
         SourceRule { report_all }
-    }
-    fn create_rule_result_detail_parameters(source: &str) -> HashMap<String, String> {
-        let mut map = HashMap::with_capacity(1);
-        map.insert("source".to_string(), source.to_string());
-        map
     }
 }
 
@@ -30,39 +25,50 @@ impl Default for SourceRule {
 
 impl Rule for SourceRule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult {
-        let mut result = RuleResult::default();
-
-        let source_refs = password_data
-            .password_references()
-            .iter()
-            .filter_map(|rf| rf.as_any().downcast_ref::<SourceReference>());
-
-        let len = source_refs.clone().count();
-
-        if len < 1 {
-            return result;
-        }
-        let cleartext = password_data.password();
-        if self.report_all {
-            source_refs.filter(|&rf| matches(cleartext, rf)).for_each(|rf| {
-                result.add_error(
-                    ERROR_CODE,
-                    Some(Self::create_rule_result_detail_parameters(rf.label())),
-                );
-            });
-        } else {
-            let rf = source_refs.filter(|&rf| matches(cleartext, rf)).next();
-            if rf.is_some() {
-                result.add_error(
-                    ERROR_CODE,
-                    Some(Self::create_rule_result_detail_parameters(
-                        rf.unwrap().label(),
-                    )),
-                );
-            }
-        };
-        result
+        validate_with_source_references(self.report_all, password_data, matches)
     }
+}
+
+pub(super) fn validate_with_source_references<F: Fn(&str, &SourceReference) -> bool>(
+    report_all: bool,
+    password_data: &PasswordData,
+    matcher: F,
+) -> RuleResult {
+    let mut result = RuleResult::default();
+
+    let source_refs = password_data
+        .password_references()
+        .iter()
+        .filter_map(|rf| rf.as_any().downcast_ref::<SourceReference>());
+
+    let len = source_refs.clone().count();
+
+    if len < 1 {
+        return result;
+    }
+    let cleartext = password_data.password();
+    if report_all {
+        source_refs.filter(|&rf| matcher(cleartext, rf)).for_each(|rf| {
+            result.add_error(
+                ERROR_CODE,
+                Some(create_rule_result_detail_parameters(rf.label())),
+            );
+        });
+    } else {
+        let rf = source_refs.filter(|&rf| matcher(cleartext, rf)).next();
+        if rf.is_some() {
+            result.add_error(
+                ERROR_CODE,
+                Some(create_rule_result_detail_parameters(rf.unwrap().label())),
+            );
+        }
+    };
+    result
+}
+fn create_rule_result_detail_parameters(source: &str) -> HashMap<String, String> {
+    let mut map = HashMap::with_capacity(1);
+    map.insert("source".to_string(), source.to_string());
+    map
 }
 fn matches(password: &str, rf: &SourceReference) -> bool {
     password == rf.password()
@@ -119,7 +125,6 @@ impl Reference for SourceReference {
 
 #[cfg(test)]
 mod test {
-    use crate::rule::history::HistoryRule;
     use crate::rule::reference::Reference;
     use crate::rule::source::{SourceReference, SourceRule, ERROR_CODE};
     use crate::rule::PasswordData;

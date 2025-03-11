@@ -30,7 +30,7 @@ impl Salt {
     pub fn suffix(s: String) -> Salt {
         Salt::Suffix(s)
     }
-    fn apply_to(&self, password: String) -> String {
+    pub fn apply_to(&self, password: String) -> String {
         match self {
             Salt::Prefix(s) => {
                 let mut s = s.to_owned();
