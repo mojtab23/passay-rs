@@ -5,7 +5,7 @@ use std::any::Any;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
-const ERROR_CODE: &str = "HISTORY_VIOLATION";
+pub const ERROR_CODE: &str = "HISTORY_VIOLATION";
 
 #[derive(Clone)]
 pub struct HistoryRule {
@@ -16,46 +16,47 @@ impl HistoryRule {
     pub fn new(report_all: bool) -> HistoryRule {
         HistoryRule { report_all }
     }
+}
 
-    fn create_rule_result_detail_parameters(len: usize) -> HashMap<String, String> {
-        let mut map = HashMap::with_capacity(1);
-        map.insert("historySize".to_string(), len.to_string());
-        map
+pub fn create_rule_result_detail_parameters(len: usize) -> HashMap<String, String> {
+    let mut map = HashMap::with_capacity(1);
+    map.insert("historySize".to_string(), len.to_string());
+    map
+}
+impl Rule for HistoryRule {
+    fn validate(&self, password_data: &PasswordData) -> RuleResult {
+        validate_with_history_references(self.report_all, password_data, matches)
     }
 }
 
-impl Rule for HistoryRule {
-    fn validate(&self, password_data: &PasswordData) -> RuleResult {
-        let mut result = RuleResult::default();
+pub(super) fn validate_with_history_references<F: Fn(&str, &HistoricalReference) -> bool>(
+    report_all: bool,
+    password_data: &PasswordData,
+    matcher: F,
+) -> RuleResult {
+    let mut result = RuleResult::default();
 
-        let history_refs = password_data
-            .password_references()
-            .iter()
-            .filter_map(|rf| rf.as_any().downcast_ref::<HistoricalReference>());
+    let history_refs = password_data
+        .password_references()
+        .iter()
+        .filter_map(|rf| rf.as_any().downcast_ref::<HistoricalReference>());
 
-        let len = history_refs.clone().count();
-        if len == 0 {
-            return result;
-        }
-        let cleartext = password_data.password();
-        if self.report_all {
-            history_refs.filter(|&rf| matches(cleartext, rf)).for_each(|rf| {
-                result.add_error(
-                    ERROR_CODE,
-                    Some(Self::create_rule_result_detail_parameters(len)),
-                );
-            });
-        } else {
-            let x = history_refs.filter(|&rf| matches(cleartext, rf)).next();
-            if x.is_some() {
-                result.add_error(
-                    ERROR_CODE,
-                    Some(Self::create_rule_result_detail_parameters(len)),
-                );
-            }
-        };
-        result
+    let len = history_refs.clone().count();
+    if len == 0 {
+        return result;
     }
+    let cleartext = password_data.password();
+    if report_all {
+        history_refs.filter(|&rf| matcher(cleartext, rf)).for_each(|rf| {
+            result.add_error(ERROR_CODE, Some(create_rule_result_detail_parameters(len)));
+        });
+    } else {
+        let x = history_refs.filter(|&rf| matcher(cleartext, rf)).next();
+        if x.is_some() {
+            result.add_error(ERROR_CODE, Some(create_rule_result_detail_parameters(len)));
+        }
+    };
+    result
 }
 
 impl Default for HistoryRule {
@@ -83,10 +84,10 @@ impl HistoricalReference {
     }
 
     pub fn with_password(password: String) -> HistoricalReference {
-        Self::with_password_and_label(password, None)
+        Self::new(password, None, None)
     }
-    pub fn with_password_and_label(password: String, label: Option<String>) -> HistoricalReference {
-        Self::new(password, label, None)
+    pub fn with_label_password(password: String, label: String) -> HistoricalReference {
+        Self::new(password, Some(label), None)
     }
 }
 
@@ -276,21 +277,21 @@ mod test {
 
     fn setup_history() -> Vec<Box<dyn Reference>> {
         vec![
-            Box::new(HistoricalReference::with_password_and_label(
+            Box::new(HistoricalReference::with_label_password(
+                "history".to_string(),
                 "t3stUs3r01".to_string(),
-                Some("history".to_string()),
             )),
-            Box::new(HistoricalReference::with_password_and_label(
+            Box::new(HistoricalReference::with_label_password(
+                "history".to_string(),
                 "t3stUs3r02".to_string(),
-                Some("history".to_string()),
             )),
-            Box::new(HistoricalReference::with_password_and_label(
+            Box::new(HistoricalReference::with_label_password(
+                "history".to_string(),
                 "t3stUs3r03".to_string(),
-                Some("history".to_string()),
             )),
-            Box::new(HistoricalReference::with_password_and_label(
+            Box::new(HistoricalReference::with_label_password(
+                "history".to_string(),
                 "t3stUs3r02".to_string(),
-                Some("history".to_string()),
             )),
         ]
     }

@@ -8,7 +8,7 @@ pub struct DigestSourceRule<H>
 where
     H: Hasher<String>,
 {
-    hash_object: H,
+    hasher: H,
     report_all: bool,
 }
 
@@ -16,11 +16,8 @@ impl<H> DigestSourceRule<H>
 where
     H: Hasher<String>,
 {
-    pub fn new(hash_object: H, report_all: bool) -> Self {
-        Self {
-            hash_object,
-            report_all,
-        }
+    pub fn new(hasher: H, report_all: bool) -> Self {
+        Self { hasher, report_all }
     }
 }
 
@@ -35,7 +32,7 @@ where
                 None => pass,
                 Some(salt) => salt.apply_to(pass),
             };
-            let h = &self.hash_object;
+            let h = &self.hasher;
             h.compare(rf.password().as_bytes(), undigested.as_bytes()).unwrap_or(false)
         };
         validate_with_source_references(self.report_all, password_data, matcher)
