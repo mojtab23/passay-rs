@@ -36,33 +36,21 @@ pub(super) fn validate_with_source_references<F: Fn(&str, &SourceReference) -> b
 ) -> RuleResult {
     let mut result = RuleResult::default();
 
-    let source_refs = password_data
-        .password_references()
-        .iter()
-        .filter_map(|rf| rf.as_any().downcast_ref::<SourceReference>());
-
-    let len = source_refs.clone().count();
-
-    if len < 1 {
-        return result;
-    }
-    let cleartext = password_data.password();
-    if report_all {
-        source_refs.filter(|&rf| matcher(cleartext, rf)).for_each(|rf| {
-            result.add_error(
-                ERROR_CODE,
-                Some(create_rule_result_detail_parameters(rf.label())),
-            );
-        });
-    } else {
-        let rf = source_refs.filter(|&rf| matcher(cleartext, rf)).next();
-        if rf.is_some() {
-            result.add_error(
-                ERROR_CODE,
-                Some(create_rule_result_detail_parameters(rf.unwrap().label())),
-            );
+    for rf in password_data.password_references() {
+        if let Some(rf) = rf.as_any().downcast_ref::<SourceReference>() {
+            let cleartext = password_data.password();
+            if matcher(cleartext, rf) {
+                result.add_error(
+                    ERROR_CODE,
+                    Some(create_rule_result_detail_parameters(rf.label())),
+                );
+                if !report_all {
+                    return result;
+                };
+            }
         }
-    };
+    }
+
     result
 }
 fn create_rule_result_detail_parameters(source: &str) -> HashMap<String, String> {
@@ -87,7 +75,7 @@ impl SourceReference {
             salt: Some(salt),
         }
     }
-    pub fn with_label_and_password(label: String, password: String) -> Self {
+    pub fn with_password_label(password: String, label: String) -> Self {
         SourceReference {
             label,
             password,
@@ -256,17 +244,17 @@ mod test {
 
     fn create_sources() -> Vec<Box<dyn Reference>> {
         vec![
-            Box::new(SourceReference::with_label_and_password(
-                "System A".to_string(),
+            Box::new(SourceReference::with_password_label(
                 "t3stUs3r04".to_string(),
-            )),
-            Box::new(SourceReference::with_label_and_password(
                 "System A".to_string(),
-                "t3stUs3r05".to_string(),
             )),
-            Box::new(SourceReference::with_label_and_password(
-                "System A".to_string(),
+            Box::new(SourceReference::with_password_label(
                 "t3stUs3r05".to_string(),
+                "System A".to_string(),
+            )),
+            Box::new(SourceReference::with_password_label(
+                "t3stUs3r05".to_string(),
+                "System A".to_string(),
             )),
         ]
     }

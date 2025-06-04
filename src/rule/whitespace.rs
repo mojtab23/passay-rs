@@ -5,7 +5,7 @@ use crate::rule::rule_result::{CountCategory, RuleResult, RuleResultMetadata};
 use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;
 
-const ERROR_CODE: &str = "ILLEGAL_WHITESPACE";
+pub const ERROR_CODE: &str = "ILLEGAL_WHITESPACE";
 const WHITESPACES: &[char] =
     &['\u{0009}', '\u{000a}', '\u{000b}', '\u{000c}', '\u{000d}', '\u{0020}'];
 pub struct WhitespaceRule {

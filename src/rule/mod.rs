@@ -1,7 +1,7 @@
 use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
-mod allowed_character;
+pub mod allowed_character;
 mod allowed_regex;
 pub mod character;
 pub mod character_characteristics;
@@ -34,6 +34,13 @@ mod whitespace;
 
 pub trait Rule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult;
+    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+        None
+    }
+}
+
+pub trait HasCharacters: Rule {
+    fn characters(&self) -> String;
 }
 
 /// Contains password related information used by rules to perform password validation.

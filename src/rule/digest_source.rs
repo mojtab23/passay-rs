@@ -41,13 +41,12 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::hash::Hasher;
+    use crate::rule::digest_history::test::Sha1Hasher;
     use crate::rule::digest_source::DigestSourceRule;
     use crate::rule::reference::Reference;
     use crate::rule::source::{SourceReference, ERROR_CODE};
     use crate::rule::PasswordData;
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
-    use base64::Engine;
 
     #[test]
     fn test_passwords() {
@@ -105,24 +104,12 @@ mod test {
         check_messages(test_cases);
     }
     fn create_sources() -> Vec<Box<dyn Reference>> {
-        vec![Box::new(SourceReference::with_label_and_password(
-            "System B".to_string(),
+        vec![Box::new(SourceReference::with_password_label(
             "CJGTDMQRP+rmHApkcijC80aDV0o=".to_string(),
+            "System B".to_string(),
         ))]
     }
-    fn create_digest_rule() -> DigestSourceRule<TestHasher> {
-        DigestSourceRule::new(TestHasher, true)
-    }
-    struct TestHasher;
-    impl Hasher<String> for TestHasher {
-        fn hash(&self, data: &[u8]) -> Result<Vec<u8>, String> {
-            todo!()
-        }
-
-        fn compare(&self, hash: &[u8], data: &[u8]) -> Result<bool, String> {
-            let hash_bytes = base64::prelude::BASE64_STANDARD.decode(hash).unwrap();
-            let data_sha1 = sha1_smol::Sha1::from(data).digest().bytes();
-            Ok(hash_bytes.eq(&data_sha1))
-        }
+    fn create_digest_rule() -> DigestSourceRule<Sha1Hasher> {
+        DigestSourceRule::new(Sha1Hasher, true)
     }
 }

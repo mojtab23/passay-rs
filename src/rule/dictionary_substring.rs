@@ -3,7 +3,7 @@ use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;
 
-const ERROR_CODE: &str = "ILLEGAL_WORD";
+pub(crate) const ERROR_CODE: &str = "ILLEGAL_WORD";
 const ERROR_CODE_REVERSED: &str = "ILLEGAL_WORD_REVERSED";
 
 pub struct DictionarySubstringRule<D: Dictionary> {

@@ -41,7 +41,7 @@ where
 }
 
 #[cfg(test)]
-mod test {
+pub(crate) mod test {
     use crate::hash::Hasher;
     use crate::rule::digest_history::DigestHistoryRule;
     use crate::rule::history::{HistoricalReference, ERROR_CODE};
@@ -53,7 +53,7 @@ mod test {
 
     #[test]
     fn test_passwords() {
-        let bcrypt_ref = Box::new(HistoricalReference::with_label_password(
+        let bcrypt_ref = Box::new(HistoricalReference::with_password_label(
             "$2a$5$bvIG6Nmid91Mu9RcmmWZfO5HJIMCT8riNW0hEp8f6/FuA2/mHZFpe".to_string(),
             "bcrypt-history".to_string(),
         ));
@@ -271,15 +271,15 @@ mod test {
     }
     fn create_digest_refs() -> Vec<Box<dyn Reference>> {
         vec![
-            Box::new(HistoricalReference::with_label_password(
+            Box::new(HistoricalReference::with_password_label(
                 "safx/LW8+SsSy/o3PmCNy4VEm5s=".to_string(),
                 "history".to_string(),
             )),
-            Box::new(HistoricalReference::with_label_password(
+            Box::new(HistoricalReference::with_password_label(
                 "zurb9DyQ5nooY1la8h86Bh0n1iw=".to_string(),
                 "history".to_string(),
             )),
-            Box::new(HistoricalReference::with_label_password(
+            Box::new(HistoricalReference::with_password_label(
                 "bhqabXwE3S8E6xNJfX/d76MFOCs=".to_string(),
                 "history".to_string(),
             )),
@@ -342,7 +342,7 @@ mod test {
     fn create_digest_rule() -> DigestHistoryRule<Sha1Hasher> {
         DigestHistoryRule::new(Sha1Hasher, true)
     }
-    struct Sha1Hasher;
+    pub(crate) struct Sha1Hasher;
     impl Hasher<String> for Sha1Hasher {
         fn hash(&self, data: &[u8]) -> Result<Vec<u8>, String> {
             todo!()
@@ -350,9 +350,7 @@ mod test {
 
         fn compare(&self, hash: &[u8], data: &[u8]) -> Result<bool, String> {
             let hash_bytes = base64::prelude::BASE64_STANDARD.decode(hash).unwrap();
-            dbg!(&hash_bytes);
             let data_sha1 = sha1_smol::Sha1::from(data).digest().bytes();
-            dbg!(&data_sha1);
             Ok(hash_bytes.eq(&data_sha1))
         }
     }

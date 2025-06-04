@@ -3,8 +3,8 @@ use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;
 
-pub const ERROR_CODE: &str = "ILLEGAL_USERNAME";
-const ERROR_CODE_REVERSED: &str = "ILLEGAL_USERNAME_REVERSED";
+pub(crate) const ERROR_CODE: &str = "ILLEGAL_USERNAME";
+pub(crate) const ERROR_CODE_REVERSED: &str = "ILLEGAL_USERNAME_REVERSED";
 pub struct UsernameRule {
     match_backwards: bool,
     ignore_case: bool,
