@@ -1,7 +1,7 @@
 use crate::rule::character_data::CharacterData;
 use crate::rule::password_utils::{count_matching_characters, get_matching_characters};
 use crate::rule::rule_result::{RuleResult, RuleResultDetail, RuleResultMetadata};
-use crate::rule::{PasswordData, Rule};
+use crate::rule::{HasCharacters, PasswordData, Rule};
 use std::collections::HashMap;
 
 pub struct CharacterRule {
@@ -93,5 +93,14 @@ impl Rule for CharacterRule {
             result.set_metadata(self.create_rule_result_metadata(password_data));
             result
         }
+    }
+    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+        Some(self)
+    }
+}
+
+impl HasCharacters for CharacterRule {
+    fn characters(&self) -> String {
+        self.valid_characters().to_string()
     }
 }

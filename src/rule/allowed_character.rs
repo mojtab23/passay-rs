@@ -1,42 +1,38 @@
 use crate::rule::allowed_character::MatchBehavior::Contains;
 use crate::rule::password_utils::count_matching_characters;
 use crate::rule::rule_result::{CountCategory, RuleResult, RuleResultMetadata};
-use crate::rule::{PasswordData, Rule};
+use crate::rule::{HasCharacters, PasswordData, Rule};
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use MatchBehavior::{EndsWith, StartsWith};
 
 const ERROR_CODE: &str = "ALLOWED_CHAR";
 pub struct AllowedCharacter {
-    allowed_characters: Vec<char>,
+    allowed_characters: String,
     match_behavior: MatchBehavior,
     report_all: bool,
 }
 
 impl AllowedCharacter {
-    pub fn new(
-        allowed_characters: Vec<char>,
-        match_behavior: MatchBehavior,
-        report_all: bool,
-    ) -> Self {
+    pub fn new(allowed_characters: &str, match_behavior: MatchBehavior, report_all: bool) -> Self {
         AllowedCharacter {
             report_all,
-            allowed_characters,
+            allowed_characters: allowed_characters.to_string(),
             match_behavior,
         }
     }
 
-    pub fn from_chars(allowed_characters: Vec<char>) -> Self {
+    pub fn from_chars(allowed_characters: &str) -> Self {
         AllowedCharacter {
-            allowed_characters,
+            allowed_characters: allowed_characters.to_string(),
             match_behavior: Contains,
             report_all: true,
         }
     }
 
-    pub fn with_report_all(allowed_characters: Vec<char>, report_all: bool) -> Self {
+    pub fn with_report_all(allowed_characters: &str, report_all: bool) -> Self {
         AllowedCharacter {
-            allowed_characters,
+            allowed_characters: allowed_characters.to_string(),
             match_behavior: Contains,
             report_all,
         }
@@ -52,10 +48,8 @@ impl AllowedCharacter {
         map
     }
     fn create_rule_result_metadata(&self, password_data: &PasswordData) -> RuleResultMetadata {
-        let count = count_matching_characters(
-            self.allowed_characters.iter().collect::<String>().as_str(),
-            password_data.password(),
-        );
+        let count =
+            count_matching_characters(self.allowed_characters.as_str(), password_data.password());
         RuleResultMetadata::new(CountCategory::Allowed, count)
     }
 }
@@ -65,7 +59,7 @@ impl Rule for AllowedCharacter {
         let mut matches = HashSet::new();
         let text = password_data.password();
         'la: for c in text.chars() {
-            let option = self.allowed_characters.iter().find(|&&x| x == c);
+            let option = self.allowed_characters.chars().find(|&x| x == c);
             if option.is_none()
                 && !matches.contains(&c)
                 && (self.match_behavior == Contains || self.match_behavior.match_char(text, c))
@@ -84,6 +78,15 @@ impl Rule for AllowedCharacter {
         }
         result.set_metadata(self.create_rule_result_metadata(password_data));
         result
+    }
+    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+        Some(self)
+    }
+}
+
+impl HasCharacters for AllowedCharacter {
+    fn characters(&self) -> String {
+        self.allowed_characters.clone()
     }
 }
 
@@ -132,80 +135,58 @@ mod tests {
     use crate::rule::rule_result::CountCategory;
     use crate::rule::{PasswordData, Rule};
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
-    const ALLOWED_CHARS: &[char] = &[
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-        's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-    ];
+    const ALLOWED_CHARS: &str = "abcdefghijklmnopqrstuvwxyz";
     #[test]
     fn test_passwords() {
         let test_cases: Vec<RulePasswordTestItem> = vec![
             // test valid password
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("boepselwezz".to_string()),
                 vec![],
             ),
             // test invalid password
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("gbwersco4kk".to_string()),
                 vec![ERROR_CODE],
             ),
             // test multiple matches
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("gbwersco4kk5kk".to_string()),
                 vec![ERROR_CODE, ERROR_CODE],
             ),
             // test single match
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::with_report_all(
-                    ALLOWED_CHARS.to_vec(),
-                    false,
-                )),
+                Box::new(AllowedCharacter::with_report_all(ALLOWED_CHARS, false)),
                 PasswordData::with_password("gbwersco4kk5kk".to_string()),
                 vec![ERROR_CODE],
             ),
             // test duplicate matches
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("gbwersco4kk5kk4".to_string()),
                 vec![ERROR_CODE, ERROR_CODE],
             ),
             // test match behavior
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    StartsWith,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, StartsWith, true)),
                 PasswordData::with_password("4gbwersco4kk5kk".to_string()),
                 vec![ERROR_CODE],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    StartsWith,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, StartsWith, true)),
                 PasswordData::with_password("gbwersco4kk".to_string()),
                 vec![],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    EndsWith,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, EndsWith, true)),
                 PasswordData::with_password("gbwersco4kk5kk4".to_string()),
                 vec![ERROR_CODE],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    EndsWith,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, EndsWith, true)),
                 PasswordData::with_password("gbwersco4kk".to_string()),
                 vec![],
             ),
@@ -217,52 +198,37 @@ mod tests {
     fn test_messages() {
         let test_cases: Vec<RulePasswordTestItem> = vec![
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("gbwersco4kk".to_string()),
                 vec!["ALLOWED_CHAR,Contains,4"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("gbwersco4kk5kk".to_string()),
                 vec!["ALLOWED_CHAR,Contains,4", "ALLOWED_CHAR,Contains,5"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::with_report_all(
-                    ALLOWED_CHARS.to_vec(),
-                    false,
-                )),
+                Box::new(AllowedCharacter::with_report_all(ALLOWED_CHARS, false)),
                 PasswordData::with_password("gbwersco4kk5kk".to_string()),
                 vec!["ALLOWED_CHAR,Contains,4"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec())),
+                Box::new(AllowedCharacter::from_chars(ALLOWED_CHARS)),
                 PasswordData::with_password("gbwersco4kk5kk4".to_string()),
                 vec!["ALLOWED_CHAR,Contains,4", "ALLOWED_CHAR,Contains,5"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    Contains,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, Contains, true)),
                 PasswordData::with_password("gbwer scokkk".to_string()),
                 vec!["ALLOWED_CHAR,Contains,ALLOWED_CHAR.32"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    StartsWith,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, StartsWith, true)),
                 PasswordData::with_password("4bwersco4kk".to_string()),
                 vec!["ALLOWED_CHAR,StartsWith,4"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(
-                    ALLOWED_CHARS.to_vec(),
-                    EndsWith,
-                    true,
-                )),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS.clone(), EndsWith, true)),
                 PasswordData::with_password("gbwersco4kk4".to_string()),
                 vec!["ALLOWED_CHAR,EndsWith,4"],
             ),
@@ -272,7 +238,7 @@ mod tests {
 
     #[test]
     fn test_metadata() {
-        let rule = AllowedCharacter::from_chars(ALLOWED_CHARS.to_vec());
+        let rule = AllowedCharacter::from_chars(ALLOWED_CHARS);
         let result = rule.validate(&PasswordData::with_password("metadata".to_string()));
         assert!(result.valid());
         let category = CountCategory::Allowed;

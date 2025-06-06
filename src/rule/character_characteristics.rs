@@ -1,6 +1,6 @@
 use crate::rule::character::CharacterRule;
 use crate::rule::rule_result::RuleResult;
-use crate::rule::{PasswordData, Rule};
+use crate::rule::{HasCharacters, PasswordData, Rule};
 use std::collections::HashMap;
 
 pub const ERROR_CODE: &str = "INSUFFICIENT_CHARACTERISTICS";
@@ -76,6 +76,15 @@ impl Rule for CharacterCharacteristics {
             }
         }
         result
+    }
+    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+        Some(self)
+    }
+}
+
+impl HasCharacters for CharacterCharacteristics {
+    fn characters(&self) -> String {
+        self.rules.iter().map(CharacterRule::characters).collect::<String>()
     }
 }
 

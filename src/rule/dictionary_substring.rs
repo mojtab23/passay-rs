@@ -1,6 +1,6 @@
 use crate::dictionary::Dictionary;
 use crate::rule::rule_result::RuleResult;
-use crate::rule::{PasswordData, Rule};
+use crate::rule::{DictionaryRuleTrait, PasswordData, Rule};
 use std::collections::HashMap;
 
 pub(crate) const ERROR_CODE: &str = "ILLEGAL_WORD";
@@ -67,8 +67,15 @@ impl<D: Dictionary> Rule for DictionarySubstringRule<D> {
         }
         result
     }
+    fn as_dictionary_rule<'a>(&'a self) -> Option<&'a dyn DictionaryRuleTrait> {
+        Some(self)
+    }
 }
-
+impl<D: Dictionary> DictionaryRuleTrait for DictionarySubstringRule<D> {
+    fn dictionary(&self) -> &dyn Dictionary {
+        &self.dictionary
+    }
+}
 #[cfg(test)]
 mod tests {
     use crate::dictionary::word_lists::sort::SliceSort;

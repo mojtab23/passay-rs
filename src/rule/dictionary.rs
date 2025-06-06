@@ -1,6 +1,6 @@
 use crate::dictionary::Dictionary;
 use crate::rule::rule_result::RuleResult;
-use crate::rule::{PasswordData, Rule};
+use crate::rule::{DictionaryRuleTrait, PasswordData, Rule};
 use std::collections::HashMap;
 
 pub(crate) const ERROR_CODE: &str = "ILLEGAL_WORD";
@@ -60,9 +60,19 @@ impl<D: Dictionary> Rule for DictionaryRule<D> {
         }
         result
     }
+    fn as_dictionary_rule<'a>(&'a self) -> Option<&'a dyn DictionaryRuleTrait> {
+        Some(self)
+    }
 }
+
+impl<D: Dictionary> DictionaryRuleTrait for DictionaryRule<D> {
+    fn dictionary(&self) -> &dyn Dictionary {
+        &self.dictionary
+    }
+}
+
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
     use crate::dictionary::word_lists::ArrayWordList;
     use crate::dictionary::DictionaryBuilder;
@@ -78,7 +88,7 @@ mod tests {
         Box::new(DictionaryRule::from_dictionary(case_sensitive_dict))
     }
 
-    fn read_word_list() -> &'static [u8] {
+    pub(crate) fn read_word_list() -> &'static [u8] {
         include_bytes!("../../resources/test/web2")
     }
 

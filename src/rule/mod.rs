@@ -1,3 +1,4 @@
+use crate::dictionary::Dictionary;
 use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
@@ -8,7 +9,7 @@ pub mod character_characteristics;
 pub mod character_data;
 mod character_occurrences;
 mod character_sequence;
-mod dictionary;
+pub(crate) mod dictionary;
 mod dictionary_substring;
 mod digest_dictionary;
 mod digest_history;
@@ -22,7 +23,7 @@ mod length_rule;
 pub mod message_resolver;
 mod number_range;
 mod password_utils;
-mod password_validator;
+pub mod password_validator;
 mod reference;
 mod repeat_character_regex;
 mod repeat_characters;
@@ -37,10 +38,17 @@ pub trait Rule {
     fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
         None
     }
+    fn as_dictionary_rule<'a>(&'a self) -> Option<&'a dyn DictionaryRuleTrait> {
+        None
+    }
 }
 
 pub trait HasCharacters: Rule {
     fn characters(&self) -> String;
+}
+
+pub trait DictionaryRuleTrait: Rule {
+    fn dictionary(&self) -> &dyn Dictionary;
 }
 
 /// Contains password related information used by rules to perform password validation.
