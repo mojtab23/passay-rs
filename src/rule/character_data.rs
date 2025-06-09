@@ -189,8 +189,8 @@ pub enum PolishCharacterData {
 impl CharacterData for PolishCharacterData {
     fn characters(&self) -> &str {
         match self {
-            PolishCharacterData::LowerCase => "aąbcćdeęfghijklmnoópqrsśtuvwxyzźż",
-            PolishCharacterData::UpperCase => "AĄBCĆDEĘFGHIJKLMNOÓPQRSŚTUVWXYZŹŻ",
+            PolishCharacterData::LowerCase => "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż",
+            PolishCharacterData::UpperCase => "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ",
         }
     }
 

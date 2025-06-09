@@ -98,8 +98,8 @@ impl SequenceData for PolishSequenceData {
     fn get_sequences(&self) -> Vec<CharacterSequence> {
         match self {
             PolishSequenceData::Alphabetical => vec![CharacterSequence::new(vec![
-                "aąbcćdeęfghijklmnoópqrsśtuwxyzźż".to_string(),
-                "AĄBCĆDEĘFGHIJKLMNOÓPQRSŚTUWXYZŹŻ".to_string(),
+                "aąbcćdeęfghijklłmnńoópqrsśtuwxyzźż".to_string(),
+                "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUWXYZŹŻ".to_string(),
             ])
             .unwrap()],
         }
