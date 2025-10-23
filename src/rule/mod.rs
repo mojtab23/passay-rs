@@ -3,7 +3,7 @@ use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 
 pub mod allowed_character;
-mod allowed_regex;
+pub mod allowed_regex;
 pub mod character;
 pub mod character_characteristics;
 pub mod character_data;

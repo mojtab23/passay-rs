@@ -5,11 +5,29 @@ use std::collections::HashMap;
 
 const ERROR_CODE: &str = "ALLOWED_MATCH";
 const REGEX_ERROR: &str = "REGEX_ERROR";
+
+/// Rule for determining if a password matches an allowed regular expression. Passwords must match
+/// the expression or validation will fail.
 pub struct AllowedRegex {
     regex: Regex,
 }
 
 impl AllowedRegex {
+    /// Creates a new allowed regex rule.
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///  use fancy_regex::Regex;
+    ///  use passay_rs::rule::allowed_regex::AllowedRegex;
+    ///  use passay_rs::rule::PasswordData;
+    ///  use passay_rs::rule::Rule;
+    ///
+    ///  let rule = AllowedRegex::from_regex(Regex::new("^[\\p{Alpha}]+\\d\\d\\d\\d$").unwrap());
+    ///  let password = PasswordData::with_password("pwUiNh0248".to_string());
+    ///  let result = rule.validate(&password);
+    ///  assert!(result.valid());
+    /// ```
     pub fn from_regex(regex: Regex) -> AllowedRegex {
         AllowedRegex { regex }
     }
@@ -26,8 +44,8 @@ impl Rule for AllowedRegex {
         let result1 = self.regex.is_match(password_data.password());
         if result1.is_err() {
             result.add_error(ERROR_CODE, None)
-        } else {
-            if !result1.unwrap() {
+        } else if let Ok(b) = result1 {
+            if !b {
                 result.add_error(
                     ERROR_CODE,
                     Some(self.create_rule_result_detail_parameters()),
