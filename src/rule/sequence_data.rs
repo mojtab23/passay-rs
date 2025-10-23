@@ -128,7 +128,7 @@ impl SequenceData for GermanSequenceData {
             .unwrap()],
             GermanSequenceData::DEQwertz => vec![
                 CharacterSequence::new(vec![
-                    "^1234567890ß\\´".to_string(),
+                    "^1234567890ß´".to_string(),
                     "°!\"§$%&/()=?`".to_string(),
                     // "\u{0000}\u{0000}²³\u{0000}\u{0000}\u{0000}{[]}\\\u{0000}".to_string(),
                 ])
