@@ -7,6 +7,9 @@ use std::fmt::{Display, Formatter};
 use MatchBehavior::{EndsWith, StartsWith};
 
 const ERROR_CODE: &str = "ALLOWED_CHAR";
+
+/// Rule for determining if a password contains allowed characters. Validation will fail unless the
+/// password contains only allowed characters.
 pub struct AllowedCharacter {
     allowed_characters: String,
     match_behavior: MatchBehavior,
@@ -14,6 +17,22 @@ pub struct AllowedCharacter {
 }
 
 impl AllowedCharacter {
+    /// Create a new allowed character rule.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    ///  use passay_rs::rule::allowed_character::{AllowedCharacter, MatchBehavior};
+    ///  use passay_rs::rule::PasswordData;
+    ///  use crate::passay_rs::rule::Rule;
+    ///
+    ///  let characters : &str = "abcdefghijklmnopqrstuvwxyz";
+    ///  let rule = AllowedCharacter::new(characters, MatchBehavior::Contains, true);
+    ///
+    ///  let password = PasswordData::with_password("xyz".to_string());
+    ///  let result = rule.validate(&password);
+    ///  assert!(result.valid());
+    /// ```
     pub fn new(allowed_characters: &str, match_behavior: MatchBehavior, report_all: bool) -> Self {
         AllowedCharacter {
             report_all,
@@ -64,7 +83,7 @@ impl Rule for AllowedCharacter {
                 && !matches.contains(&c)
                 && (self.match_behavior == Contains || self.match_behavior.match_char(text, c))
             {
-                let first_codee = format!("{}.{}", ERROR_CODE.to_string(), c as u32);
+                let first_codee = format!("{}.{}", ERROR_CODE, c as u32);
                 let codes = [first_codee, ERROR_CODE.to_string()];
                 result.add_error_with_codes(
                     &codes,
@@ -79,7 +98,7 @@ impl Rule for AllowedCharacter {
         result.set_metadata(self.create_rule_result_metadata(password_data));
         result
     }
-    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+    fn as_has_characters(&self) -> Option<&dyn HasCharacters> {
         Some(self)
     }
 }
@@ -228,7 +247,7 @@ mod tests {
                 vec!["ALLOWED_CHAR,StartsWith,4"],
             ),
             RulePasswordTestItem(
-                Box::new(AllowedCharacter::new(ALLOWED_CHARS.clone(), EndsWith, true)),
+                Box::new(AllowedCharacter::new(ALLOWED_CHARS, EndsWith, true)),
                 PasswordData::with_password("gbwersco4kk4".to_string()),
                 vec!["ALLOWED_CHAR,EndsWith,4"],
             ),
