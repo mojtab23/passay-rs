@@ -4,6 +4,20 @@ use std::collections::HashMap;
 
 const ERROR_CODE: &str = "TOO_MANY_OCCURRENCES";
 
+/// Validates that a password does not contain too many occurrences of the same character.
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::character_occurrences::CharacterOccurrences;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = CharacterOccurrences::new(4);
+///  let password = PasswordData::with_password("babababab".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 #[derive(Debug, Clone)]
 pub struct CharacterOccurrences {
     max_occurrences: usize,

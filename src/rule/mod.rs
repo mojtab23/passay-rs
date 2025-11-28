@@ -7,7 +7,7 @@ pub mod allowed_regex;
 pub mod character;
 pub mod character_characteristics;
 pub mod character_data;
-mod character_occurrences;
+pub mod character_occurrences;
 mod character_sequence;
 pub(crate) mod dictionary;
 mod dictionary_substring;
