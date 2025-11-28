@@ -1,5 +1,6 @@
 use crate::rule::rule_result::CountCategory;
 
+/// Input data used by [CharacterRule](crate::rule::character::CharacterRule)
 pub trait CharacterData {
     fn characters(&self) -> &str;
     fn error_code(&self) -> &str;
