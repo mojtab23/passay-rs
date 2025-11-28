@@ -12,7 +12,7 @@ impl CharacterSequence {
     /// # Arguments
     ///
     /// * `strings`: One or more characters strings, one for each form. At least one sequence MUST be defined. If
-    ///              multiple sequences are defined, they MUST be of equal length.
+    ///   multiple sequences are defined, they MUST be of equal length.
     pub fn new(strings: Vec<String>) -> Result<Self, String> {
         if strings.is_empty() {
             Err("At least one sequence must be defined".to_string())

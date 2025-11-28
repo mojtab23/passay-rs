@@ -35,10 +35,10 @@ mod whitespace;
 
 pub trait Rule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult;
-    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+    fn as_has_characters(&self) -> Option<&dyn HasCharacters> {
         None
     }
-    fn as_dictionary_rule<'a>(&'a self) -> Option<&'a dyn DictionaryRuleTrait> {
+    fn as_dictionary_rule(&self) -> Option<&dyn DictionaryRuleTrait> {
         None
     }
 }
