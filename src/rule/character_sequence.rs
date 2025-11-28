@@ -1,8 +1,5 @@
 /// Models a sequence of characters in one or more forms as strings of equal length where each string represents one form
 /// of characters in the sequence.
-///
-/// # Author
-/// Middleware Services
 #[derive(Debug, PartialEq, Eq)]
 pub struct CharacterSequence {
     /// Character forms.
