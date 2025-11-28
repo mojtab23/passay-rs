@@ -4,6 +4,7 @@ use crate::rule::rule_result::{RuleResult, RuleResultDetail, RuleResultMetadata}
 use crate::rule::{HasCharacters, PasswordData, Rule};
 use std::collections::HashMap;
 
+/// Validates whether a password contains a certain number of a type of character.
 pub struct CharacterRule {
     character_data: Box<dyn CharacterData>,
     num_characters: usize,
@@ -94,7 +95,7 @@ impl Rule for CharacterRule {
             result
         }
     }
-    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+    fn as_has_characters(&self) -> Option<&dyn HasCharacters> {
         Some(self)
     }
 }

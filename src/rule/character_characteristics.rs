@@ -4,6 +4,32 @@ use crate::rule::{HasCharacters, PasswordData, Rule};
 use std::collections::HashMap;
 
 pub const ERROR_CODE: &str = "INSUFFICIENT_CHARACTERISTICS";
+
+/// Rule for determining if a password contains the desired mix of character types. In order to meet the criteria of this
+/// rule, passwords must meet any number of supplied character rules.
+///
+/// # Example
+///
+/// ```
+///    use passay_rs::rule::PasswordData;
+///    use passay_rs::rule::Rule;
+///    use passay_rs::rule::character_characteristics::CharacterCharacteristics;
+///    use passay_rs::rule::character::CharacterRule;
+///    use passay_rs::rule::character_data::EnglishCharacterData;
+///
+///    let char_rules = vec![
+///        CharacterRule::new(Box::new(EnglishCharacterData::Digit), 1).unwrap(),
+///        CharacterRule::new(Box::new(EnglishCharacterData::Special), 1).unwrap(),
+///        CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///        CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///    ];
+///
+///    let rule = CharacterCharacteristics::new(char_rules, 4, false, true).unwrap();
+///    let password = PasswordData::with_password("pwUiNh0248".to_string());
+///    let result = rule.validate(&password);
+///    // password is invalid because it has no special character in it.
+///    assert!(!result.valid());
+/// ```
 pub struct CharacterCharacteristics {
     rules: Vec<CharacterRule>,
     num_characteristics: usize,
@@ -77,7 +103,7 @@ impl Rule for CharacterCharacteristics {
         }
         result
     }
-    fn as_has_characters<'a>(&'a self) -> Option<&'a dyn HasCharacters> {
+    fn as_has_characters(&self) -> Option<&dyn HasCharacters> {
         Some(self)
     }
 }
