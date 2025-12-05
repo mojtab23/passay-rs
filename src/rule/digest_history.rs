@@ -4,6 +4,42 @@ use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 
+/// Rule for determining if a password matches one of any previous digested password a user has chosen. If no password
+/// reference has been set that matches the label on the rule, then passwords will meet this rule.
+/// You need to bring an implementation of [Hasher].
+/// See also [PasswordData::password_references]
+///
+/// # Example
+///
+/// ```
+///#  use base64::Engine;
+///#  use passay_rs::hash::Hasher;
+///#  struct Sha1Hasher;
+///#  impl Hasher<String> for Sha1Hasher {
+///#      fn hash(&self, data: &[u8]) -> Result<Vec<u8>, String> {
+///#          todo!()
+///#      }
+///#
+///#      fn compare(&self, hash: &[u8], data: &[u8]) -> Result<bool, String> {
+///#          let hash_bytes = base64::prelude::BASE64_STANDARD.decode(hash).unwrap();
+///#          let data_sha1 = sha1_smol::Sha1::from(data).digest().bytes();
+///#          Ok(hash_bytes.eq(&data_sha1))
+///#      }
+///#  }
+///  use passay_rs::rule::digest_history::DigestHistoryRule;
+///  use passay_rs::rule::history::HistoricalReference;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::Rule;
+///
+///  let sha1_ref = Box::new(HistoricalReference::with_password_label(
+///                  "safx/LW8+SsSy/o3PmCNy4VEm5s=".to_string(),
+///                 "history".to_string(),
+///             ));
+///  let rule = DigestHistoryRule::new(Sha1Hasher, true);
+///  let password = PasswordData::new("t3stUs3r01".to_string(), Some("testuser".to_string()), vec![sha1_ref]);
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct DigestHistoryRule<H>
 where
     H: Hasher<String>,

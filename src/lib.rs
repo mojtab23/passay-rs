@@ -3,7 +3,7 @@
 
 pub mod dictionary;
 mod entropy;
-mod hash;
+pub mod hash;
 mod password_generator;
 pub mod rule;
 mod test;
