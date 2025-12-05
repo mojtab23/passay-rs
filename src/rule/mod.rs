@@ -10,7 +10,7 @@ pub mod character_data;
 pub mod character_occurrences;
 mod character_sequence;
 pub mod dictionary;
-mod dictionary_substring;
+pub mod dictionary_substring;
 mod digest_dictionary;
 mod digest_history;
 mod digest_source;
