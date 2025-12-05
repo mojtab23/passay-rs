@@ -9,7 +9,7 @@ pub mod character_characteristics;
 pub mod character_data;
 pub mod character_occurrences;
 mod character_sequence;
-pub(crate) mod dictionary;
+pub mod dictionary;
 mod dictionary_substring;
 mod digest_dictionary;
 mod digest_history;

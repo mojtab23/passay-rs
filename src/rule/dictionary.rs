@@ -6,6 +6,27 @@ use std::collections::HashMap;
 pub(crate) const ERROR_CODE: &str = "ILLEGAL_WORD";
 pub(crate) const ERROR_CODE_REVERSED: &str = "ILLEGAL_WORD_REVERSED";
 
+/// Rule for determining if a password matches a dictionary word. This rule will optionally also check for reversed words.
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::dictionary::word_lists::word_list_dictionary::WordListDictionary;
+///  use passay_rs::dictionary::word_lists::ArrayWordList;
+///  use passay_rs::dictionary::word_lists::sort::SliceSort;
+///  use passay_rs::rule::dictionary::DictionaryRule;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::Rule;
+///
+///  let words = ["test", "z", "x", "y", "man", "pullmanize"].map(String::from).to_vec();
+///  // world list should be sorted so we sort it now
+///  let word_list = ArrayWordList::with_sorter(words, false, Some(SliceSort));
+///  let dictionary = WordListDictionary::new(word_list);
+///  let dictionary_rule = DictionaryRule::new(dictionary, true);
+///  let password = PasswordData::with_password("Pullmanize".to_string());
+///  let result = dictionary_rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct DictionaryRule<D: Dictionary> {
     dictionary: D,
     match_backwards: bool,
@@ -60,7 +81,7 @@ impl<D: Dictionary> Rule for DictionaryRule<D> {
         }
         result
     }
-    fn as_dictionary_rule<'a>(&'a self) -> Option<&'a dyn DictionaryRuleTrait> {
+    fn as_dictionary_rule(&self) -> Option<&dyn DictionaryRuleTrait> {
         Some(self)
     }
 }

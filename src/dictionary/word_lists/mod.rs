@@ -8,7 +8,7 @@ use std::ops::Index;
 pub use self::array_word_list::ArrayWordList;
 use self::sort::{ArraySorter, Comparator};
 
-mod array_word_list;
+pub mod array_word_list;
 pub mod sort;
 mod test_base;
 pub mod word_list_dictionary;
@@ -25,6 +25,10 @@ pub trait WordLists: Index<usize, Output = String> {
     /// Returns the number of words in the list.
     /// @return  total number of words in list.
     fn len(&self) -> usize;
+
+    fn is_empty(&self) -> bool {
+        self.len() < 1
+    }
 
     /// Returns the comparator that should be used to compare a search term with candidate words in the list.
     /// The comparator naturally respects ordering and case sensitivity of the word list.
