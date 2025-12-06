@@ -15,7 +15,7 @@ mod digest_dictionary;
 pub mod digest_history;
 pub mod digest_source;
 pub mod history;
-mod illegal_character;
+pub mod illegal_character;
 mod illegal_regex;
 mod illegal_sequence_rule;
 mod length_complexity;

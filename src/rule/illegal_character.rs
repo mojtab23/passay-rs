@@ -6,6 +6,22 @@ use crate::rule::{PasswordData, Rule};
 use std::collections::{HashMap, HashSet};
 
 const ERROR_CODE: &str = "ILLEGAL_CHAR";
+
+/// Rule for determining if a password contains an illegal character. Validation will fail if the password contains any
+/// of the illegal characters.
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::illegal_character::IllegalCharacterRule;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = IllegalCharacterRule::from_chars(vec!['@', '$']);
+///  let password = PasswordData::with_password("AycD@Pdsyz".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct IllegalCharacterRule {
     illegal_characters: Vec<char>,
     match_behavior: MatchBehavior,
