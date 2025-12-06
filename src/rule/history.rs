@@ -7,6 +7,32 @@ use std::fmt::{Debug, Formatter};
 
 pub const ERROR_CODE: &str = "HISTORY_VIOLATION";
 
+/// Rule for determining if a password matches one of any previous password a user has chosen. If no historical password
+/// reference has been set, then passwords will meet this rule. See also [PasswordData::password_references]
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::history::HistoryRule;
+///  use passay_rs::rule::history::HistoricalReference;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::reference::Reference;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = HistoryRule::default();
+///  let history: Vec<Box<dyn Reference>> =
+///      vec![Box::new(HistoricalReference::with_password_label(
+///          "t3stUs3r03".to_string(),
+///          "history".to_string(),
+///      ))];
+///  let password = PasswordData::new(
+///      "t3stUs3r03".to_string(),
+///      Some("testuser".to_string()),
+///      history,
+///  );
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 #[derive(Clone)]
 pub struct HistoryRule {
     report_all: bool,
@@ -38,7 +64,7 @@ pub(super) fn validate_with_history_references<F: Fn(&str, &HistoricalReference)
 
     let mut len = 0;
     for rf in password_data.password_references() {
-        if let Some(_) = rf.as_any().downcast_ref::<HistoricalReference>() {
+        if rf.as_any().downcast_ref::<HistoricalReference>().is_some() {
             len += 1;
         }
     }
