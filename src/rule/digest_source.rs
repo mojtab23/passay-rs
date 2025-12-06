@@ -4,6 +4,46 @@ use crate::rule::rule_result::RuleResult;
 use crate::rule::source::{validate_with_source_references, SourceReference};
 use crate::rule::{PasswordData, Rule};
 
+/// Rule for determining if a password matches a digested password from a different source. Useful for when separate
+/// systems cannot have matching passwords. If no password reference has been set that matches the label on the rule,
+/// then passwords will meet this rule. See also [PasswordData::password_references]
+///
+/// # Example
+///
+/// ```
+///#  use base64::Engine;
+///#  use passay_rs::hash::Hasher;
+///#  struct Sha1Hasher;
+///#  impl Hasher<String> for Sha1Hasher {
+///#      fn hash(&self, data: &[u8]) -> Result<Vec<u8>, String> {
+///#          todo!()
+///#      }
+///#
+///#      fn compare(&self, hash: &[u8], data: &[u8]) -> Result<bool, String> {
+///#          let hash_bytes = base64::prelude::BASE64_STANDARD.decode(hash).unwrap();
+///#          let data_sha1 = sha1_smol::Sha1::from(data).digest().bytes();
+///#          Ok(hash_bytes.eq(&data_sha1))
+///#      }
+///#  }
+///  use passay_rs::rule::digest_source::DigestSourceRule;
+///  use passay_rs::rule::source::SourceReference;
+///  use passay_rs::rule::reference::Reference;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = DigestSourceRule::new(Sha1Hasher, true);
+///  let source: Vec<Box<dyn Reference>> = vec![Box::new(SourceReference::with_password_label(
+///      "CJGTDMQRP+rmHApkcijC80aDV0o=".to_string(),
+///      "System B".to_string(),
+///  ))];
+///  let password = PasswordData::new(
+///      "t3stUs3r04".to_string(),
+///      Some("testuser".to_string()),
+///      source,
+///  );
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct DigestSourceRule<H>
 where
     H: Hasher<String>,

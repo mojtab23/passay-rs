@@ -8,16 +8,6 @@ pub trait Reference: Debug + Any {
     fn as_any(&self) -> &dyn Any;
 }
 
-trait AsAny {
-    fn as_any(&self) -> &dyn Any;
-}
-
-impl<T: 'static + Reference> AsAny for T {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-}
-
 pub enum Salt {
     Prefix(String),
     Suffix(String),
@@ -39,7 +29,7 @@ impl Salt {
             }
             Salt::Suffix(s) => {
                 let mut pass = password.to_owned();
-                pass.push_str(&s);
+                pass.push_str(s);
                 pass
             }
         }
