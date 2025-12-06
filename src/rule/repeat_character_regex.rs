@@ -1,4 +1,4 @@
-use crate::rule::illegal_regex::IllegalRegex;
+use crate::rule::illegal_regex::IllegalRegexRule;
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
 use fancy_regex::Regex;
@@ -9,7 +9,7 @@ const MINIMUM_SEQUENCE_LENGTH: usize = 3;
 
 // TODO rewrite it without regex
 pub struct RepeatCharacterRegexRule {
-    regex_rule: IllegalRegex,
+    regex_rule: IllegalRegexRule,
 }
 
 impl RepeatCharacterRegexRule {
@@ -19,7 +19,7 @@ impl RepeatCharacterRegexRule {
                 "sequence length must be >= {MINIMUM_SEQUENCE_LENGTH}"
             ));
         }
-        let regex_rule = IllegalRegex::new(Self::create_regex(sequence_length), report_all);
+        let regex_rule = IllegalRegexRule::new(Self::create_regex(sequence_length), report_all);
         Ok(Self { regex_rule })
     }
     pub fn with_sequence_len(sequence_len: usize) -> Result<Self, String> {
