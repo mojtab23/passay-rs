@@ -51,7 +51,7 @@ mod tests {
     use crate::rule::digest_source::DigestSourceRule;
     use crate::rule::history::HistoricalReference;
     use crate::rule::illegal_sequence::IllegalSequenceRule;
-    use crate::rule::length_rule::LengthRule;
+    use crate::rule::length::LengthRule;
     use crate::rule::password_validator::{PasswordValidator, USER};
     use crate::rule::reference::Reference;
     use crate::rule::repeat_character_regex::RepeatCharacterRegexRule;
@@ -60,7 +60,7 @@ mod tests {
     use crate::rule::username::UsernameRule;
     use crate::rule::whitespace::WhitespaceRule;
     use crate::rule::{
-        dictionary, dictionary_substring, history, length_rule, source, username, whitespace,
+        dictionary, dictionary_substring, history, length, source, username, whitespace,
         PasswordData, Rule,
     };
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
@@ -323,7 +323,7 @@ mod tests {
                     Some(USER.to_string()),
                     create_password_references(),
                 ),
-                vec![length_rule::ERROR_CODE_MIN],
+                vec![length::ERROR_CODE_MIN],
             ),
             // too long
             RulePasswordTestItem(
@@ -333,7 +333,7 @@ mod tests {
                     Some(USER.to_string()),
                     create_password_references(),
                 ),
-                vec![length_rule::ERROR_CODE_MAX],
+                vec![length::ERROR_CODE_MAX],
             ),
             // invalid dictionary rule passwords
             // matches dictionary word 'none'
@@ -515,7 +515,7 @@ mod tests {
                     EnglishCharacterData::UpperCase.error_code(),
                     EnglishSequenceData::Numerical.error_code(),
                     EnglishSequenceData::Numerical.error_code(), // it does the error two times?!
-                    length_rule::ERROR_CODE_MIN,
+                    length::ERROR_CODE_MIN,
                 ],
             ),
         ];

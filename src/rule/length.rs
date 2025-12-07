@@ -5,6 +5,22 @@ use crate::rule::{PasswordData, Rule};
 
 pub const ERROR_CODE_MIN: &str = "TOO_SHORT";
 pub const ERROR_CODE_MAX: &str = "TOO_LONG";
+
+/// Rule for determining if a password is within a desired length. The minimum and maximum lengths are used inclusively
+/// to determine if a password meets this rule.
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::length::LengthRule;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = LengthRule::new(4, 10);
+///  let password = PasswordData::with_password("123".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct LengthRule {
     min_length: usize,
     max_length: usize,
@@ -66,10 +82,17 @@ impl Rule for LengthRule {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::length_rule::LengthRule;
+    use crate::rule::length::LengthRule;
     use crate::rule::rule_result::CountCategory;
     use crate::rule::{PasswordData, Rule};
 
+    #[test]
+    fn check_metada() {
+        let rule = LengthRule::new(4, 10);
+        let password = PasswordData::with_password("123".to_string());
+        let result = rule.validate(&password);
+        assert!(!result.valid());
+    }
     #[test]
     fn check_metadata() {
         let rule = LengthRule::new(4, 10);

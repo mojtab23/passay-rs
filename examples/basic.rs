@@ -1,4 +1,4 @@
-use passay_rs::rule::length_rule::LengthRule;
+use passay_rs::rule::length::LengthRule;
 use passay_rs::rule::PasswordData;
 use passay_rs::rule::Rule;
 

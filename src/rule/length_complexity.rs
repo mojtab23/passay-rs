@@ -18,7 +18,7 @@ const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
 ///  use passay_rs::rule::character_data::EnglishCharacterData;
 ///  use passay_rs::rule::character_characteristics::CharacterCharacteristics;
 ///  use passay_rs::rule::length_complexity::LengthComplexityRule;
-///  use passay_rs::rule::length_rule::LengthRule;
+///  use passay_rs::rule::length::LengthRule;
 ///  use passay_rs::rule::repeat_character_regex::RepeatCharacterRegexRule;
 ///  use passay_rs::rule::username::UsernameRule;
 ///  use passay_rs::rule::Rule;
@@ -259,14 +259,14 @@ fn ranges_intersect(a: &Range<usize>, b: &Range<usize>) -> bool {
 #[cfg(test)]
 mod tests {
     use crate::rule::character_data::CharacterData;
+    use crate::rule::length::{ERROR_CODE_MAX, ERROR_CODE_MIN};
     use crate::rule::length_complexity::{ERROR_CODE, ERROR_CODE_RULES};
-    use crate::rule::length_rule::{ERROR_CODE_MAX, ERROR_CODE_MIN};
     use crate::rule::sequence_data::SequenceData;
     use crate::rule::{
         character::CharacterRule, character_characteristics,
         character_characteristics::CharacterCharacteristics, character_data::EnglishCharacterData,
-        illegal_sequence::IllegalSequenceRule, length_complexity::LengthComplexityRule,
-        length_rule::LengthRule, repeat_character_regex,
+        illegal_sequence::IllegalSequenceRule, length::LengthRule,
+        length_complexity::LengthComplexityRule, repeat_character_regex,
         repeat_character_regex::RepeatCharacterRegexRule, sequence_data::EnglishSequenceData,
         username, username::UsernameRule, PasswordData, Rule,
     };
