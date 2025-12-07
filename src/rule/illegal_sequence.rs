@@ -5,6 +5,22 @@ use crate::rule::{PasswordData, Rule};
 use std::collections::HashMap;
 
 pub const DEFAULT_SEQUENCE_LENGTH: usize = 5;
+
+/// Password validation rule that prevents illegal sequences of characters, e.g. keyboard, alphabetical, numeric.
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::illegal_sequence::IllegalSequenceRule;
+///  use passay_rs::rule::sequence_data::EnglishSequenceData;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = IllegalSequenceRule::with_sequence_data(EnglishSequenceData::USQwerty);
+///  let password = PasswordData::with_password("pqwerty#n65".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct IllegalSequenceRule<S>
 where
     S: SequenceData,
@@ -96,7 +112,7 @@ impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
 mod tests {
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
     use crate::{
-        rule::illegal_sequence_rule::IllegalSequenceRule,
+        rule::illegal_sequence::IllegalSequenceRule,
         rule::password_validator::PasswordValidator,
         rule::sequence_data::{
             CyrillicSequenceData, CzechSequenceData, EnglishSequenceData, GermanSequenceData,

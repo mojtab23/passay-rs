@@ -142,7 +142,7 @@ mod tests {
     use crate::rule::{
         character::CharacterRule, character_characteristics,
         character_characteristics::CharacterCharacteristics, character_data::EnglishCharacterData,
-        illegal_sequence_rule::IllegalSequenceRule, length_complexity::LengthComplexityRule,
+        illegal_sequence::IllegalSequenceRule, length_complexity::LengthComplexityRule,
         length_rule::LengthRule, repeat_character_regex,
         repeat_character_regex::RepeatCharacterRegexRule, sequence_data::EnglishSequenceData,
         username, username::UsernameRule, PasswordData, Rule,

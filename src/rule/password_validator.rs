@@ -50,7 +50,7 @@ mod tests {
     use crate::rule::digest_history::DigestHistoryRule;
     use crate::rule::digest_source::DigestSourceRule;
     use crate::rule::history::HistoricalReference;
-    use crate::rule::illegal_sequence_rule::IllegalSequenceRule;
+    use crate::rule::illegal_sequence::IllegalSequenceRule;
     use crate::rule::length_rule::LengthRule;
     use crate::rule::password_validator::{PasswordValidator, USER};
     use crate::rule::reference::Reference;
