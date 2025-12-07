@@ -5,6 +5,129 @@ use std::ops::Range;
 
 const ERROR_CODE: &str = "INSUFFICIENT_COMPLEXITY";
 const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
+
+/// Rule for determining if a password contains the desired complexity for a certain length. In order to meet the
+/// criteria of this rule, passwords must meet all the supplied rules for a given password length.
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::illegal_sequence::IllegalSequenceRule;
+///  use passay_rs::rule::sequence_data::EnglishSequenceData;
+///  use passay_rs::rule::character::CharacterRule;
+///  use passay_rs::rule::character_data::EnglishCharacterData;
+///  use passay_rs::rule::character_characteristics::CharacterCharacteristics;
+///  use passay_rs::rule::length_complexity::LengthComplexityRule;
+///  use passay_rs::rule::length_rule::LengthRule;
+///  use passay_rs::rule::repeat_character_regex::RepeatCharacterRegexRule;
+///  use passay_rs::rule::username::UsernameRule;
+///  use passay_rs::rule::Rule;
+///
+///   let char_rules = vec![
+///      CharacterRule::new(Box::new(EnglishCharacterData::Digit), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::Special), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///  ];
+///
+///  let rules: Vec<Box<dyn Rule>> = vec![
+///      Box::new(LengthRule::new(8, 64)),
+///      Box::new(
+///          CharacterCharacteristics::with_rules_and_characteristics(char_rules, 4).unwrap(),
+///      ),
+///      Box::new(UsernameRule::with_match_backwards_and_ignore_case(
+///          true, true,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Alphabetical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Numerical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::USQwerty,
+///      )),
+///      Box::new(RepeatCharacterRegexRule::default()),
+///  ];
+///  let mut rule = LengthComplexityRule::default();
+///  let _ = rule.add_rules(0..12, rules);
+///
+///  let char_rules = vec![
+///      CharacterRule::new(Box::new(EnglishCharacterData::Digit), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///  ];
+///  let rules: Vec<Box<dyn Rule>> = vec![
+///      Box::new(LengthRule::new(8, 64)),
+///      Box::new(
+///          CharacterCharacteristics::with_rules_and_characteristics(char_rules, 3).unwrap(),
+///      ),
+///      Box::new(UsernameRule::with_match_backwards_and_ignore_case(
+///          true, true,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Alphabetical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Numerical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::USQwerty,
+///      )),
+///      Box::new(RepeatCharacterRegexRule::default()),
+///  ];
+///  let _ = rule.add_rules(12..16, rules);
+///
+///  let char_rules = vec![
+///      CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///  ];
+///  let rules: Vec<Box<dyn Rule>> = vec![
+///      Box::new(LengthRule::new(8, 64)),
+///      Box::new(
+///          CharacterCharacteristics::with_rules_and_characteristics(char_rules, 2).unwrap(),
+///      ),
+///      Box::new(UsernameRule::with_match_backwards_and_ignore_case(
+///          true, true,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Alphabetical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Numerical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::USQwerty,
+///      )),
+///      Box::new(RepeatCharacterRegexRule::default()),
+///  ];
+///  let _ = rule.add_rules(16..20, rules);
+///
+///  let rules: Vec<Box<dyn Rule>> = vec![
+///      Box::new(LengthRule::new(8, 64)),
+///      Box::new(UsernameRule::with_match_backwards_and_ignore_case(
+///          true, true,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Alphabetical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::Numerical,
+///      )),
+///      Box::new(IllegalSequenceRule::with_sequence_data(
+///          EnglishSequenceData::USQwerty,
+///      )),
+///      Box::new(RepeatCharacterRegexRule::default()),
+///  ];
+///  let _ = rule.add_rules(20..128, rules);
+///
+///  let password = PasswordData::with_password_and_user(
+///      "rPscvEW2e".to_string(),
+///      Some("alfred".to_string()),
+///  );
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct LengthComplexityRule {
     rules: HashMap<Range<usize>, Vec<Box<dyn Rule>>>,
     report_failure: bool,
@@ -36,7 +159,7 @@ impl LengthComplexityRule {
             return Err("Rules cannot be empty".to_string());
         }
 
-        for (existing_interval, _) in &self.rules {
+        for existing_interval in self.rules.keys() {
             if ranges_intersect(existing_interval, &interval) {
                 return Err(format!(
                     "Interval {:?} intersects existing interval {:?}",

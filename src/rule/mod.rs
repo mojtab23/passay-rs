@@ -18,19 +18,19 @@ pub mod history;
 pub mod illegal_character;
 pub mod illegal_regex;
 pub mod illegal_sequence;
-mod length_complexity;
+pub mod length_complexity;
 pub mod length_rule;
 pub mod message_resolver;
 mod number_range;
 mod password_utils;
 pub mod password_validator;
 pub mod reference;
-mod repeat_character_regex;
+pub mod repeat_character_regex;
 mod repeat_characters;
 pub mod rule_result;
 pub mod sequence_data;
 pub mod source;
-mod username;
+pub mod username;
 mod whitespace;
 
 pub trait Rule {
