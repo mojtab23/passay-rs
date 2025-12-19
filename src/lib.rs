@@ -4,6 +4,8 @@
 pub mod dictionary;
 mod entropy;
 pub mod hash;
-mod password_generator;
+pub mod password_generator;
 pub mod rule;
+
+#[cfg(test)]
 mod test;

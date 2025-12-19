@@ -5,6 +5,23 @@ use rand::distr::Uniform;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 
+/// Creates passwords that meet password character rule criteria.
+///
+/// ```
+///  use passay_rs::password_generator::PasswordGenerator;
+///  use passay_rs::rule::character::CharacterRule;
+///  use passay_rs::rule::character_data::EnglishCharacterData;
+///
+///  let generate_rules = vec![
+///      CharacterRule::new(Box::new(EnglishCharacterData::Digit), 2).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::Special), 2).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///  ];
+///  let mut password_generator = PasswordGenerator::new();
+///  let password = password_generator.generate_password(16, &generate_rules).unwrap();
+///  assert_eq!(password.chars().count(), 16);
+/// ```
 pub struct PasswordGenerator {
     random: StdRng,
 }
@@ -104,19 +121,19 @@ mod tests {
 
     #[test]
     fn test_buffer_overflow() {
-        let output = PasswordGenerator::new()
+        let _output = PasswordGenerator::new()
             .generate_password(
                 5,
                 &vec![CharacterRule::new(Box::new(EnglishCharacterData::Digit), 10).unwrap()],
             )
             .unwrap();
-        let output = PasswordGenerator::new()
+        let _output = PasswordGenerator::new()
             .generate_password(
                 10,
                 &vec![CharacterRule::new(Box::new(EnglishCharacterData::Digit), 5).unwrap()],
             )
             .unwrap();
-        let output = PasswordGenerator::new()
+        let _output = PasswordGenerator::new()
             .generate_password(
                 10,
                 &vec![CharacterRule::new(Box::new(EnglishCharacterData::Digit), 10).unwrap()],
