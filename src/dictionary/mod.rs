@@ -9,6 +9,9 @@ pub mod word_lists;
 pub trait Dictionary {
     fn search(&self, word: &str) -> bool;
     fn len(&self) -> usize;
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 pub struct DictionaryBuilder {

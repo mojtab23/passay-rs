@@ -101,6 +101,12 @@ impl PasswordGenerator {
     }
 }
 
+impl Default for PasswordGenerator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::password_generator::PasswordGenerator;
