@@ -19,7 +19,7 @@ const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
 ///  use passay_rs::rule::character_characteristics::CharacterCharacteristics;
 ///  use passay_rs::rule::length_complexity::LengthComplexityRule;
 ///  use passay_rs::rule::length::LengthRule;
-///  use passay_rs::rule::repeat_character_regex::RepeatCharacterRegexRule;
+///  use passay_rs::rule::repeat_character::RepeatCharacterRule;
 ///  use passay_rs::rule::username::UsernameRule;
 ///  use passay_rs::rule::Rule;
 ///
@@ -47,7 +47,7 @@ const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
 ///      Box::new(IllegalSequenceRule::with_sequence_data(
 ///          EnglishSequenceData::USQwerty,
 ///      )),
-///      Box::new(RepeatCharacterRegexRule::default()),
+///      Box::new(RepeatCharacterRule::default()),
 ///  ];
 ///  let mut rule = LengthComplexityRule::default();
 ///  let _ = rule.add_rules(0..12, rules);
@@ -74,7 +74,7 @@ const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
 ///      Box::new(IllegalSequenceRule::with_sequence_data(
 ///          EnglishSequenceData::USQwerty,
 ///      )),
-///      Box::new(RepeatCharacterRegexRule::default()),
+///      Box::new(RepeatCharacterRule::default()),
 ///  ];
 ///  let _ = rule.add_rules(12..16, rules);
 ///
@@ -99,7 +99,7 @@ const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
 ///      Box::new(IllegalSequenceRule::with_sequence_data(
 ///          EnglishSequenceData::USQwerty,
 ///      )),
-///      Box::new(RepeatCharacterRegexRule::default()),
+///      Box::new(RepeatCharacterRule::default()),
 ///  ];
 ///  let _ = rule.add_rules(16..20, rules);
 ///
@@ -117,7 +117,7 @@ const ERROR_CODE_RULES: &str = "INSUFFICIENT_COMPLEXITY_RULES";
 ///      Box::new(IllegalSequenceRule::with_sequence_data(
 ///          EnglishSequenceData::USQwerty,
 ///      )),
-///      Box::new(RepeatCharacterRegexRule::default()),
+///      Box::new(RepeatCharacterRule::default()),
 ///  ];
 ///  let _ = rule.add_rules(20..128, rules);
 ///
@@ -266,9 +266,9 @@ mod tests {
         character::CharacterRule, character_characteristics,
         character_characteristics::CharacterCharacteristics, character_data::EnglishCharacterData,
         illegal_sequence::IllegalSequenceRule, length::LengthRule,
-        length_complexity::LengthComplexityRule, repeat_character_regex,
-        repeat_character_regex::RepeatCharacterRegexRule, sequence_data::EnglishSequenceData,
-        username, username::UsernameRule, PasswordData, Rule,
+        length_complexity::LengthComplexityRule, repeat_character,
+        repeat_character::RepeatCharacterRule, sequence_data::EnglishSequenceData, username,
+        username::UsernameRule, PasswordData, Rule,
     };
     use crate::test::{check_passwords, RulePasswordTestItem};
 
@@ -390,8 +390,8 @@ mod tests {
                     "It was the best of eeeee, it was the worst of 87654".to_string(),
                     Some("alfred".to_string()),
                 ),
-                vec![ERROR_CODE, repeat_character_regex::ERROR_CODE,
-                     EnglishSequenceData::USQwerty.error_code(),EnglishSequenceData::Numerical.error_code()],
+                vec![ERROR_CODE, repeat_character::ERROR_CODE,
+                     EnglishSequenceData::USQwerty.error_code(), EnglishSequenceData::Numerical.error_code()],
             ),
             RulePasswordTestItem(
                 // RULE 2
@@ -435,7 +435,7 @@ mod tests {
             Box::new(IllegalSequenceRule::with_sequence_data(
                 EnglishSequenceData::USQwerty,
             )),
-            Box::new(RepeatCharacterRegexRule::default()),
+            Box::new(RepeatCharacterRule::default()),
         ];
         let mut rule = LengthComplexityRule::default();
         let _ = rule.add_rules(0..12, rules);
@@ -462,7 +462,7 @@ mod tests {
             Box::new(IllegalSequenceRule::with_sequence_data(
                 EnglishSequenceData::USQwerty,
             )),
-            Box::new(RepeatCharacterRegexRule::default()),
+            Box::new(RepeatCharacterRule::default()),
         ];
         let _ = rule.add_rules(12..16, rules);
 
@@ -487,7 +487,7 @@ mod tests {
             Box::new(IllegalSequenceRule::with_sequence_data(
                 EnglishSequenceData::USQwerty,
             )),
-            Box::new(RepeatCharacterRegexRule::default()),
+            Box::new(RepeatCharacterRule::default()),
         ];
         let _ = rule.add_rules(16..20, rules);
 
@@ -505,7 +505,7 @@ mod tests {
             Box::new(IllegalSequenceRule::with_sequence_data(
                 EnglishSequenceData::USQwerty,
             )),
-            Box::new(RepeatCharacterRegexRule::default()),
+            Box::new(RepeatCharacterRule::default()),
         ];
         let _ = rule.add_rules(20..128, rules);
         rule
@@ -535,7 +535,7 @@ mod tests {
             Box::new(IllegalSequenceRule::with_sequence_data(
                 EnglishSequenceData::USQwerty,
             )),
-            Box::new(RepeatCharacterRegexRule::default()),
+            Box::new(RepeatCharacterRule::default()),
         ];
         let mut rule = LengthComplexityRule::default();
         rule.report_failure = false;
@@ -555,7 +555,7 @@ mod tests {
             Box::new(IllegalSequenceRule::with_sequence_data(
                 EnglishSequenceData::USQwerty,
             )),
-            Box::new(RepeatCharacterRegexRule::default()),
+            Box::new(RepeatCharacterRule::default()),
         ];
         let _ = rule.add_rules(20..usize::MAX, rules);
         rule

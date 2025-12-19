@@ -1,6 +1,7 @@
 use std::any::Any;
 use std::fmt::Debug;
 
+/// Reference to another password.
 pub trait Reference: Debug + Any {
     fn password(&self) -> &str;
     fn salt(&self) -> &Option<Salt>;

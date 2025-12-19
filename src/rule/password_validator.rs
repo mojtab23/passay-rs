@@ -13,7 +13,7 @@ use std::rc::Rc;
 ///  use passay_rs::rule::character_characteristics::CharacterCharacteristics;
 ///  use passay_rs::rule::illegal_sequence::IllegalSequenceRule;
 ///  use passay_rs::rule::sequence_data::EnglishSequenceData;
-///  use passay_rs::rule::repeat_character_regex::RepeatCharacterRegexRule;
+///  use passay_rs::rule::repeat_character::RepeatCharacterRule;
 ///  use passay_rs::rule::Rule;
 ///  use passay_rs::rule::password_validator::PasswordValidator;
 ///  use passay_rs::rule::PasswordData;
@@ -32,7 +32,7 @@ use std::rc::Rc;
 ///  let alpha_seq_rule =
 ///      IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Alphabetical);
 ///  let num_seq_rule = IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Numerical);
-///  let dup_seq_rule = RepeatCharacterRegexRule::default();
+///  let dup_seq_rule = RepeatCharacterRule::default();
 ///
 ///  let rules: Vec<Box<dyn Rule>> = vec![
 ///      Box::new(char_rule),
@@ -100,7 +100,7 @@ mod tests {
     use crate::rule::length::LengthRule;
     use crate::rule::password_validator::PasswordValidator;
     use crate::rule::reference::Reference;
-    use crate::rule::repeat_character_regex::RepeatCharacterRegexRule;
+    use crate::rule::repeat_character::RepeatCharacterRule;
     use crate::rule::sequence_data::{EnglishSequenceData, SequenceData};
     use crate::rule::source::SourceReference;
     use crate::rule::username::UsernameRule;
@@ -166,7 +166,7 @@ mod tests {
         let alpha_seq_rule =
             IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Alphabetical);
         let num_seq_rule = IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Numerical);
-        let dup_seq_rule = RepeatCharacterRegexRule::default();
+        let dup_seq_rule = RepeatCharacterRule::default();
 
         let rules: Vec<Box<dyn Rule>> = vec![
             Box::new(char_rule),
@@ -600,7 +600,7 @@ mod tests {
         let alpha_seq_rule =
             IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Alphabetical);
         let num_seq_rule = IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Numerical);
-        let dup_seq_rule = RepeatCharacterRegexRule::default();
+        let dup_seq_rule = RepeatCharacterRule::default();
         let user_id_rule = UsernameRule::with_match_backwards_and_ignore_case(true, true);
         let history_rule = DigestHistoryRule::new(Sha1Hasher, true);
         let source_rule = DigestSourceRule::new(Sha1Hasher, true);
