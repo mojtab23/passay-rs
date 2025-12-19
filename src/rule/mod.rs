@@ -21,7 +21,7 @@ pub mod illegal_sequence;
 pub mod length;
 pub mod length_complexity;
 pub mod message_resolver;
-mod number_range;
+pub mod number_range;
 mod password_utils;
 pub mod password_validator;
 pub mod reference;

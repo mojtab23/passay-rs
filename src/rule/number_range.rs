@@ -6,6 +6,19 @@ use std::collections::HashMap;
 use std::ops::Range;
 
 pub const ERROR_CODE: &str = "ILLEGAL_NUMBER_RANGE";
+
+/// Rule for determining if a password contains any number within a defined range.
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::Rule;
+///  use passay_rs::rule::number_range::NumberRangeRule;
+///  use passay_rs::rule::PasswordData;
+///  let rule = NumberRangeRule::from(101..199);
+///  let password = PasswordData::with_password("150Rcv8#n65".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct NumberRangeRule {
     range: Range<isize>,
     match_behavior: MatchBehavior,
