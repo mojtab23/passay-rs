@@ -38,8 +38,8 @@ impl Dictionary for TernaryTreeDictionary {
 
 #[cfg(test)]
 mod tests {
+    use rand::rng;
     use rand::seq::SliceRandom;
-    use rand::thread_rng;
 
     use crate::dictionary::ternary_tree::TernaryTreeDictionary;
     use crate::dictionary::word_lists::sort::{
@@ -155,7 +155,7 @@ mod tests {
 
     fn get_animals() -> Vec<String> {
         let mut animals: Vec<String> = ANIMALS.iter().map(|a| a.to_string()).collect();
-        animals.shuffle(&mut thread_rng());
+        animals.shuffle(&mut rng());
         animals
     }
 

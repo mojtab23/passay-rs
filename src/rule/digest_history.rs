@@ -380,7 +380,7 @@ pub(crate) mod test {
     }
     pub(crate) struct Sha1Hasher;
     impl Hasher<String> for Sha1Hasher {
-        fn hash(&self, data: &[u8]) -> Result<Vec<u8>, String> {
+        fn hash(&self, _data: &[u8]) -> Result<Vec<u8>, String> {
             todo!()
         }
 
@@ -392,7 +392,7 @@ pub(crate) mod test {
     }
     struct BcryptHasher;
     impl Hasher<String> for BcryptHasher {
-        fn hash(&self, data: &[u8]) -> Result<Vec<u8>, String> {
+        fn hash(&self, _data: &[u8]) -> Result<Vec<u8>, String> {
             todo!()
         }
 

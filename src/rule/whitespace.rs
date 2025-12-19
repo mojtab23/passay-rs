@@ -208,6 +208,6 @@ mod tests {
     #[test]
     #[should_panic(expected = "Character 'a' is not whitespace")]
     fn check_valid_characters() {
-        let rule = WhitespaceRule::new(vec![' ', 'a'], Contains, true);
+        let _rule = WhitespaceRule::new(vec![' ', 'a'], Contains, true);
     }
 }

@@ -154,7 +154,7 @@ mod tests {
         let mut password_generator = PasswordGenerator::new();
 
         let rule = gen_rule();
-        for i in 0..100 {
+        for _ in 0..100 {
             let password = password_generator.generate_password(LEN, &rule).unwrap();
             assert!(password.chars().count() >= LEN);
             passwords.push(password);
