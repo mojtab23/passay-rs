@@ -1,8 +1,8 @@
 use std::cmp::Ordering::Equal;
 
+use crate::dictionary::Dictionary;
 use crate::dictionary::ternary_tree::tree::Tst;
 use crate::dictionary::word_lists::WordLists;
-use crate::dictionary::Dictionary;
 
 mod tree;
 
@@ -41,12 +41,12 @@ mod tests {
     use rand::rng;
     use rand::seq::SliceRandom;
 
+    use crate::dictionary::Dictionary;
     use crate::dictionary::ternary_tree::TernaryTreeDictionary;
     use crate::dictionary::word_lists::sort::{
         ArraySorter, BubbleSortOptimized, InsertionSort, QuickSort, SelectionSort, SliceSort,
     };
-    use crate::dictionary::word_lists::{create_from_read, ArrayWordList, WordLists};
-    use crate::dictionary::Dictionary;
+    use crate::dictionary::word_lists::{ArrayWordList, WordLists, create_from_read};
 
     const FALSE_SEARCH: &str = "not-found-in-the-dictionary";
     const ANIMALS: &[&str] = &[

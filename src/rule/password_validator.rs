@@ -84,16 +84,16 @@ impl Rule for PasswordValidator {
 
 #[cfg(test)]
 mod tests {
+    use crate::dictionary::Dictionary;
     use crate::dictionary::word_lists::create_from_read;
     use crate::dictionary::word_lists::sort::SliceSort;
     use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
-    use crate::dictionary::Dictionary;
     use crate::rule::character::CharacterRule;
     use crate::rule::character_characteristics::{CharacterCharacteristics, ERROR_CODE};
     use crate::rule::character_data::{CharacterData, EnglishCharacterData};
     use crate::rule::dictionary_substring::DictionarySubstringRule;
-    use crate::rule::digest_history::test::Sha1Hasher;
     use crate::rule::digest_history::DigestHistoryRule;
+    use crate::rule::digest_history::test::Sha1Hasher;
     use crate::rule::digest_source::DigestSourceRule;
     use crate::rule::history::HistoricalReference;
     use crate::rule::illegal_sequence::IllegalSequenceRule;
@@ -106,10 +106,10 @@ mod tests {
     use crate::rule::username::UsernameRule;
     use crate::rule::whitespace::WhitespaceRule;
     use crate::rule::{
-        dictionary, dictionary_substring, history, length, source, username, whitespace,
-        PasswordData, Rule,
+        PasswordData, Rule, dictionary, dictionary_substring, history, length, source, username,
+        whitespace,
     };
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     // The test producerExtends in java code is not needed here
     const USER: &str = "testuser";
@@ -135,12 +135,13 @@ mod tests {
         ));
         let pv = PasswordValidator::new(rules);
         assert!(pv.validate(&PasswordData::with_password(VALID_PASS.to_string())).valid());
-        assert!(pv
-            .validate(&PasswordData::with_password_and_user(
+        assert!(
+            pv.validate(&PasswordData::with_password_and_user(
                 VALID_PASS.to_string(),
                 Some(String::new())
             ))
-            .valid());
+            .valid()
+        );
 
         let pass_data =
             PasswordData::with_password_and_user(VALID_PASS.to_string(), Some(USER.to_string()));

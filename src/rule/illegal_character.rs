@@ -100,10 +100,10 @@ impl Rule for IllegalCharacterRule {
 #[cfg(test)]
 mod tests {
     use crate::rule::allowed_character::MatchBehavior::{Contains, EndsWith, StartsWith};
-    use crate::rule::illegal_character::{IllegalCharacterRule, ERROR_CODE};
+    use crate::rule::illegal_character::{ERROR_CODE, IllegalCharacterRule};
     use crate::rule::rule_result::CountCategory::Illegal;
     use crate::rule::{PasswordData, Rule};
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

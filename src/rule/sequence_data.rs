@@ -97,11 +97,13 @@ impl SequenceData for PolishSequenceData {
 
     fn get_sequences(&self) -> Vec<CharacterSequence> {
         match self {
-            PolishSequenceData::Alphabetical => vec![CharacterSequence::new(vec![
-                "aąbcćdeęfghijklłmnńoópqrsśtuwxyzźż".to_string(),
-                "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUWXYZŹŻ".to_string(),
-            ])
-            .unwrap()],
+            PolishSequenceData::Alphabetical => vec![
+                CharacterSequence::new(vec![
+                    "aąbcćdeęfghijklłmnńoópqrsśtuwxyzźż".to_string(),
+                    "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUWXYZŹŻ".to_string(),
+                ])
+                .unwrap(),
+            ],
         }
     }
 }
@@ -121,11 +123,13 @@ impl SequenceData for GermanSequenceData {
 
     fn get_sequences(&self) -> Vec<CharacterSequence> {
         match self {
-            GermanSequenceData::Alphabetical => vec![CharacterSequence::new(vec![
-                "abcdefghijklmnopqrstuvwxyzäöüß".to_string(),
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ".to_string(),
-            ])
-            .unwrap()],
+            GermanSequenceData::Alphabetical => vec![
+                CharacterSequence::new(vec![
+                    "abcdefghijklmnopqrstuvwxyzäöüß".to_string(),
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ".to_string(),
+                ])
+                .unwrap(),
+            ],
             GermanSequenceData::DEQwertz => vec![
                 CharacterSequence::new(vec![
                     "^1234567890ß´".to_string(),
@@ -169,11 +173,13 @@ impl SequenceData for CzechSequenceData {
 
     fn get_sequences(&self) -> Vec<CharacterSequence> {
         match self {
-            CzechSequenceData::Alphabetical => vec![CharacterSequence::new(vec![
-                "aábcčdďeěéfghiíjklmnňoópqrřsštťuúůvwxyýzž".to_string(),
-                "AÁBCČDĎEĚÉFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽ".to_string(),
-            ])
-            .unwrap()],
+            CzechSequenceData::Alphabetical => vec![
+                CharacterSequence::new(vec![
+                    "aábcčdďeěéfghiíjklmnňoópqrřsštťuúůvwxyýzž".to_string(),
+                    "AÁBCČDĎEĚÉFGHIÍJKLMNŇOÓPQRŘSŠTŤUÚŮVWXYÝZŽ".to_string(),
+                ])
+                .unwrap(),
+            ],
         }
     }
 }
@@ -191,11 +197,13 @@ impl SequenceData for CyrillicSequenceData {
 
     fn get_sequences(&self) -> Vec<CharacterSequence> {
         match self {
-            CyrillicSequenceData::Alphabetical => vec![CharacterSequence::new(vec![
-                "абвгдеёжзийклмнопрстуфхцчшщъыьэюяіѣѳѵ".to_string(),
-                "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯІѢѲѴ".to_string(),
-            ])
-            .unwrap()],
+            CyrillicSequenceData::Alphabetical => vec![
+                CharacterSequence::new(vec![
+                    "абвгдеёжзийклмнопрстуфхцчшщъыьэюяіѣѳѵ".to_string(),
+                    "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯІѢѲѴ".to_string(),
+                ])
+                .unwrap(),
+            ],
         }
     }
 }

@@ -94,12 +94,12 @@ impl<D: Dictionary> DictionaryRuleTrait for DictionaryRule<D> {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
-    use crate::dictionary::word_lists::ArrayWordList;
     use crate::dictionary::DictionaryBuilder;
-    use crate::rule::dictionary::{DictionaryRule, ERROR_CODE, ERROR_CODE_REVERSED};
+    use crate::dictionary::word_lists::ArrayWordList;
+    use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::dictionary::{DictionaryRule, ERROR_CODE, ERROR_CODE_REVERSED};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     fn create_rule() -> Box<DictionaryRule<WordListDictionary<ArrayWordList>>> {
         let case_sensitive_dict = DictionaryBuilder::new()

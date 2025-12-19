@@ -76,9 +76,9 @@ impl Rule for IllegalRegexRule {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::illegal_regex::{IllegalRegexRule, ERROR_CODE};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::illegal_regex::{ERROR_CODE, IllegalRegexRule};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
     use fancy_regex::{Regex, RegexBuilder};
 
     #[test]

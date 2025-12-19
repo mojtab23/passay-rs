@@ -68,10 +68,10 @@ impl Rule for NumberRangeRule {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::allowed_character::MatchBehavior::{Contains, EndsWith, StartsWith};
-    use crate::rule::number_range::{NumberRangeRule, ERROR_CODE};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::allowed_character::MatchBehavior::{Contains, EndsWith, StartsWith};
+    use crate::rule::number_range::{ERROR_CODE, NumberRangeRule};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

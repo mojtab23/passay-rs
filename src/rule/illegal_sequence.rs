@@ -110,15 +110,15 @@ impl<S: SequenceData> Rule for IllegalSequenceRule<S> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
     use crate::{
+        rule::PasswordData,
         rule::illegal_sequence::IllegalSequenceRule,
         rule::password_validator::PasswordValidator,
         rule::sequence_data::{
             CyrillicSequenceData, CzechSequenceData, EnglishSequenceData, GermanSequenceData,
             PolishSequenceData, SequenceData,
         },
-        rule::PasswordData,
     };
 
     #[test]

@@ -105,9 +105,9 @@ impl Default for WhitespaceRule {
 mod tests {
     use crate::rule::allowed_character::MatchBehavior::{Contains, EndsWith, StartsWith};
     use crate::rule::rule_result::CountCategory;
-    use crate::rule::whitespace::{WhitespaceRule, ERROR_CODE};
+    use crate::rule::whitespace::{ERROR_CODE, WhitespaceRule};
     use crate::rule::{PasswordData, Rule};
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

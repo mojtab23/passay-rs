@@ -29,9 +29,9 @@ passay-rs = "0.1.0"
 Then, create and configure your password validation rules:
 
 ```rust
-use passay_rs::rule::length::LengthRule;
 use passay_rs::rule::PasswordData;
 use passay_rs::rule::Rule;
+use passay_rs::rule::length::LengthRule;
 
 fn main() {
     let rule = LengthRule::new(8, 20);

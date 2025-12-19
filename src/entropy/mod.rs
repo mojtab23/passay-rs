@@ -1,8 +1,8 @@
+use crate::rule::PasswordData;
+use crate::rule::Rule;
 use crate::rule::character::CharacterRule;
 use crate::rule::character_characteristics::CharacterCharacteristics;
 use crate::rule::character_data::EnglishCharacterData;
-use crate::rule::PasswordData;
-use crate::rule::Rule;
 use std::collections::HashSet;
 use std::f64;
 
@@ -57,7 +57,9 @@ impl RandomPasswordEntropy {
             }
         }
         if unique_chars.is_empty() {
-            return Err("Password rules must contain at least 1 unique character by CharacterRule definition");
+            return Err(
+                "Password rules must contain at least 1 unique character by CharacterRule definition",
+            );
         }
         Ok(RandomPasswordEntropy {
             alphabet_size: unique_chars.len(),

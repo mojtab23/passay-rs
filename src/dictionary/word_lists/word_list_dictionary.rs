@@ -1,5 +1,5 @@
-use crate::dictionary::word_lists::{binary_search, WordLists};
 use crate::dictionary::Dictionary;
+use crate::dictionary::word_lists::{WordLists, binary_search};
 
 /// Provides fast searching for dictionary words using a word list. It's critical that the word list provided to this
 /// dictionary be sorted according to the natural ordering of {@link java.lang.String}.
@@ -36,10 +36,10 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::dictionary::Dictionary;
     use crate::dictionary::word_lists::sort::SliceSort;
     use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
-    use crate::dictionary::word_lists::{create_from_read, WordLists};
-    use crate::dictionary::Dictionary;
+    use crate::dictionary::word_lists::{WordLists, create_from_read};
 
     const FALSE_SEARCH: &str = "not-found-in-the-dictionary";
 

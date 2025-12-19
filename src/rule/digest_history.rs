@@ -1,5 +1,5 @@
 use crate::hash::Hasher;
-use crate::rule::history::{validate_with_history_references, HistoricalReference};
+use crate::rule::history::{HistoricalReference, validate_with_history_references};
 use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
 use crate::rule::{PasswordData, Rule};
@@ -79,12 +79,12 @@ where
 #[cfg(test)]
 pub(crate) mod test {
     use crate::hash::Hasher;
+    use crate::rule::PasswordData;
     use crate::rule::digest_history::DigestHistoryRule;
-    use crate::rule::history::{HistoricalReference, ERROR_CODE};
+    use crate::rule::history::{ERROR_CODE, HistoricalReference};
     use crate::rule::reference::Reference;
     use crate::rule::reference::Salt::{Prefix, Suffix};
-    use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
     use base64::Engine;
 
     #[test]

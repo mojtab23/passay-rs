@@ -142,10 +142,10 @@ impl Reference for SourceReference {
 
 #[cfg(test)]
 mod test {
-    use crate::rule::reference::Reference;
-    use crate::rule::source::{SourceReference, SourceRule, ERROR_CODE};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::reference::Reference;
+    use crate::rule::source::{ERROR_CODE, SourceReference, SourceRule};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

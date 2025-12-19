@@ -1,7 +1,7 @@
 use crate::hash::Hasher;
 use crate::rule::reference::Reference;
 use crate::rule::rule_result::RuleResult;
-use crate::rule::source::{validate_with_source_references, SourceReference};
+use crate::rule::source::{SourceReference, validate_with_source_references};
 use crate::rule::{PasswordData, Rule};
 
 /// Rule for determining if a password matches a digested password from a different source. Useful for when separate
@@ -81,12 +81,12 @@ where
 
 #[cfg(test)]
 mod test {
+    use crate::rule::PasswordData;
     use crate::rule::digest_history::test::Sha1Hasher;
     use crate::rule::digest_source::DigestSourceRule;
     use crate::rule::reference::Reference;
-    use crate::rule::source::{SourceReference, ERROR_CODE};
-    use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::source::{ERROR_CODE, SourceReference};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

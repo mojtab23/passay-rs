@@ -101,12 +101,12 @@ impl<D: Dictionary> DictionaryRuleTrait for DictionarySubstringRule<D> {
 mod tests {
     use crate::dictionary::word_lists::sort::SliceSort;
     use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
-    use crate::dictionary::word_lists::{create_from_read, ArrayWordList};
+    use crate::dictionary::word_lists::{ArrayWordList, create_from_read};
+    use crate::rule::PasswordData;
     use crate::rule::dictionary_substring::{
         DictionarySubstringRule, ERROR_CODE, ERROR_CODE_REVERSED,
     };
-    use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

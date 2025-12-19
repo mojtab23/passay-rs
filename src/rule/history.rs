@@ -140,10 +140,10 @@ impl Reference for HistoricalReference {
 
 #[cfg(test)]
 mod test {
-    use crate::rule::history::{HistoricalReference, HistoryRule, ERROR_CODE};
-    use crate::rule::reference::Reference;
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::history::{ERROR_CODE, HistoricalReference, HistoryRule};
+    use crate::rule::reference::Reference;
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

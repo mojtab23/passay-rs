@@ -102,7 +102,7 @@ pub fn binary_search(word_list: &impl WordLists, word: &str) -> Option<usize> {
 mod tests {
     use super::array_word_list::ArrayWordList;
     use super::sort::SliceSort;
-    use super::{binary_search, create_from_read, read_words, WordLists};
+    use super::{WordLists, binary_search, create_from_read, read_words};
 
     fn case_sensitive_word_list() -> ArrayWordList {
         create_from_read(

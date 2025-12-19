@@ -1,6 +1,6 @@
 use crate::dictionary::word_lists::sort::SliceSort;
 use crate::dictionary::word_lists::word_list_dictionary::WordListDictionary;
-use crate::dictionary::word_lists::{create_from_reads, ArrayWordList};
+use crate::dictionary::word_lists::{ArrayWordList, create_from_reads};
 use std::io::Read;
 
 pub mod ternary_tree;

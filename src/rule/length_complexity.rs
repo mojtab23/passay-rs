@@ -263,14 +263,14 @@ mod tests {
     use crate::rule::length_complexity::{ERROR_CODE, ERROR_CODE_RULES};
     use crate::rule::sequence_data::SequenceData;
     use crate::rule::{
-        character::CharacterRule, character_characteristics,
+        PasswordData, Rule, character::CharacterRule, character_characteristics,
         character_characteristics::CharacterCharacteristics, character_data::EnglishCharacterData,
         illegal_sequence::IllegalSequenceRule, length::LengthRule,
         length_complexity::LengthComplexityRule, repeat_character,
         repeat_character::RepeatCharacterRule, sequence_data::EnglishSequenceData, username,
-        username::UsernameRule, PasswordData, Rule,
+        username::UsernameRule,
     };
-    use crate::test::{check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_passwords};
 
     #[test]
     fn test_passwords() {

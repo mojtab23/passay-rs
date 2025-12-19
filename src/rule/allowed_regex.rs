@@ -43,13 +43,13 @@ impl Rule for AllowedRegex {
         let result1 = self.regex.is_match(password_data.password());
         if result1.is_err() {
             result.add_error(ERROR_CODE, None)
-        } else if let Ok(b) = result1 {
-            if !b {
-                result.add_error(
-                    ERROR_CODE,
-                    Some(self.create_rule_result_detail_parameters()),
-                )
-            }
+        } else if let Ok(b) = result1
+            && !b
+        {
+            result.add_error(
+                ERROR_CODE,
+                Some(self.create_rule_result_detail_parameters()),
+            )
         }
         result
     }
@@ -57,9 +57,9 @@ impl Rule for AllowedRegex {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::allowed_regex::{AllowedRegex, ERROR_CODE};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::allowed_regex::{AllowedRegex, ERROR_CODE};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
     use fancy_regex::{Regex, RegexBuilder};
 
     #[test]

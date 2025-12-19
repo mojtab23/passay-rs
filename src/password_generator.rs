@@ -1,9 +1,9 @@
 use crate::rule::character::CharacterRule;
 
+use rand::SeedableRng;
 use rand::distr::Distribution;
 use rand::distr::Uniform;
 use rand::rngs::StdRng;
-use rand::SeedableRng;
 
 /// Creates passwords that meet password character rule criteria.
 ///

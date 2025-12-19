@@ -38,7 +38,7 @@ impl CharacterData for EnglishCharacterData {
             EnglishCharacterData::UpperCase => upper!(),
             EnglishCharacterData::Digit => "0123456789",
             EnglishCharacterData::Alphabetical => alphabetical!(),
-            EnglishCharacterData::Special =>
+            EnglishCharacterData::Special => {
                 "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\
                 \u{00a1}\u{00a2}\u{00a3}\u{00a4}\u{00a5}\u{00a6}\u{00a7}\u{00a8}\u{00a9}\u{00aa}\u{00ab}\u{00ac}\u{00ad}\u{00ae}\u{00af}\
                 \u{00b0}\u{00b1}\u{00b2}\u{00b3}\u{00b4}\u{00b5}\u{00b6}\u{00b7}\u{00b8}\u{00b9}\u{00ba}\u{00bb}\u{00bc}\u{00bd}\u{00be}\u{00bf}\
@@ -46,7 +46,8 @@ impl CharacterData for EnglishCharacterData {
                 \u{2013}\u{2014}\u{2015}\u{2017}\u{2018}\u{2019}\u{201a}\u{201b}\u{201c}\u{201d}\u{201e}\u{2020}\u{2021}\u{2022}\u{2026}\u{2030}\u{2032}\u{2033}\
                 \u{2039}\u{203a}\u{203c}\u{203e}\u{2044}\u{204a}\
                 \u{20a0}\u{20a1}\u{20a2}\u{20a3}\u{20a4}\u{20a5}\u{20a6}\u{20a7}\u{20a8}\u{20a9}\u{20aa}\u{20ab}\u{20ac}\u{20ad}\u{20ae}\u{20af}\
-                \u{20b0}\u{20b1}\u{20b2}\u{20b3}\u{20b4}\u{20b5}\u{20b6}\u{20b7}\u{20b8}\u{20b9}\u{20ba}\u{20bb}\u{20bc}\u{20bd}\u{20be}",
+                \u{20b0}\u{20b1}\u{20b2}\u{20b3}\u{20b4}\u{20b5}\u{20b6}\u{20b7}\u{20b8}\u{20b9}\u{20ba}\u{20bb}\u{20bc}\u{20bd}\u{20be}"
+            }
         }
     }
 

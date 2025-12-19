@@ -120,7 +120,7 @@ mod tests {
     use crate::rule::character_data::{CharacterData, EnglishCharacterData};
     use crate::rule::rule_result::CountCategory;
     use crate::rule::{PasswordData, Rule};
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

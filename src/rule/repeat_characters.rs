@@ -103,9 +103,9 @@ impl Rule for RepeatCharactersRule {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::repeat_characters::{RepeatCharactersRule, ERROR_CODE};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::repeat_characters::{ERROR_CODE, RepeatCharactersRule};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

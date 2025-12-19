@@ -154,7 +154,7 @@ fn insert_r<T>(
             old_value
         }
 
-        Some(ref mut node) => choose_branch_and_do_insert(node),
+        Some(node) => choose_branch_and_do_insert(node),
     }
 }
 
@@ -522,10 +522,10 @@ fn visit_neighbor_values_r<T, C>(
     C: FnMut(&T),
 {
     if range == 0 {
-        if let Some(label) = label {
-            if let Some(value) = get_r(link, label, key_tail, comparator) {
-                callback(value);
-            }
+        if let Some(label) = label
+            && let Some(value) = get_r(link, label, key_tail, comparator)
+        {
+            callback(value);
         }
     } else if let Some(ref node) = *link {
         visit_neighbor_values_r(
@@ -603,10 +603,10 @@ fn visit_neighbor_values_r_mut<T, C>(
     C: FnMut(&mut T),
 {
     if range == 0 {
-        if let Some(label) = label {
-            if let Some(value) = get_r_mut(link, label, key_tail, comparator) {
-                callback(value);
-            }
+        if let Some(label) = label
+            && let Some(value) = get_r_mut(link, label, key_tail, comparator)
+        {
+            callback(value);
         }
     } else if let Some(ref mut node) = *link {
         let label_tmp = node.label;
@@ -1199,9 +1199,9 @@ macro_rules! tst {
         $crate::Tst::new()
     }};
 
-    ($($key:expr => $value:expr,)+) => (tst!($($key => $value),+));
+    ($($key:expr_2021 => $value:expr_2021,)+) => (tst!($($key => $value),+));
 
-    ($($key: expr => $val: expr),*) => {{
+    ($($key: expr_2021 => $val: expr_2021),*) => {{
 
         let mut tst = $crate::Tst::new();
         $(
@@ -1234,7 +1234,7 @@ pub struct TstIterator<'a, T: 'a> {
 }
 
 macro_rules! gen_it_path {
-    ($path_of_x:ident, $todo_x:ident, $a1:expr, $a2:expr) => {
+    ($path_of_x:ident, $todo_x:ident, $a1:expr_2021, $a2:expr_2021) => {
         pub fn $path_of_x(&self) -> String {
             let mut path = String::new();
 
@@ -1262,7 +1262,7 @@ impl<'a, T> TstIterator<'a, T> {
             last_j: None,
         };
 
-        if let Some(ref node) = root {
+        if let Some(node) = root {
             it.todo_i.push((node, GoLeft));
             it.todo_j.push((node, GoRight));
         }
@@ -1291,16 +1291,15 @@ impl<'a, T> Iterator for TstIterator<'a, T> {
                 }
 
                 Visit => {
-                    if node.value.is_some() {
-                        if let Some(node_j) = self.last_j {
-                            if ptr::eq(node, node_j) {
-                                self.todo_i.clear();
-                                self.todo_j.clear();
+                    if node.value.is_some()
+                        && let Some(node_j) = self.last_j
+                        && ptr::eq(node, node_j)
+                    {
+                        self.todo_i.clear();
+                        self.todo_j.clear();
 
-                                found = None;
-                                break;
-                            }
-                        }
+                        found = None;
+                        break;
                     }
 
                     self.todo_i.push((node, GoMiddle));
@@ -1357,16 +1356,15 @@ impl<'a, T> DoubleEndedIterator for TstIterator<'a, T> {
                 }
 
                 Visit => {
-                    if node.value.is_some() {
-                        if let Some(node_i) = self.last_i {
-                            if ptr::eq(node, node_i) {
-                                self.todo_i.clear();
-                                self.todo_j.clear();
+                    if node.value.is_some()
+                        && let Some(node_i) = self.last_i
+                        && ptr::eq(node, node_i)
+                    {
+                        self.todo_i.clear();
+                        self.todo_j.clear();
 
-                                found = None;
-                                break;
-                            }
-                        }
+                        found = None;
+                        break;
                     }
 
                     self.todo_j.push((node, GoLeft));
@@ -1481,7 +1479,7 @@ impl<'a, 'b, T> TstNeighborIterator<'a, 'b, T> {
             last_j: None,
         };
 
-        if let Some(ref node) = &tst.root {
+        if let Some(node) = &tst.root {
             let mut key_tail = key.chars();
             let key_len = key.chars().count();
             let label = key_tail.next();
@@ -1509,10 +1507,11 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                 GoLeft => {
                     self.todo_i.push((node, Visit, label, key_tail.clone(), tail_len, range));
 
-                    if let Some(label) = label {
-                        if range == 0 && label >= node.label {
-                            continue;
-                        }
+                    if let Some(label) = label
+                        && range == 0
+                        && label >= node.label
+                    {
+                        continue;
                     }
 
                     if let Some(ref child) = node.left {
@@ -1521,16 +1520,15 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                 }
 
                 Visit => {
-                    if node.value.is_some() {
-                        if let Some(node_j) = self.last_j {
-                            if ptr::eq(node, node_j) {
-                                self.todo_i.clear();
-                                self.todo_j.clear();
+                    if node.value.is_some()
+                        && let Some(node_j) = self.last_j
+                        && ptr::eq(node, node_j)
+                    {
+                        self.todo_i.clear();
+                        self.todo_j.clear();
 
-                                found = None;
-                                break;
-                            }
-                        }
+                        found = None;
+                        break;
                     }
 
                     self.todo_i.push((node, GoMiddle, label, key_tail, tail_len, range));
@@ -1590,10 +1588,11 @@ impl<'a, 'b, T> Iterator for TstNeighborIterator<'a, 'b, T> {
                 }
 
                 GoRight => {
-                    if let Some(label) = label {
-                        if range == 0 && label <= node.label {
-                            continue;
-                        }
+                    if let Some(label) = label
+                        && range == 0
+                        && label <= node.label
+                    {
+                        continue;
                     }
 
                     if let Some(ref child) = node.right {
@@ -1616,10 +1615,11 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                 GoRight => {
                     self.todo_j.push((node, GoMiddle, label, key_tail.clone(), tail_len, range));
 
-                    if let Some(label) = label {
-                        if range == 0 && label <= node.label {
-                            continue;
-                        }
+                    if let Some(label) = label
+                        && range == 0
+                        && label <= node.label
+                    {
+                        continue;
                     }
 
                     if let Some(ref child) = node.right {
@@ -1628,16 +1628,15 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                 }
 
                 Visit => {
-                    if node.value.is_some() {
-                        if let Some(node_i) = self.last_i {
-                            if ptr::eq(node, node_i) {
-                                self.todo_i.clear();
-                                self.todo_j.clear();
+                    if node.value.is_some()
+                        && let Some(node_i) = self.last_i
+                        && ptr::eq(node, node_i)
+                    {
+                        self.todo_i.clear();
+                        self.todo_j.clear();
 
-                                found = None;
-                                break;
-                            }
-                        }
+                        found = None;
+                        break;
                     }
 
                     self.todo_j.push((node, GoLeft, label, key_tail, tail_len, range));
@@ -1697,10 +1696,11 @@ impl<'a, 'b, T> DoubleEndedIterator for TstNeighborIterator<'a, 'b, T> {
                 }
 
                 GoLeft => {
-                    if let Some(label) = label {
-                        if range == 0 && label >= node.label {
-                            continue;
-                        }
+                    if let Some(label) = label
+                        && range == 0
+                        && label >= node.label
+                    {
+                        continue;
                     }
 
                     if let Some(ref child) = node.left {
@@ -1739,7 +1739,7 @@ impl<'a, 'b, T> TstCrosswordIterator<'a, 'b, T> {
             joker,
         };
 
-        if let Some(ref node) = &tst.root {
+        if let Some(node) = &tst.root {
             let mut key_tail = key.chars();
 
             if let Some(label) = key_tail.next() {
@@ -1768,61 +1768,54 @@ impl<'a, 'b, T> Iterator for TstCrosswordIterator<'a, 'b, T> {
                 GoLeft => {
                     self.todo_i.push((node, Visit, label, key_tail.clone(), tail_len));
 
-                    if label == self.joker || label < node.label {
-                        if let Some(ref child) = node.left {
-                            self.todo_i.push((child, GoLeft, label, key_tail, tail_len));
-                        }
+                    if (label == self.joker || label < node.label)
+                        && let Some(ref child) = node.left
+                    {
+                        self.todo_i.push((child, GoLeft, label, key_tail, tail_len));
                     }
                 }
 
                 Visit => {
-                    if node.value.is_some() {
-                        if let Some(node_j) = self.last_j {
-                            if ptr::eq(node, node_j) {
-                                self.todo_i.clear();
-                                self.todo_j.clear();
+                    if node.value.is_some()
+                        && let Some(node_j) = self.last_j
+                        && ptr::eq(node, node_j)
+                    {
+                        self.todo_i.clear();
+                        self.todo_j.clear();
 
-                                found = None;
-                                break;
-                            }
-                        }
+                        found = None;
+                        break;
                     }
 
                     self.todo_i.push((node, GoMiddle, label, key_tail, tail_len));
 
-                    if let Some(ref value) = node.value {
-                        if tail_len == 0 && (label == self.joker || label == node.label) {
-                            self.last_i = Some(node);
-                            found = Some(value);
+                    if let Some(ref value) = node.value
+                        && tail_len == 0
+                        && (label == self.joker || label == node.label)
+                    {
+                        self.last_i = Some(node);
+                        found = Some(value);
 
-                            break;
-                        }
+                        break;
                     }
                 }
 
                 GoMiddle => {
                     self.todo_i.push((node, GoRight, label, key_tail.clone(), tail_len));
 
-                    if label == self.joker || label == node.label {
-                        if let Some(ref child) = node.middle {
-                            if let Some(new_label) = key_tail.next() {
-                                self.todo_i.push((
-                                    child,
-                                    GoLeft,
-                                    new_label,
-                                    key_tail,
-                                    tail_len - 1,
-                                ));
-                            }
-                        }
+                    if (label == self.joker || label == node.label)
+                        && let Some(ref child) = node.middle
+                        && let Some(new_label) = key_tail.next()
+                    {
+                        self.todo_i.push((child, GoLeft, new_label, key_tail, tail_len - 1));
                     }
                 }
 
                 GoRight => {
-                    if label == self.joker || label > node.label {
-                        if let Some(ref child) = node.right {
-                            self.todo_i.push((child, GoLeft, label, key_tail, tail_len));
-                        }
+                    if (label == self.joker || label > node.label)
+                        && let Some(ref child) = node.right
+                    {
+                        self.todo_i.push((child, GoLeft, label, key_tail, tail_len));
                     }
                 }
             }
@@ -1841,61 +1834,54 @@ impl<'a, 'b, T> DoubleEndedIterator for TstCrosswordIterator<'a, 'b, T> {
                 GoRight => {
                     self.todo_j.push((node, GoMiddle, label, key_tail.clone(), tail_len));
 
-                    if label == self.joker || label > node.label {
-                        if let Some(ref child) = node.right {
-                            self.todo_j.push((child, GoRight, label, key_tail, tail_len));
-                        }
+                    if (label == self.joker || label > node.label)
+                        && let Some(ref child) = node.right
+                    {
+                        self.todo_j.push((child, GoRight, label, key_tail, tail_len));
                     }
                 }
 
                 Visit => {
-                    if node.value.is_some() {
-                        if let Some(node_i) = self.last_i {
-                            if ptr::eq(node, node_i) {
-                                self.todo_i.clear();
-                                self.todo_j.clear();
+                    if node.value.is_some()
+                        && let Some(node_i) = self.last_i
+                        && ptr::eq(node, node_i)
+                    {
+                        self.todo_i.clear();
+                        self.todo_j.clear();
 
-                                found = None;
-                                break;
-                            }
-                        }
+                        found = None;
+                        break;
                     }
 
                     self.todo_j.push((node, GoLeft, label, key_tail, tail_len));
 
-                    if let Some(ref value) = node.value {
-                        if tail_len == 0 && (label == self.joker || label == node.label) {
-                            self.last_j = Some(node);
-                            found = Some(value);
+                    if let Some(ref value) = node.value
+                        && tail_len == 0
+                        && (label == self.joker || label == node.label)
+                    {
+                        self.last_j = Some(node);
+                        found = Some(value);
 
-                            break;
-                        }
+                        break;
                     }
                 }
 
                 GoMiddle => {
                     self.todo_j.push((node, Visit, label, key_tail.clone(), tail_len));
 
-                    if label == self.joker || label == node.label {
-                        if let Some(ref child) = node.middle {
-                            if let Some(new_label) = key_tail.next() {
-                                self.todo_j.push((
-                                    child,
-                                    GoRight,
-                                    new_label,
-                                    key_tail,
-                                    tail_len - 1,
-                                ));
-                            }
-                        }
+                    if (label == self.joker || label == node.label)
+                        && let Some(ref child) = node.middle
+                        && let Some(new_label) = key_tail.next()
+                    {
+                        self.todo_j.push((child, GoRight, new_label, key_tail, tail_len - 1));
                     }
                 }
 
                 GoLeft => {
-                    if label == self.joker || label < node.label {
-                        if let Some(ref child) = node.left {
-                            self.todo_j.push((child, GoRight, label, key_tail, tail_len));
-                        }
+                    if (label == self.joker || label < node.label)
+                        && let Some(ref child) = node.left
+                    {
+                        self.todo_j.push((child, GoRight, label, key_tail, tail_len));
                     }
                 }
             }

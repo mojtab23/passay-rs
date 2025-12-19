@@ -2,9 +2,9 @@ use crate::rule::allowed_character::MatchBehavior::Contains;
 use crate::rule::password_utils::count_matching_characters;
 use crate::rule::rule_result::{CountCategory, RuleResult, RuleResultMetadata};
 use crate::rule::{HasCharacters, PasswordData, Rule};
+use MatchBehavior::{EndsWith, StartsWith};
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
-use MatchBehavior::{EndsWith, StartsWith};
 
 const ERROR_CODE: &str = "ALLOWED_CHAR";
 
@@ -153,7 +153,7 @@ mod tests {
     use crate::rule::allowed_character::{AllowedCharacter, ERROR_CODE};
     use crate::rule::rule_result::CountCategory;
     use crate::rule::{PasswordData, Rule};
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
     const ALLOWED_CHARS: &str = "abcdefghijklmnopqrstuvwxyz";
     #[test]
     fn test_passwords() {

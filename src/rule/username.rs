@@ -116,10 +116,10 @@ impl Default for UsernameRule {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::allowed_character::MatchBehavior;
-    use crate::rule::username::{UsernameRule, ERROR_CODE, ERROR_CODE_REVERSED};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::allowed_character::MatchBehavior;
+    use crate::rule::username::{ERROR_CODE, ERROR_CODE_REVERSED, UsernameRule};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

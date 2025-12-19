@@ -71,9 +71,9 @@ impl Rule for CharacterOccurrences {
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::character_occurrences::{CharacterOccurrences, ERROR_CODE};
     use crate::rule::PasswordData;
-    use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
+    use crate::rule::character_occurrences::{CharacterOccurrences, ERROR_CODE};
+    use crate::test::{RulePasswordTestItem, check_messages, check_passwords};
 
     #[test]
     fn test_passwords() {

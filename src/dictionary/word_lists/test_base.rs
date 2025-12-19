@@ -2,7 +2,7 @@
 
 use super::array_word_list::ArrayWordList;
 use super::sort::SliceSort;
-use super::{create_from_read, WordLists};
+use super::{WordLists, create_from_read};
 
 pub struct ExpectedWord {
     pub word: String,

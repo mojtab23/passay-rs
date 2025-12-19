@@ -2,8 +2,8 @@ use std::cmp::Ordering;
 use std::ops::Index;
 use std::slice::Iter;
 
-use super::sort::{ArraySorter, Comparator, SliceSort};
 use super::WordLists;
+use super::sort::{ArraySorter, Comparator, SliceSort};
 
 pub fn case_sensitive_comparator(a: &str, b: &str) -> Ordering {
     a.cmp(b)
