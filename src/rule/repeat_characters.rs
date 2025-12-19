@@ -5,6 +5,25 @@ use std::collections::HashMap;
 const ERROR_CODE: &str = "ILLEGAL_REPEATED_CHARS";
 const DEFAULT_SEQUENCE_LENGTH: usize = 5;
 const DEFAULT_SEQUENCE_COUNT: usize = 1;
+
+/// Rule for determining if a password contains multiple sequences of repeating characters.
+/// For example, the password "11a22b333xyz" will fail validation of this rule with
+/// a sequence length of 2 and sequence count of 3, since it contains 3 sequences (or more)
+/// of 2 repeating characters (or more).
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::repeat_characters::RepeatCharactersRule;
+///  use passay_rs::rule::Rule;
+///  use fancy_regex::Regex;
+///
+///  let rule = RepeatCharactersRule::new(5, 2).unwrap();
+///  let password = PasswordData::with_password("p4&&&&&#n65FFFFF".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct RepeatCharactersRule {
     sequence_length: usize,
     sequence_count: usize,
