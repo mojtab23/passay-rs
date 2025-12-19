@@ -77,7 +77,6 @@ pub type Comparator = fn(char, char) -> Ordering;
 /// more flexible ways to find and iterate over values.
 ///
 /// See the [module documentation]( ./index.html) for example usage and motivation.
-
 pub struct Tst<T> {
     root: Link<T>,
     count: usize,
@@ -321,18 +320,17 @@ pub struct BytesStat {
 /// Contains various metrics describing the tree: its nodes, keys and values. Mostly used for tuning and debugging
 /// purpose.
 /// * `dist[n].matches` number of values reached by traversing _n_ `middle` links (the number of keys of length
-/// _n_)
+///   _n_)
 /// * `dist[n].sides` number of values reached by traversing _n_ `left` or `middle` links (those links may indicate
-/// that the tree is not well balanced)
+///   that the tree is not well balanced)
 /// * `dist[n].depth` number of values whose total depth (`middle`, `left` and `right` links) is _n_
 /// * `key_len.min` length of the shortest key inserted in the tree
 /// * `key_len.max` length of the longest key inserted in the tree
 /// * `count.nodes` total number of nodes in the tree
 /// * `count.values` number of nodes which store a value (same as [len]( ./struct.Tst.html#method.len))
 /// * `bytes.node` byte size of a node (including the fixed size of a value, but excluding heap allocated memory of
-/// this value)
+///   this value)
 /// * `bytes.total` total number of bytes allocated for nodes (`count.nodes` * `bytes.node`)
-
 #[derive(Default, PartialEq, Eq, Debug)]
 pub struct Stats {
     pub dist: Vec<DistStat>,
@@ -836,20 +834,8 @@ impl<T> Tst<T> {
     /// Create a new, empty `Tst`. The key is always a string slice and one needs only to provide a value
     /// type. The following code creates an empty tree which stores `bool` values
     ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// let mut map: Tst<bool> = Tst::new();
-    /// ```
-    ///
     /// Although most of the time, type inference and some context allow to simply write
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// let mut map = Tst::new();
-    /// # map.insert("foo", true);
-    ///
-    /// ```
     /// And the exact value type is properly guessed.
-
     pub fn new(case_sensitive: bool) -> Self {
         let comparator: Comparator = if case_sensitive {
             |a, b| a.cmp(&b)
@@ -865,33 +851,11 @@ impl<T> Tst<T> {
 
     /// Inserts `key` and `value` pair in the tree, returning any value previously associated with `key`.
     ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// let mut map = Tst::new();
-    /// assert_eq!(map.len(), 0);
-    ///
-    /// let old_value = map.insert("foo", "🍄🍄");
-    /// assert_eq!(old_value, None);
-    /// assert_eq!(map.len(), 1);
-    /// ```
-    ///
     /// Because `key` represents a node path to `value` in the tree, an empty key is meaningless, and its
     /// associated value cannot be stored in the tree. In such a case, `value` is given back by `insert`
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # let mut map = Tst::new();
-    /// assert_eq!(map.len(), 0);
-    ///
-    /// let this_value = map.insert("", "woups");
-    /// assert_eq!(this_value, Some("woups"));
-    /// assert_eq!(map.len(), 0);
-    /// ```
-    ///
     /// Another consequence of `key` representing a path in the tree is that `key` is not consumed by `insert`:
     /// `key` is only borrowed by the tree which needs to iterate over it, but does not need to store it. Thus once
     /// insertion is done, `key` is given back to the caller.
-
     pub fn insert(&mut self, key: &str, value: T) -> Option<T> {
         let mut key_tail = key.chars();
 
@@ -911,15 +875,6 @@ impl<T> Tst<T> {
     }
 
     /// Returns an immutable reference to the value associated with `key`, or None.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # let mut map = Tst::new();
-    /// map.insert("foo", "🍄🍄");
-    ///
-    /// let v = map.get("foo");
-    /// assert_eq!(v, Some(&"🍄🍄"));
-
     pub fn get(&self, key: &str) -> Option<&T> {
         let mut key_tail = key.chars();
 
@@ -931,19 +886,6 @@ impl<T> Tst<T> {
     }
 
     /// Returns an mutable reference to the value associated with `key`, or `None`.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # let mut map = Tst::new();
-    /// map.insert("foo", "🍄".to_string());
-    ///
-    /// if let Some(v) = map.get_mut("foo") {
-    ///     v.push('🍄');
-    /// }
-    ///
-    /// let v = map.get("foo");
-    /// assert_eq!(v, Some(&"🍄🍄".to_string()));
-
     pub fn get_mut(&mut self, key: &str) -> Option<&mut T> {
         let mut key_tail = key.chars();
 
@@ -956,18 +898,6 @@ impl<T> Tst<T> {
 
     /// Removes the value associated with `key` from the tree, and returns it. Does nothing if no value is
     /// associated with `key`, and returns `None`.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # let mut map = Tst::new();
-    /// map.insert("foo", "🍄🍄".to_string());
-    ///
-    /// let v = map.remove("foo");
-    /// assert_eq!(v, Some("🍄🍄".to_string()));
-    ///
-    /// let v = map.remove("foo");
-    /// assert_eq!(v, None);
-
     pub fn remove(&mut self, key: &str) -> Option<T> {
         let mut key_tail = key.chars();
 
@@ -989,37 +919,13 @@ impl<T> Tst<T> {
     }
 
     /// Returns the number of values stored in the tree.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// let mut map = Tst::new();
-    /// assert_eq!(map.len(), 0);
-    ///
-    /// map.insert("foo", "🍄🍄");
-    /// assert_eq!(map.len(), 1);
-    /// ```
-
     pub fn len(&self) -> usize {
         self.count
     }
 
     /// Walks the tree, gathers various metrics about nodes, keys and values, and returns a [`Stats`](
     /// ./struct.Stats.html) structure to sum it up.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// let mut map = Tst::new();
-    /// assert_eq!(map.len(), 0);
-    ///
-    /// map.insert("foo", "🍄🍄");
-    /// assert_eq!(map.len(), 1);
-    ///
-    /// let stats = map.stat();
-    /// assert_eq!(stats.count.nodes, 3);
-    /// ```
-    ///
     /// See [Stats]( ./struct.Stats.html) for a detailed description of available fields.
-
     pub fn stat(&self) -> Stats {
         let empty_stats: Stats = Default::default();
 
@@ -1032,18 +938,6 @@ impl<T> Tst<T> {
     }
 
     /// Deletes every node and value stored in the tree.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// let mut map = Tst::new();
-    /// assert_eq!(map.len(), 0);
-    ///
-    /// map.insert("foo", "🍄🍄");
-    /// assert_eq!(map.len(), 1);
-    ///
-    /// map.clear();
-    /// assert_eq!(map.len(), 0);
-
     pub fn clear(&mut self) {
         self.root = None;
         self.count = 0;
@@ -1052,17 +946,6 @@ impl<T> Tst<T> {
     /// Recursively walks the tree and calls `callback` closure on each immutable value. Values are found in
     /// alphabetical order of keys. See also the [`iter`]( ./struct.Tst.html#method.iter) method which produces the
     /// same sequence of values in a non-recursive way.
-    ///
-    /// ```
-    /// # use passay_rs::Tst;
-    /// # use passay_rs::tst;
-    /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    ///
-    /// let mut v = Vec::new();
-    /// map.visit_values(|s| v.push(s.clone()));
-    /// assert_eq!(v, ["🐟", "㵅", "🍄🍄"]);
-    /// ```
-
     pub fn visit_values<C>(&self, mut callback: C)
     where
         C: FnMut(&T),
@@ -1073,7 +956,6 @@ impl<T> Tst<T> {
     /// Recursively walks the tree and calls `callback` closure on each mutable value. The same as
     /// [`visit_values`]( ./struct.Tst.html#method.visit_values), except the `_mut` version works on mutable
     /// values, and does not have an iterator counterpart.
-
     pub fn visit_values_mut<C>(&mut self, mut callback: C)
     where
         C: FnMut(&mut T),
@@ -1085,32 +967,11 @@ impl<T> Tst<T> {
     /// `key_prefix`. Values are found in alphabetical order of keys. See also the [`iter_complete`](
     /// ./struct.Tst.html#method.iter_complete) method which produces the same sequence of values in a
     /// non-recursive way.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    ///
-    /// let mut v = Vec::new();
-    /// map.visit_complete_values("ba", |s| v.push(s.clone()));
-    /// assert_eq!(v, ["🐟", "㵅"]);
-    /// ```
-    ///
     /// Some key is not a prefix of itself. In the previous example, `visit_complete_values` called with `foo`
     /// prefix would find no value
     ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// # let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    /// let mut v = Vec::new();
-    /// map.visit_complete_values("foo", |s| v.push(s.clone()));
-    /// assert_eq!(v.is_empty(), true);
-    /// ```
-    ///
     /// If `key_prefix` is empty, `visit_complete_values` behaves as [`visit_values`](
     /// ./struct.Tst.html#method.visit_values), and all values stored in the tree are found.
-
     pub fn visit_complete_values<C>(&self, key_prefix: &str, mut callback: C)
     where
         C: FnMut(&T),
@@ -1130,7 +991,6 @@ impl<T> Tst<T> {
     /// Recursively walks the tree and calls `callback` closure on each mutable value whose key begins with
     /// `key_prefix`. The same as [`visit_complete_values`]( ./struct.Tst.html#method.visit_complete_values),
     /// except the `_mut` version works on mutable values, and does not have an iterator counterpart.
-
     pub fn visit_complete_values_mut<C>(&mut self, key_prefix: &str, mut callback: C)
     where
         C: FnMut(&mut T),
@@ -1153,30 +1013,9 @@ impl<T> Tst<T> {
     /// order of keys. See also the [`iter_neighbor`]( ./struct.Tst.html#method.iter_neighbor) method which
     /// produces the same sequence of values in a non-recursive way.
     ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["fo" => "🍄", "bar" => "🐟", "baz" => "㵅", "fooo" => "🍄🍄🍄"];
-    ///
-    /// let mut v = Vec::new();
-    /// map.visit_neighbor_values("bar", 1, |s| v.push(s.clone()));
-    /// assert_eq!(v, ["🐟", "㵅"]);
-    /// ```
-    ///
     /// An empty `key` is allowed, and with a `range` of _n_, it will find all values whose key length is up to
     /// _n_. In the previous example `visit_neighbor_values` called with `""` key and range `3` would find all
     /// value whose key length is ≤ 3
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["fo" => "🍄", "bar" => "🐟", "baz" => "㵅", "fooo" => "🍄🍄🍄"];
-    ///
-    /// let mut v = Vec::new();
-    /// map.visit_neighbor_values("", 3, |s| v.push(s.clone()));
-    /// assert_eq!(v, ["🐟", "㵅", "🍄"]);
-    /// ```
-
     pub fn visit_neighbor_values<C>(&self, key: &str, range: usize, mut callback: C)
     where
         C: FnMut(&T),
@@ -1201,7 +1040,6 @@ impl<T> Tst<T> {
     /// ([Hamming distance]( http://en.wikipedia.org/wiki/Hamming_distance) of `range`). The same as
     /// [`visit_neighbor_values`]( ./struct.Tst.html#method.visit_neighbor_values), except the `_mut` version works
     /// on mutable values, and does not have an iterator counterpart.
-
     pub fn visit_neighbor_values_mut<C>(&mut self, key: &str, range: usize, mut callback: C)
     where
         C: FnMut(&mut T),
@@ -1227,31 +1065,9 @@ impl<T> Tst<T> {
     /// are found in alphabetical order of keys. See also the [`iter_crossword`](
     /// ./struct.Tst.html#method.iter_crossword) method which produces the same sequence of values in a
     /// non-recursive way.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["fo" => "🍄", "bar" => "🐟", "baz" => "㵅", "fooo" => "🍄🍄🍄"];
-    ///
-    /// let mut v = Vec::new();
-    /// map.visit_crossword_values("?a?", '?', |s| v.push(s.clone()));
-    /// assert_eq!(v, ["🐟", "㵅"]);
-    /// ```
-    ///
     /// A `pattern` of _n_ `joker` characters will find all values whose key length is exactly _n_
     ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let mut v = Vec::new();
-    /// let map = tst!["fo" => "🍄", "bar" => "🐟", "baz" => "㵅", "fooo" => "🍄🍄🍄"];
-    ///
-    /// map.visit_crossword_values("???", '?', |s| v.push(s.clone()));
-    /// assert_eq!(v, ["🐟", "㵅"]);
-    /// ```
-    ///
     /// An empty `pattern` is meaningless, and does not find any value.
-
     pub fn visit_crossword_values<C>(&self, pattern: &str, joker: char, mut callback: C)
     where
         C: FnMut(&T),
@@ -1271,7 +1087,6 @@ impl<T> Tst<T> {
     /// with `joker` characters. The same as [`visit_crossword_values`](
     /// ./struct.Tst.html#method.visit_crossword_values), except the `_mut` version works on mutable values, and
     /// does not have an iterator counterpart.
-
     pub fn visit_crossword_values_mut<C>(&mut self, pattern: &str, joker: char, mut callback: C)
     where
         C: FnMut(&mut T),
@@ -1295,7 +1110,6 @@ impl<T> Tst<T> {
     /// box "☑" denotes a node which stores a value (it corresponds to the last character of a key). An empty box
     /// "☐" means that the node has no value. Mostly used for documentation and debugging purpose. See the [module
     /// documentation]( ./index.html) for an example.
-
     pub fn pretty_print(&self, writer: &mut dyn Write) {
         let _ = writeln!(writer, "digraph {{");
         let _ = writeln!(writer, "node [shape=plaintext]");
@@ -1316,24 +1130,6 @@ impl<T> Tst<T> {
     /// returned by [`next`]( ./struct.TstIterator.html#method.next) or [`next_back`](
     /// struct.TstIterator.html#method.next_back). See also the [`visit_value_mut`](
     /// ./struct.Tst.html#method.visit_values_mut) method which produces the same sequence of mutable values.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    ///
-    /// let mut it = map.iter();
-    ///
-    /// let first_value = it.next();
-    /// let last_value = it.next_back();
-    ///
-    /// let first_key = it.current_key();
-    /// let last_key = it.current_key_back();
-    ///
-    /// assert_eq!((first_key, first_value), ("bar".to_string(), Some(&"🐟")));
-    /// assert_eq!((last_key, last_value), ("foo".to_string(), Some(&"🍄🍄")));
-    /// ```
-
     pub fn iter(&self) -> TstIterator<'_, T> {
         TstIterator::<T>::new(self)
     }
@@ -1348,24 +1144,6 @@ impl<T> Tst<T> {
     /// struct.TstCompleteIterator.html#method.next_back). See also the [`visit_complete_value_mut`](
     /// ./struct.Tst.html#method.visit_complete_values_mut) method which produces the same sequence of mutable
     /// values.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    ///
-    /// let mut it = map.iter_complete("b");
-    ///
-    /// let first_value = it.next();
-    /// let last_value = it.next_back();
-    ///
-    /// let first_key = it.current_key();
-    /// let last_key = it.current_key_back();
-    ///
-    /// assert_eq!((first_key, first_value), ("bar".to_string(), Some(&"🐟")));
-    /// assert_eq!((last_key, last_value), ("baz".to_string(), Some(&"㵅")));
-    /// ```
-
     pub fn iter_complete(&self, prefix: &str) -> TstCompleteIterator<'_, T> {
         TstCompleteIterator::<T>::new(self, prefix)
     }
@@ -1383,24 +1161,6 @@ impl<T> Tst<T> {
     /// struct.TstNeighborIterator.html#method.next_back). See also the [`visit_neighbor_value_mut`](
     /// ./struct.Tst.html#method.visit_neighbor_values_mut) method which produces the same sequence of mutable
     /// values.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    ///
-    /// let mut it = map.iter_neighbor("bar", 1);
-    ///
-    /// let first_value = it.next();
-    /// let last_value = it.next_back();
-    ///
-    /// let first_key = it.current_key();
-    /// let last_key = it.current_key_back();
-    ///
-    /// assert_eq!((first_key, first_value), ("bar".to_string(), Some(&"🐟")));
-    /// assert_eq!((last_key, last_value), ("baz".to_string(), Some(&"㵅")));
-    /// ```
-
     pub fn iter_neighbor<'a, 'b>(
         &'a self,
         key: &'b str,
@@ -1421,24 +1181,6 @@ impl<T> Tst<T> {
     /// struct.TstCrosswordIterator.html#method.next_back). See also the [`visit_crossword_value_mut`](
     /// ./struct.Tst.html#method.visit_crossword_values_mut) method which produces the same sequence of mutable
     /// values.
-    ///
-    /// ```
-    /// # use ternary_tree::Tst;
-    /// # use ternary_tree::tst;
-    /// let map = tst!["foo" => "🍄🍄", "bar" => "🐟", "baz" => "㵅"];
-    ///
-    /// let mut it = map.iter_crossword("?a?", '?');
-    ///
-    /// let first_value = it.next();
-    /// let last_value = it.next_back();
-    ///
-    /// let first_key = it.current_key();
-    /// let last_key = it.current_key_back();
-    ///
-    /// assert_eq!((first_key, first_value), ("bar".to_string(), Some(&"🐟")));
-    /// assert_eq!((last_key, last_value), ("baz".to_string(), Some(&"㵅")));
-    /// ```
-
     pub fn iter_crossword<'a, 'b>(
         &'a self,
         pattern: &'b str,
@@ -1450,14 +1192,6 @@ impl<T> Tst<T> {
 
 /// A shortcut macro to help create a small tree with a list of known `"key" => value` pairs. Calls [`insert`](
 /// ./struct.Tst.html#method.insert) on each pair, in order.
-///
-/// ```
-/// # use ternary_tree::Tst;
-/// # use ternary_tree::tst;
-/// let map = tst!["fo" => "🍄", "bar" => "🐟", "baz" => "㵅", "fooo" => "🍄🍄🍄"];
-/// assert_eq!(map.len(), 4)
-/// ````
-
 #[macro_export]
 macro_rules! tst {
 
@@ -1716,30 +1450,25 @@ impl<'a, T> DoubleEndedIterator for TstCompleteIterator<'a, T> {
     }
 }
 
+type TodoItem<'a, 'b, T> = (
+    &'a Node<T>,
+    TstIteratorAction,
+    Option<char>,
+    Chars<'b>,
+    usize,
+    usize,
+);
+
 /// A [double-ended]( http://doc.rust-lang.org/std/iter/trait.DoubleEndedIterator.html) iterator which
 /// successively returns all values whose key is _close_ to `key`. See [`iter_neighbor`](
 /// struct.Tst.html#method.iter_neighbor) method for a brief description with a short example.
 
 #[derive(Debug)]
 pub struct TstNeighborIterator<'a, 'b, T: 'a> {
-    todo_i: Vec<(
-        &'a Node<T>,
-        TstIteratorAction,
-        Option<char>,
-        Chars<'b>,
-        usize,
-        usize,
-    )>,
+    todo_i: Vec<TodoItem<'a, 'b, T>>,
     last_i: Option<&'a Node<T>>,
 
-    todo_j: Vec<(
-        &'a Node<T>,
-        TstIteratorAction,
-        Option<char>,
-        Chars<'b>,
-        usize,
-        usize,
-    )>,
+    todo_j: Vec<TodoItem<'a, 'b, T>>,
     last_j: Option<&'a Node<T>>,
 }
 
