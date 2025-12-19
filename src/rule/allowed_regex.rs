@@ -4,7 +4,6 @@ use fancy_regex::Regex;
 use std::collections::HashMap;
 
 const ERROR_CODE: &str = "ALLOWED_MATCH";
-const REGEX_ERROR: &str = "REGEX_ERROR";
 
 /// Rule for determining if a password matches an allowed regular expression. Passwords must match
 /// the expression or validation will fail.

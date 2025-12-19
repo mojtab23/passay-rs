@@ -15,7 +15,6 @@ pub fn case_insensitive_comparator(a: &str, b: &str) -> Ordering {
 
 pub struct ArrayWordList {
     words: Vec<String>,
-    case_sensitive: bool,
     comparator: fn(&str, &str) -> Ordering,
 }
 
@@ -36,11 +35,7 @@ impl ArrayWordList {
             sort.sort_with_comparator(&mut words[..], comparator)
         }
 
-        ArrayWordList {
-            words,
-            case_sensitive,
-            comparator,
-        }
+        ArrayWordList { words, comparator }
     }
 
     /// Creates a new word list backed by the given array.

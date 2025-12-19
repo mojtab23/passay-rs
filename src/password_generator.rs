@@ -52,6 +52,7 @@ impl PasswordGenerator {
             all_chars.push_str(rule.valid_characters());
         }
         target = self.fill_random_char(&all_chars, len - target.chars().count(), target)?;
+        target = self.randomize(target)?;
         Ok(target)
     }
 
@@ -149,8 +150,7 @@ mod tests {
         let rule = gen_rule();
         for i in 0..100 {
             let password = password_generator.generate_password(LEN, &rule).unwrap();
-            dbg!(password.chars().count());
-            debug_assert!(password.chars().count() >= LEN);
+            assert!(password.chars().count() >= LEN);
             passwords.push(password);
         }
         passwords

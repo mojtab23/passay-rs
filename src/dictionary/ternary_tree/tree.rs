@@ -66,7 +66,6 @@ use std::cmp::Ordering::Less;
 use std::fmt;
 use std::io::Write;
 use std::mem;
-use std::mem::replace;
 use std::ptr;
 use std::str::Chars;
 

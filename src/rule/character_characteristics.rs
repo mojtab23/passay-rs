@@ -80,7 +80,6 @@ impl CharacterCharacteristics {
 
 impl Rule for CharacterCharacteristics {
     fn validate(&self, password_data: &PasswordData) -> RuleResult {
-        dbg!(password_data);
         let mut success_count = 0usize;
         let mut result = RuleResult::default();
         for rule in &self.rules {
