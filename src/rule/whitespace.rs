@@ -8,6 +8,22 @@ use std::collections::HashMap;
 pub const ERROR_CODE: &str = "ILLEGAL_WHITESPACE";
 const WHITESPACES: &[char] =
     &['\u{0009}', '\u{000a}', '\u{000b}', '\u{000c}', '\u{000d}', '\u{0020}'];
+
+///  Rule for determining if a password contains whitespace characters. Whitespace is defined as tab (0x09), line feed
+/// (0x0A), vertical tab (0x0B), form feed (0x0C), carriage return (0x0D), and space (0x20).
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::whitespace::WhitespaceRule;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = WhitespaceRule::default();
+///  let password = PasswordData::with_password("AycD Pdsyz".to_string());
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct WhitespaceRule {
     report_rule_failures: bool,
     whitespace_chars: Vec<char>,

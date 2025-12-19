@@ -14,7 +14,6 @@ pub(crate) const ERROR_CODE_REVERSED: &str = "ILLEGAL_USERNAME_REVERSED";
 /// ```
 ///  use passay_rs::rule::username::UsernameRule;
 ///  use passay_rs::rule::PasswordData;
-///  use passay_rs::rule::reference::Reference;
 ///  use passay_rs::rule::Rule;
 ///
 ///  let rule = UsernameRule::with_match_backwards_and_ignore_case( true, false);

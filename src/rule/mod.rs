@@ -31,7 +31,7 @@ pub mod rule_result;
 pub mod sequence_data;
 pub mod source;
 pub mod username;
-mod whitespace;
+pub mod whitespace;
 
 pub trait Rule {
     fn validate(&self, password_data: &PasswordData) -> RuleResult;
