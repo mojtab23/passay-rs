@@ -6,6 +6,35 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 pub(super) const ERROR_CODE: &str = "SOURCE_VIOLATION";
+
+/// Rule for determining if a password matches a password from a different source. Useful for when separate systems
+/// cannot have matching passwords. If no source password reference has been set, then passwords will meet this rule.
+/// See also [PasswordData::password_references]
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::source::SourceRule;
+///  use passay_rs::rule::source::SourceReference;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::reference::Reference;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = SourceRule::default();
+///
+///  let source: Vec<Box<dyn Reference>> =
+///      vec![Box::new( SourceReference::with_password_label(
+///                 "t3stUs3r03".to_string(),
+///                 "System A".to_string(),
+///             ) )];
+///  let password = PasswordData::new(
+///      "t3stUs3r03".to_string(),
+///      Some("testuser".to_string()),
+///      source,
+///  );
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 #[derive(Clone)]
 pub struct SourceRule {
     report_all: bool,
