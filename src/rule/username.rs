@@ -5,6 +5,27 @@ use std::collections::HashMap;
 
 pub(crate) const ERROR_CODE: &str = "ILLEGAL_USERNAME";
 pub(crate) const ERROR_CODE_REVERSED: &str = "ILLEGAL_USERNAME_REVERSED";
+
+/// Rule for determining if a password contains the username associated with that password.
+/// This rule returns true if a supplied [PasswordData] returns a None or empty username.
+///
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::username::UsernameRule;
+///  use passay_rs::rule::PasswordData;
+///  use passay_rs::rule::reference::Reference;
+///  use passay_rs::rule::Rule;
+///
+///  let rule = UsernameRule::with_match_backwards_and_ignore_case( true, false);
+///
+///  let password = PasswordData::with_password_and_user(
+///      "p4resutset#n65".to_string(),
+///      Some("testuser".to_string()),
+///  );
+///  let result = rule.validate(&password);
+///  assert!(!result.valid());
+/// ```
 pub struct UsernameRule {
     match_backwards: bool,
     ignore_case: bool,
