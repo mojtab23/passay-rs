@@ -32,7 +32,7 @@ impl PasswordGenerator {
                 len.min(rule.num_characters()),
                 target,
             )?;
-            all_chars.push_str(&rule.valid_characters());
+            all_chars.push_str(rule.valid_characters());
         }
         target = self.fill_random_char(&all_chars, len - target.chars().count(), target)?;
         Ok(target)
@@ -45,7 +45,7 @@ impl PasswordGenerator {
         mut target: String,
     ) -> Result<String, String> {
         let result = Uniform::try_from(0..source.chars().count());
-        let mut uni = match result {
+        let uni = match result {
             Ok(x) => x,
             Err(e) => {
                 return Err(e.to_string());
@@ -66,7 +66,7 @@ impl PasswordGenerator {
         let mut n: usize;
         let mut chars: Vec<char> = str.chars().collect();
         let result = Uniform::try_from(0..chars.len());
-        let mut uni = match result {
+        let uni = match result {
             Ok(x) => x,
             Err(e) => {
                 return Err(e.to_string());

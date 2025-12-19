@@ -16,6 +16,12 @@ pub struct DictionaryBuilder {
     case_sensitive: bool,
 }
 
+impl Default for DictionaryBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DictionaryBuilder {
     pub fn build(self) -> WordListDictionary<ArrayWordList> {
         let case_sensitive = self.case_sensitive;

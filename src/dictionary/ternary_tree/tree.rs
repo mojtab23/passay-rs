@@ -135,7 +135,7 @@ fn insert_r<T>(
             let new_label = key_tail.next();
 
             match new_label {
-                None => replace(&mut node.value, Some(value)),
+                None => node.value.replace(value),
 
                 Some(label) => insert_r(&mut node.middle, label, key_tail, value, comparator),
             }
@@ -1335,7 +1335,7 @@ impl<T> Tst<T> {
     /// assert_eq!((last_key, last_value), ("foo".to_string(), Some(&"🍄🍄")));
     /// ```
 
-    pub fn iter(&self) -> TstIterator<T> {
+    pub fn iter(&self) -> TstIterator<'_, T> {
         TstIterator::<T>::new(self)
     }
 
@@ -1367,7 +1367,7 @@ impl<T> Tst<T> {
     /// assert_eq!((last_key, last_value), ("baz".to_string(), Some(&"㵅")));
     /// ```
 
-    pub fn iter_complete(&self, prefix: &str) -> TstCompleteIterator<T> {
+    pub fn iter_complete(&self, prefix: &str) -> TstCompleteIterator<'_, T> {
         TstCompleteIterator::<T>::new(self, prefix)
     }
 
