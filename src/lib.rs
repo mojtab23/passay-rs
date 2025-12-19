@@ -2,7 +2,7 @@
 #![warn(rustdoc::redundant_explicit_links)]
 
 pub mod dictionary;
-mod entropy;
+pub mod entropy;
 pub mod hash;
 pub mod password_generator;
 pub mod rule;

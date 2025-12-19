@@ -11,6 +11,34 @@ pub trait Entropy {
     fn estimate(&self) -> f64;
 }
 
+/// Entropy bits estimate defined in NIST SP-800-63-1 Randomly Selected Passwords.
+/// see [http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf](PDF Publication)
+/// A1. "Randomly Selected Passwords"
+///
+/// # Example
+///
+/// ```
+///    use passay_rs::entropy::RandomPasswordEntropy;
+///    use passay_rs::rule::Rule;
+///    use passay_rs::rule::character_characteristics::CharacterCharacteristics;
+///    use passay_rs::rule::character::CharacterRule;
+///    use passay_rs::rule::character_data::EnglishCharacterData;
+///    use passay_rs::rule::allowed_character::AllowedCharacter;
+///    use passay_rs::rule::PasswordData;
+///    use passay_rs::entropy::Entropy;
+///
+///    let allowed_rules = AllowedCharacter::from_chars("abcdefghijklmnopqrstuvwxyzL");
+///    let ch_rules = vec![
+///        CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///        CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///    ];
+///    let char_rule = CharacterCharacteristics::with_rules_and_characteristics(ch_rules, 2).unwrap();
+///
+///    let rules:Vec<Box<dyn Rule>> = vec![Box::new(allowed_rules), Box::new(char_rule)];
+///    let entropy = RandomPasswordEntropy::new(rules.as_slice(), &PasswordData::with_password("heLlo".to_string())).unwrap();
+///    let ent = entropy.estimate();
+///    assert_eq!(28.50219859070546, ent);
+/// ```
 pub struct RandomPasswordEntropy {
     alphabet_size: usize,
     password_size: usize,
@@ -65,8 +93,33 @@ const SHANNON_COMPOSITION_SIEVE: &[usize] = &[0, 0, 0, 2, 3, 3, 5, 6];
 
 /// Returns the entropy bits of a user selected password. This estimate is based on a 94 Character Alphabet and is a
 /// "ballpark" estimate based on Claude Shannon's observations.
-///  See <a href="http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf">PDF Publication</a>
-///  A1. "User Selected Passwords"
+/// See [http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf](PDF Publication)
+/// A1. "User Selected Passwords"
+///
+/// # Example
+///
+/// ```
+///    use passay_rs::entropy::ShannonEntropy;
+///    use passay_rs::rule::Rule;
+///    use passay_rs::rule::character_characteristics::CharacterCharacteristics;
+///    use passay_rs::rule::character::CharacterRule;
+///    use passay_rs::rule::character_data::EnglishCharacterData;
+///    use passay_rs::rule::allowed_character::AllowedCharacter;
+///    use passay_rs::rule::PasswordData;
+///    use passay_rs::entropy::Entropy;
+///
+///    let allowed_rules = AllowedCharacter::from_chars("abcdefghijklmnopqrstuvwxyzL");
+///    let ch_rules = vec![
+///        CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///        CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///    ];
+///    let char_rule = CharacterCharacteristics::with_rules_and_characteristics(ch_rules, 2).unwrap();
+///
+///    let rules:Vec<Box<dyn Rule>> = vec![Box::new(allowed_rules), Box::new(char_rule)];
+///    let entropy = ShannonEntropy::from_rules(rules.as_slice(), &PasswordData::with_password("heLlo".to_string()));
+///    let ent = entropy.estimate();
+///    assert_eq!(12.0, ent);
+/// ```
 pub struct ShannonEntropy {
     /// Whether a dictionary was used to check the password.
     has_dictionary_check: bool,
@@ -91,7 +144,7 @@ impl ShannonEntropy {
         let mut has_dict = false;
         for rule in rules {
             if let Some(dr) = rule.as_dictionary_rule() {
-                has_dict = dr.dictionary().len() > 0;
+                has_dict = !dr.dictionary().is_empty();
                 break;
             }
         }
