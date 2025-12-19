@@ -12,7 +12,7 @@ pub trait Entropy {
 }
 
 /// Entropy bits estimate defined in NIST SP-800-63-1 Randomly Selected Passwords.
-/// see [http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf](PDF Publication)
+/// see <http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf>
 /// A1. "Randomly Selected Passwords"
 ///
 /// # Example
@@ -95,7 +95,7 @@ const SHANNON_COMPOSITION_SIEVE: &[usize] = &[0, 0, 0, 2, 3, 3, 5, 6];
 
 /// Returns the entropy bits of a user selected password. This estimate is based on a 94 Character Alphabet and is a
 /// "ballpark" estimate based on Claude Shannon's observations.
-/// See [http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf](PDF Publication)
+/// See <http://csrc.nist.gov/publications/nistpubs/800-63-1/SP-800-63-1.pdf>
 /// A1. "User Selected Passwords"
 ///
 /// # Example
