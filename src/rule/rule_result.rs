@@ -1,10 +1,14 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
+/// Result of a password rule validation.
 #[derive(Debug)]
 pub struct RuleResult {
+    /// Whether password rule was successful.
     valid: bool,
+    /// Details associated with a password rule result.
     details: Vec<RuleResultDetail>,
+    /// Metadata produced by a password rule.
     metadata: RuleResultMetadata,
 }
 
@@ -64,6 +68,7 @@ impl Default for RuleResult {
     }
 }
 
+/// Describes an exact cause of a rule validation failure.
 #[derive(Debug)]
 pub struct RuleResultDetail {
     error_codes: Vec<String>,
@@ -104,6 +109,7 @@ impl Display for RuleResultDetail {
     }
 }
 
+/// Describes metadata relevant to the result of rule validation.
 #[derive(Default, Debug)]
 pub struct RuleResultMetadata {
     counts: HashMap<CountCategory, usize>,
