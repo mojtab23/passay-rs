@@ -3,7 +3,53 @@ use crate::rule::{PasswordData, Rule};
 use std::ops::Deref;
 use std::rc::Rc;
 
-const USER: &str = "testuser";
+/// The central component for evaluating multiple password rules against a candidate password.
+/// # Example
+///
+/// ```
+///  use passay_rs::rule::character_data::EnglishCharacterData;
+///  use passay_rs::rule::length::LengthRule;
+///  use passay_rs::rule::character::CharacterRule;
+///  use passay_rs::rule::character_characteristics::CharacterCharacteristics;
+///  use passay_rs::rule::illegal_sequence::IllegalSequenceRule;
+///  use passay_rs::rule::sequence_data::EnglishSequenceData;
+///  use passay_rs::rule::repeat_character_regex::RepeatCharacterRegexRule;
+///  use passay_rs::rule::Rule;
+///  use passay_rs::rule::password_validator::PasswordValidator;
+///  use passay_rs::rule::PasswordData;
+///
+///  let length_rule = LengthRule::new(8, 16);
+///  let char_rules = vec![
+///      CharacterRule::new(Box::new(EnglishCharacterData::Digit), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::Special), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::UpperCase), 1).unwrap(),
+///      CharacterRule::new(Box::new(EnglishCharacterData::LowerCase), 1).unwrap(),
+///  ];
+///  let char_rule =
+///      CharacterCharacteristics::with_rules_and_characteristics(char_rules, 3).unwrap();
+///  let qwerty_seq_rule =
+///      IllegalSequenceRule::with_sequence_data(EnglishSequenceData::USQwerty);
+///  let alpha_seq_rule =
+///      IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Alphabetical);
+///  let num_seq_rule = IllegalSequenceRule::with_sequence_data(EnglishSequenceData::Numerical);
+///  let dup_seq_rule = RepeatCharacterRegexRule::default();
+///
+///  let rules: Vec<Box<dyn Rule>> = vec![
+///      Box::new(char_rule),
+///      Box::new(length_rule),
+///      Box::new(qwerty_seq_rule),
+///      Box::new(alpha_seq_rule),
+///      Box::new(num_seq_rule),
+///      Box::new(dup_seq_rule),
+///  ];
+///  let password_validator = PasswordValidator::new(rules);
+///
+///  let invalid_pass = "aBcDeFgHiJk".to_string();
+///  let pass_data = PasswordData::with_password(invalid_pass);
+///  let rule_result = password_validator.validate(&pass_data);
+///  assert!(!rule_result.valid());
+///  assert!(!rule_result.details().is_empty());
+/// ```
 #[derive(Clone)]
 pub struct PasswordValidator {
     password_rules: Rc<Vec<Box<dyn Rule>>>,
@@ -52,7 +98,7 @@ mod tests {
     use crate::rule::history::HistoricalReference;
     use crate::rule::illegal_sequence::IllegalSequenceRule;
     use crate::rule::length::LengthRule;
-    use crate::rule::password_validator::{PasswordValidator, USER};
+    use crate::rule::password_validator::PasswordValidator;
     use crate::rule::reference::Reference;
     use crate::rule::repeat_character_regex::RepeatCharacterRegexRule;
     use crate::rule::sequence_data::{EnglishSequenceData, SequenceData};
@@ -66,6 +112,7 @@ mod tests {
     use crate::test::{check_messages, check_passwords, RulePasswordTestItem};
 
     // The test producerExtends in java code is not needed here
+    const USER: &str = "testuser";
 
     #[test]
     fn validate() {
